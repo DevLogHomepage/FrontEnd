@@ -1,53 +1,44 @@
 <template>
-  <div :class="['app',theme ? 'dark' : 'light']">
-    <LogoDiv />
-    <ThemeControl :theme="this.theme" @testing="setTheme" />
-  </div>
+    <main>
+        <div id="home" :class="[theme ? 'dark' : 'light']">
+            <LogoDiv />
+        </div>
+    </main>
+    <footer>
+        <div id="helper">select index to look around</div>
+    </footer>
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from 'vue';
+import { defineComponent, PropType } from 'vue';
 import LogoDiv from '../components/LogoDiv.vue';
-import ThemeControl from '../components/ThemeControl.vue'
 
 export default defineComponent({
-  name: 'App',
-  components: { 
-    LogoDiv,
-    ThemeControl
-   },
-  setup() {
-    let theme = ref<boolean>(false);
-    return {
-      theme
-    }
-  },
-  mounted() {
-    let matched = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    this.setTheme(matched)
-  },
-  data() {
-    return{
-      name: 'Link'
-    }
-  },
-  methods: {
-    setTheme(theme:boolean){
-      this.theme = theme;
-      if(this.theme){
-        document.documentElement.classList.add("dark");
-        document.documentElement.classList.remove("light");
-      }
-      else{
-        document.documentElement.classList.add("light");
-        document.documentElement.classList.remove("dark");
-      }
-      console.log(theme);
-    }
-  }
+    name: 'App',
+    components: { 
+        LogoDiv,
+    },
+    props :{
+        theme: {
+            required: true,
+            type : Boolean as PropType<boolean>,
+
+        }
+    },
 });
 </script>
 
 <style>
-
+#home {
+    height:100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+}
+#LogoDiv{
+    user-select: none;
+    font-size: 40px;
+    font-weight: bold;
+}
 </style>
