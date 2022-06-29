@@ -1,7 +1,7 @@
 <template>
     <main>
         <div id="home" :class="[theme ? 'dark' : 'light']">
-            <LogoDiv />
+            <LogoDiv :typePage="this.home"/>
         </div>
     </main>
     <footer>
@@ -14,9 +14,14 @@ import { defineComponent, PropType } from 'vue';
 import LogoDiv from '../components/LogoDiv.vue';
 
 export default defineComponent({
-    name: 'App',
+    name: 'HomeView',
     components: { 
         LogoDiv,
+    },
+    data(){
+        return {
+            home:'home'
+        }
     },
     props :{
         theme: {

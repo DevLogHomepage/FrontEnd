@@ -4,8 +4,10 @@
  
  html,
  body {
-     height: 100%;
-     height: var(--vh);
+    height: 100%;
+    height: var(--vh);
+    margin: 0;
+    padding: 0;
  }
 .dark body{
     background: #2b2b2b;

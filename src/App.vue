@@ -1,31 +1,35 @@
 <template>
-    <nav>
-        <router-link to="/">HOME</router-link>
-        <router-link to="/tech">TECH</router-link>
-        <router-link to="/project">PROJECT</router-link>
-        <router-link to="/about">ABOUT</router-link>
-    </nav>
+    <header>
+        <HamburgerButton />
+        <nav>
+            <router-link to="/">HOME</router-link>
+            <router-link to="/tech">TECH</router-link>
+            <router-link to="/project">PROJECT</router-link>
+            <router-link to="/about">ABOUT</router-link>
+        </nav>
+    </header>
     <router-view :theme="this.theme"/>
     <ThemeControl :theme="this.theme" @testing="setTheme" />
-
-    <!-- <div></div> -->
 </template>
 
 <script lang="ts">
 import { defineComponent, ref } from 'vue';
 import ThemeControl from './components/ThemeControl.vue'
+import HamburgerButton from '@/components/HamburgerButton.vue';
 
 export default defineComponent({
     name: 'App',
     components: { 
-        ThemeControl
+        ThemeControl,
+        HamburgerButton,
+
     },
     setup() {
         let theme = ref<boolean>(false);
 
 
         return {
-        theme
+            theme
         }
     },
     data() {

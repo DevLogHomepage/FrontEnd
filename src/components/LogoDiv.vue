@@ -16,7 +16,7 @@
 
 
 <script lang="ts">
-import { defineComponent, ref } from 'vue'
+import { defineComponent, PropType, ref } from 'vue'
 
 export default defineComponent({
     setup() {
@@ -43,17 +43,28 @@ export default defineComponent({
             morseTag.push(tagString);
         }
         const isHome = ref<boolean>(false);
-
+        console.log("tesgin")
         return {
             morseTag : morseTag,
             isHome
         }
     },
-    methods : {
-        setHome() {
-            this.isHome = !this.isHome
+    props :{
+        typePage: {
+            required: true,
+            type : String as PropType<string>,
         }
     },
+    methods : {
+        setHome(value:boolean) {
+            this.isHome = value
+        }
+    },
+    mounted() {
+        if(this.typePage === 'home'){
+            this.setHome(true)
+        }
+    }
 
 })
 </script>

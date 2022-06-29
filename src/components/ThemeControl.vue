@@ -20,7 +20,7 @@ import { defineComponent, PropType } from 'vue'
 export default defineComponent({
     props :{
         theme: {
-            reuqired: true,
+            required: true,
             type : Boolean as PropType<boolean>,
 
         },
@@ -64,7 +64,7 @@ export default defineComponent({
     width:30px;
     height:50px;
     position: fixed;
-    right: 100px;
+    right: 50px;
     bottom: 30px;
     
 }
@@ -93,7 +93,7 @@ input[id="ThemeInput"] + label{
 .svg-container.dark{
     position: absolute;
     top:50px;
-    transition: all 0.5s ease-in-out;
+    transition: all 0.2s ease-in-out;
     left: 0px;
     opacity: 0;
 }
@@ -101,13 +101,13 @@ input[id="ThemeInput"] + label{
 .svg-container.light{
     position: absolute;
     top: 0px;
-    transition: all 0.5s ease-in-out 0.5s;
+    transition: all 0.2s ease-in-out 0.2s;
     opacity: 1;
 }
 
 input[id="ThemeInput"]:checked + label .svg-container.dark{
     top: 0;
-    transition: all opacity 0.5s ease-in-out 0.5s;
+    transition: all opacity 0.2s ease-in-out 0.2s;
     opacity: 1;
     /* display: block; */
 
@@ -115,7 +115,7 @@ input[id="ThemeInput"]:checked + label .svg-container.dark{
 
 input[id="ThemeInput"]:checked + label .svg-container.light{
     top: 50px;
-    transition: all 0.5s ease-in-out;
+    transition: all 0.2s ease-in-out;
     opacity: 0;
     /* display: none; */
 
