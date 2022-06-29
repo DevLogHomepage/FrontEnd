@@ -8,8 +8,8 @@
             <router-link to="/about">ABOUT</router-link>
         </nav>
     </header>
-    <router-view :theme="this.theme"/>
-    <ThemeControl :theme="this.theme" @testing="setTheme" />
+    <router-view :theme="theme"/>
+    <ThemeControl :theme="theme" @testing="setTheme" />
 </template>
 
 <script lang="ts">

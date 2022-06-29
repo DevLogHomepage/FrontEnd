@@ -1,7 +1,7 @@
 <template>
     <main>
         <div id="home" :class="[theme ? 'dark' : 'light']">
-            <LogoDiv :typePage="this.home"/>
+            <LogoDiv :typePage="home"/>
         </div>
     </main>
     <footer>
