@@ -3,6 +3,9 @@
         <div v-if="level == 0" class="githubLevel-0"></div>
         <div v-else v-for="i in level" :class="'githubLevel-'+i" :key="i"></div>
     </div>
+    <div v-else id="CircleIndicator-container">
+
+    </div>
 </template>
 
 <script lang="ts">
@@ -13,7 +16,6 @@ export default defineComponent({
     setup(){
         const level = ref<number>(0);
         console.log()
-
         return {
             level
         }
@@ -35,7 +37,6 @@ export default defineComponent({
             this.level = 3
         else if(this.contributionLevel === 'FOUTRH_QUARTILE')
             this.level = 4
-        console.log(this.level)
     },
     props:{
         date:{

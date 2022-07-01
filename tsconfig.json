@@ -18,6 +18,9 @@
     "paths": {
       "@/*": [
         "src/*"
+      ],
+      "@/Type": [
+        "src/utils/Types.ts"
       ]
     },
     "lib": [

@@ -4,9 +4,7 @@
         <div id="MainStream">
             <div v-for="i in 60" :key="i" class="mainstream-div"></div>
         </div>
-        <div id="BlogPostStream">
-            <div v-for="i in 60" :key="i" class="blogpoststream-div"></div>
-        </div>
+        <BlogPostStream/>
     </div>
 </template>
 
@@ -14,20 +12,20 @@
 import { defineComponent } from 'vue'
 
 import GithubStream from './PageLocator/GithubStream.vue'
+import BlogPostStream from './PageLocator/BlogPostStream.vue'
 
 export default defineComponent({
     name: "PageLocater",
-    setup() {
-        console.log("testing");
-        
-        return {};
-    },
     data() {
         return {
             contribute: ""
         };
     },
-    components: { GithubStream }
+    components: { 
+        GithubStream,
+        BlogPostStream
+    },
+
 })
 </script>
 

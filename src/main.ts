@@ -13,7 +13,7 @@ const httpLink = createHttpLink({
   // You should use an absolute URL here
   uri: 'https://api.github.com/graphql',
   headers: {
-    authorization: GITHUB_TOKEN,
+    authorization: 'Bearer ' + GITHUB_TOKEN,
   }
 })
 

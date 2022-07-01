@@ -65,11 +65,6 @@ export default defineComponent({
             loading
         }
         
-    },
-    data() {
-        return{
-            today: new Date()
-        }
     }
 })
 

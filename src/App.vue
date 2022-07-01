@@ -52,7 +52,6 @@ export default defineComponent({
                 document.documentElement.classList.add("light");
                 document.documentElement.classList.remove("dark");
             }
-        console.log(theme);
         }
     }
 });
