@@ -21,6 +21,12 @@
       ],
       "@/Type": [
         "src/utils/Types.ts"
+      ],
+      "@core-rest/*":[
+        "src/core/rest/*"
+      ],
+      "@core-graphQL/*":[
+        "src/core/graphQL/*"
       ]
     },
     "lib": [
