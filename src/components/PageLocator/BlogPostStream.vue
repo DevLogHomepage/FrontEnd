@@ -14,15 +14,15 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import { getTesting } from '@/core/github/GraphQL'
+// import { getTesting } from '@core-graphQL/github'
 
 export default defineComponent({
     components:{
         // CircleIndicatorVue
     },
     setup(){
-        const {result} = getTesting()
-        console.log("testing" ,result)
+        // const {result} = getTesting()
+        // console.log("testing" ,result)
         // let githubData = computed(() => result.value.repository.object.entries ?? [])
         // githubData.value
         // console.log(githubData)
