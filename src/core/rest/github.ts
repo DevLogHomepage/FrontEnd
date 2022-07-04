@@ -41,7 +41,12 @@ export function decodeBase64UTF8(encoded: string) {
     return decodeURIComponent(atob(encoded));
 }
 
-
+/**
+ * 현재 깃허브에 올라가있는 블로그를 불러옵니다.
+ * 
+ * @param content `owner`,`repo`,`path`으로 구성된 dictonary 입니다.
+ * @returns `{name,path}`으로 구성된 dictionary를 반환합니다.
+ */
 export async function getPostName(content:{owner:string,repo:string,path:string}){
     const branch = 'main'
     const request = githubRequest(`repos/${content.owner}/${content.repo}/contents/${content.path}?ref=main`)

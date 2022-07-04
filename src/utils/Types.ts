@@ -46,3 +46,41 @@ export interface FileContentsResponse {
 export interface RequestRepo{
     
 }
+export interface VueStatus<T>{
+    dep: Set<any>,
+    __v_isRef: boolean,
+    __v_isShallow:boolean,
+    _rawValue: T,
+    _value: T,
+    value: T
+
+}
+
+export interface ContributionCalendar{
+    months: ContributionMonths[],
+    totalContributions: number,
+    weeks: ContributionDays[],
+    __typename:string
+}
+
+export interface ContributionMonths{
+    firstDay: string,
+    name: string,
+    totalWeeks: number,
+    year:number,
+    __typename:string
+}
+
+export interface ContributionWeeks{
+    contributionDays: ContributionDays[],
+    __typename:string
+}
+
+export interface ContributionDays{
+    color:string,
+    contributionCount: number,
+    contributionLevel: string,
+    date: string,
+    weekday: number,
+    __typeName:string
+}
