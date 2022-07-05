@@ -1,18 +1,30 @@
 <template>
     <div class="tech" :class="[theme ? 'dark' : 'light']">
         <h1>This is an tech page</h1>
+        <div v-if="response!.length <= 0">
+            블로그가 없습니다.
+        </div>
+        <div v-else v-for="node in response" :key="node.name" class="blogPost">
+            <div v-html="node.content"></div>
+        </div>
         <PageLocater />
     </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType } from 'vue';
+import { defineComponent, PropType, ref } from 'vue';
 import PageLocater from '@/components/PageLocator.vue'
-import * as rest from '@core-rest/github'
+import * as grapqhl from '@core-graphQL/github'
+import { BlogPostData } from '@/utils/Types';
+import hljs from 'highlight.js'
 
 export default defineComponent({
     name: 'TechView',
     setup(){
+        const response = ref<BlogPostData[]>([]);
+        return {
+            response
+        }
         // const date = new Date();
         // let currentMonth = new Date(date.getFullYear(),date.getMonth(),1);
         // let nextMonth = new Date(date.getFullYear(),date.getMonth() + 1,1);
@@ -31,9 +43,7 @@ export default defineComponent({
     },
     async mounted() {
         const path ="tech"
-
-        const response = await rest.getPostName({owner:'dennis0324',repo:'blogPost',path:path});
-        console.log(response)
+        this.response = await grapqhl.getPostUpdate({owner:'dennis0324',repo:'blogPost',path:path},'tech');
     }
 });
 
@@ -45,5 +55,23 @@ export default defineComponent({
 <style scoped>
     .dark .tech{
         color:#fff;
+    }
+
+    .blogPost{
+        margin:50px;
+    }
+
+
+    .blogPost >>> pre code{
+        text-align: left !important;
+        border-radius: 5px;
+        padding:10px;
+
+    }
+
+    .blogPost >>> pre{
+        text-align: left !important;
+        border-radius: 5px;
+        background-color: #222222;
     }
 </style>

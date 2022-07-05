@@ -62,7 +62,6 @@ export default defineComponent({
     font-family: Avenir, Helvetica, Arial, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    text-align: center;
     display:table;
     width:100%;
     height: 100%;
@@ -132,5 +131,6 @@ footer{
 
 #helper{
     color:#878787;
+    text-align: center;
 }
 </style>

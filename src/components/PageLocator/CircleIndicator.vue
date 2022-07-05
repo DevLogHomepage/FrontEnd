@@ -15,7 +15,6 @@ export default defineComponent({
     name:'CircleIndicator',
     setup(){
         const level = ref<number>(0);
-        console.log()
         return {
             level
         }

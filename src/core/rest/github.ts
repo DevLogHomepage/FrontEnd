@@ -5,12 +5,12 @@ export function githubRequest(relativeUrl: string) {
     const init = {} as RequestInit
     init.mode = 'cors';
     init.cache = 'no-cache'; // force conditional request
-    const request = new Request('https://api.github.com/' + relativeUrl,{cache:'no-cache',mode:'cors'});
+    const request = new Request('https://api.github.com/' + relativeUrl,{method: "GET" ,cache:'no-cache',mode:'cors'});
     request.headers.set('Accept', 'application/vnd.github.v3+json');
     request.headers.set('Authorization', `token ${GITHUB_TOKEN}`);
-return request;
-
+    return request;
 }
+
 export function githubFetch(request: Request): Promise<Response> {
     return fetch(request).then(response => {
         if (response.status === 401) {
@@ -33,7 +33,6 @@ export function githubFetch(request: Request): Promise<Response> {
         }
         return response;
     });
-
 }
 
 export function decodeBase64UTF8(encoded: string) {
@@ -70,3 +69,4 @@ export async function getPostName(content:{owner:string,repo:string,path:string}
         }
     return PostTile
 }
+

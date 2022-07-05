@@ -43,7 +43,6 @@ export default defineComponent({
             morseTag.push(tagString);
         }
         const isHome = ref<boolean>(false);
-        console.log("tesgin")
         return {
             morseTag : morseTag,
             isHome

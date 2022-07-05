@@ -55,8 +55,6 @@ export default defineComponent({
                     }
                 }
             }`;
-        console.log(new Date(today.getFullYear(),today.getMonth(),today.getDate(),0,0,0).toISOString())
-        console.log(new Date(today.getFullYear(),today.getMonth(),today.getDate() - 60,0,0,0).toISOString())
         const { result,loading } = useQuery(QUERY, {
             userName: "dennis0324",
             toDate: new Date(today.getFullYear(),today.getMonth(),today.getDate()).toISOString(),
@@ -69,7 +67,7 @@ export default defineComponent({
 
         watchEffect(() => {
             if(result.value !== undefined){
-                console.log(githubData)
+                console.log()
             }
         })
 
@@ -92,11 +90,9 @@ export default defineComponent({
             let result:ContributionWeeks[][] = []
             for(let i of this.githubDataMonth as ContributionMonths[]){
                 endsNum += i.totalWeeks
-                console.log(startNum,endsNum)
                 result.push(this.githubDataWeek.slice(startNum,endsNum))
                 startNum = endsNum;
             }
-            console.log(result)
             return result
         },
     }

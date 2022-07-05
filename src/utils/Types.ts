@@ -56,6 +56,8 @@ export interface VueStatus<T>{
 
 }
 
+/** contribution 관리 타입 */
+
 export interface ContributionCalendar{
     months: ContributionMonths[],
     totalContributions: number,
@@ -83,4 +85,58 @@ export interface ContributionDays{
     date: string,
     weekday: number,
     __typeName:string
+}
+
+/**  */
+export interface CommitResponse{
+    data:{
+        repository:{
+            commitsData:{},
+            content:{
+                entries: ContentNode[]
+            }
+        }
+    }
+}
+
+
+
+export interface Node{
+    node:{
+        committedDate:string 
+        oid:string
+        author:{  
+          email:string
+        }
+    }
+}
+
+export interface ContentNode{
+    name:string,
+    object:{
+        entries:[]
+    }
+    type:string
+}
+
+
+export interface ContentFile{
+    name:string,
+    object:{
+        byteSize: number;
+        text:string
+    },
+    type:string
+}
+
+export interface CommitDatas{
+    edges: Node[]
+}
+
+export interface BlogPostData{
+    name:string,
+    content:string,
+    createdat:string,
+    updatedat:string,
+    
 }
