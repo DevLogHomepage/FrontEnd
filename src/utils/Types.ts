@@ -133,10 +133,22 @@ export interface CommitDatas{
     edges: Node[]
 }
 
+/**
+ * 깃허브 블로그 글을 작성할때의 기본적인 정보를 입력하는 데이터 타입입니다.
+ */
 export interface BlogPostData{
     name:string,
     content:string,
     createdat:string,
     updatedat:string,
+    titleData:TitleData
     
+}
+
+/**
+ *  깃허브에서 글을 가지고 와서 특정 `prefix` ,`surfix`를 지정해서 `title`과 `tags` 받아옵니다.
+ */
+export interface TitleData{
+    title:string,
+    tags:string[],
 }

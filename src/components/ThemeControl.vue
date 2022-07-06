@@ -65,7 +65,7 @@ export default defineComponent({
     height:50px;
     position: fixed;
     right: 50px;
-    bottom: 30px;
+    bottom: 10px;
     
 }
 #ThemeInput{

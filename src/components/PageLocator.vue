@@ -1,11 +1,16 @@
 <template>
     <div id="pagelocater">
-        <GithubStream/>
-        <div id="MainStream">
-            <div v-for="i in 60" :key="i" class="mainstream-div"></div>
-        </div>
+        <div id="pagelocater-indicator">
+            <GithubStream/>
+            <div id="MainStream">
+                <div v-for="i in 60" :key="i" class="mainstream-div"></div>
+            </div>
         <BlogPostStream/>
+        </div>
+        <div class="date-indicator">Recent Post: {}</div>
+        <div class="date-indicator">Post in a Row : {}</div>
     </div>
+
 </template>
 
 <script lang="ts">
@@ -32,6 +37,20 @@ export default defineComponent({
 <style scoped>
 #pagelocater{
     display:flex;
+    margin: 0 50px;
+    padding: 0 50px;
+    flex-direction: column;
+    align-items: center; 
+}
+
+.date-indicator{
+    margin:5px 0;
+}
+#pagelocater-indicator{
+    display:flex;
+    margin: 0 50px;
+    padding: 0 50px;
+    border-right: solid 1px #707070;
     
 }
 #GithubStream{
@@ -48,9 +67,15 @@ export default defineComponent({
     width:6px;
     height:6px;
     border-radius: 50%;
-    background:#fff;
     margin: 1px;
+}
+.dark #MainStream .mainstream-div{
+
+    background-color:#fff;
     
+}
+.light #MainStream .mainstream-div{
+    background-color:#2B2B2B;
 }
 #BlogPostStream{
     display:flex;

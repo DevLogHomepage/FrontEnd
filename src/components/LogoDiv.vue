@@ -50,7 +50,6 @@ export default defineComponent({
     },
     props :{
         typePage: {
-            required: true,
             type : String as PropType<string>,
         }
     },
