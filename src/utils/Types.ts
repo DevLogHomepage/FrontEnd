@@ -87,7 +87,7 @@ export interface ContributionDays{
     __typeName:string
 }
 
-/**  */
+/** 블로그 최근 추가일과 업데이트 날짜를 구하기 위한 commit 날짜 응답 형식입니다. */
 export interface CommitResponse{
     data:{
         repository:{
@@ -97,6 +97,7 @@ export interface CommitResponse{
     }
 }
 
+/** 블로그 포스트의 내용을 확인하기 위한 응답 형식입니다. */
 export interface ContentResponse{
     data:{
         repository:{

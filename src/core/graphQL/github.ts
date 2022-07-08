@@ -183,10 +183,20 @@ export function getPostJson(prefix:string,surfix:string,content:string){
 
 
 export function getBetweenDate(fromDate:Date,toDate:Date,blogPostDatas:BlogPostData[]){
+    let filteredPostDatas:BlogPostData[] = []
     for(const node of blogPostDatas){
         console.log(toDate.toISOString(),node.updatedat)
         // 이렇게 비교하면 될듯
         console.log(node.updatedat.localeCompare(toDate.toISOString()))
         console.log(fromDate.toISOString().localeCompare(node.updatedat))
+        if(node.updatedat.localeCompare(toDate.toISOString()) !== 1){
+            continue
+        }
+        if(fromDate.toISOString().localeCompare(node.updatedat) !== 1){
+            continue
+        }
+        filteredPostDatas.push(node)
+        
     }
+    console.log(filteredPostDatas)
 }
