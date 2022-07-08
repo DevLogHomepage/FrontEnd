@@ -1,0 +1,35 @@
+.hljs-comment{
+    color:#529949;
+}
+
+.hljs-keyword{
+    color:#569AD6;
+}
+
+.hljs-property{
+    color: #DCDCAA;
+}
+
+.hljs-attr{
+     color:#569AD6;
+}
+
+.hljs-title.function_{
+    color: #DCDCAA;
+}
+
+.hljs-title.class_{
+    color: #DCDCAA;
+}
+
+.dark .hljs{
+    color:#fff;
+}
+
+.dark .hljs-punctuation{
+    color:#fff
+}
+
+.light .hljs-punctuation{
+    color:#000
+}

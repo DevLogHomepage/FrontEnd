@@ -17,12 +17,14 @@
     "highlight.js": "^11.5.1",
     "marked": "^4.0.17",
     "overlayscrollbars-vue": "^0.3.0",
+    "prismjs": "^1.28.0",
     "vue": "^3.2.13",
     "vue-router": "^4.0.3",
     "vuex": "^4.0.0"
   },
   "devDependencies": {
     "@types/marked": "^4.0.3",
+    "@types/prismjs": "^1.26.0",
     "@typescript-eslint/eslint-plugin": "^5.4.0",
     "@typescript-eslint/parser": "^5.4.0",
     "@vue/cli-plugin-babel": "~5.0.0",

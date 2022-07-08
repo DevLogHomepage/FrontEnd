@@ -92,6 +92,14 @@ export interface CommitResponse{
     data:{
         repository:{
             commitsData:{},
+
+        }
+    }
+}
+
+export interface ContentResponse{
+    data:{
+        repository:{
             content:{
                 entries: ContentNode[]
             }

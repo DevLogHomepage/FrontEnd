@@ -1,7 +1,7 @@
 <template>
     <div v-if="true"></div>
     <div>
-        TESTING
+        t
     </div>
     <!-- <div v-else id="GithubStream">
         <div v-for="i in githubData.weeks" :key="i" class="githubstream-div"> 

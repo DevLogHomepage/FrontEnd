@@ -1,13 +1,23 @@
+<!-- 
+    여기서 해야할 일은 일단 GITHUB에서 가져오는 방식을 바꿔야한다 COMMIT만 가지고 오고 나머지는 천천히 가지고 오는걸로
+
+ -->
 <template>
     <main>
         <div id="tech" class="tech" :class="[theme ? 'dark' : 'light']">
             <div class="tech-container">
-                <PageLocater />
+                <div class="left-sidebar">
+                    
+                    <!-- <div>
+                        search
+                    </div> -->
+                    <PageLocater />
+                </div>
                 <div class="posts">
                     <div v-if="response!.length <= 0">
                         로딩중입니다.
                     </div>
-                    <div v-else v-for="node in response" :key="node.name" class="blogPost">
+                    <!-- <div v-else v-for="node in response" :key="node.name" class="blogPost">
                         <div class="blogPost-container">
                             <div class="blogPost-create">
                                 <div class="blogPost-create-title">제작한 날짜</div>
@@ -21,7 +31,7 @@
                         <div class="blogPost-title">{{node.titleData.title}}</div>
                         <div v-html="node.content"></div>
                         <div>{{node.titleData.tags}}</div>
-                    </div>
+                    </div> -->
                 </div>
 
             </div>
@@ -70,7 +80,6 @@ export default defineComponent({
     async mounted() {
         const path ="tech"
         this.response = await grapqhl.getPostUpdate({owner:'dennis0324',repo:'blogPost',path:path},'tech');
-
     }
 });
 
@@ -80,6 +89,10 @@ export default defineComponent({
 
 
 <style scoped>
+    .left-sidebar{
+        display:flex;
+        flex-direction: column;
+    }
     .dark .tech{
         color:#fff;
     }
@@ -145,6 +158,7 @@ export default defineComponent({
         justify-content: center;
         align-items: center;
         position: relative;
+        margin: 0 50px;
     }
 
     /** 블로그 사진 크기 조정 */

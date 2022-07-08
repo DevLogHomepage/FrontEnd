@@ -70,3 +70,25 @@ export async function getPostName(content:{owner:string,repo:string,path:string}
     return PostTile
 }
 
+
+
+
+
+
+
+// function createWindow() {
+//     const win = new BrowserWindow({
+//       width: 1200,
+//       height: 800,
+//       backgroundCoor: "white",
+//       webPreferences: {
+//         NodeIterator: false,
+//         worldSafeExecuteJavascript : true,
+//         contextIsolation: true,
+//         preload : path.resolve(path.join(__dirname, "preload.js"))
+//       }
+//     })
+  
+//     win.loadFile('index.html');
+    
+//   }

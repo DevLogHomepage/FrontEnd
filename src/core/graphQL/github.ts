@@ -8,6 +8,9 @@ import { BlogPostData, CommitDatas, CommitResponse, ContentFile, ContentNode } f
 import gql from 'graphql-tag'
 import {marked} from 'marked';
 import hljs from 'highlight.js'
+import prism from "prismjs";
+import { returnGetBlogCommitQuery, returnNode } from './query'
+
 
 export function getTesting(){
     const QUERY = gql`
@@ -62,64 +65,17 @@ export async function getPostUpdate(content:{owner:string,repo:string,path:strin
     /** 깃허브에서 파일 이름을 가지고 옵니다. */
     const fileDate = await getPostName({owner:content.owner,repo:content.repo,path:content.path})
     
-    let commits = ``
 
     /** 커밋 기록을 가지고 오는 형식을 만들어주는 틀입니다. */
+    let nodes:string[] = []
     fileDate.forEach((value,key) => {
-      const putData = value.name.replace(".md","") + `: history(path: "`+value.path+`") {
-        edges {
-          node { 
-            committedDate 
-            oid
-            author
-            {  
-              email
-            }
-          } 
-        }
-      }
-      `
-      commits = commits.concat(putData)
+        const temp = returnNode(value.name.replace(".md",""),value.path)
+
+        nodes.push(temp)
     })
     
     /** 글을 가지고 올 때 사용하는 query입니다. */
-    const query = `query RepoFiles($own:String!,$repo:String!){
-        repository(owner: $own, name: $repo) {
-          commitsData:object(expression: "main") {
-            ... on Commit {
-              `+commits+`
-            
-          }
-          
-        }
-        content: object(expression: "HEAD:") {
-          ... on Tree {
-            entries {
-              name
-              type
-              object {
-                ... on Blob {
-                  byteSize
-                }
-                ... on Tree {
-                  entries {
-                    name
-                    type
-                    object {
-                      ... on Blob {
-                        byteSize
-                        text
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-    `
+    const query = returnGetBlogCommitQuery(nodes)
 
     /** 가지고 온 파일을 md를 HTML string 형식으로 바꿔줍니다. */
     marked.setOptions({
@@ -161,39 +117,58 @@ export async function getPostUpdate(content:{owner:string,repo:string,path:strin
         })
 
     const commitData:CommitResponse = await commitDatas.json() as CommitResponse
+    console.log(commitData)
     let blogPostDatas:BlogPostData[] = []
-    const postData = commitData.data.repository.content.entries.find(n => n.name == path) as ContentNode
-    Object.entries<CommitDatas>(commitData.data.repository.commitsData).forEach((key,index) => {
-        
+    // const postData = commitData.data.repository.content.entries.find(n => n.name == path) as ContentNode
+    const commitDates = Object.entries<CommitDatas>(commitData.data.repository.commitsData).forEach((key,index) => {
         let blogPostData:BlogPostData = {} as BlogPostData
+
         const dateArr:string[] = []
+
         key[1].edges.forEach(value => {
             dateArr.push(value.node.committedDate)
         })
-
         blogPostData.name = key[0]
         blogPostData.createdat = dateArr[dateArr.length - 1]
         blogPostData.updatedat = dateArr[0]
-
-        const entries = Object.values<ContentFile>(postData.object.entries).find(n => n.name.split(".")[0] === key[0])
-        let content = entries?.object.text
-
-        const startingPoint:number = entries?.object.text.indexOf("---\n{") as number;
-        const endingPoint:number = entries?.object.text.indexOf("}\n---") as number;
-
-        const title = content?.slice(startingPoint ,endingPoint + "---\n{".length + 1)
-        content = content?.replace(title as string,"")
-
-        // console.log(content)
-        const titleData = getPostJson("---\n{","---\n}",title as string)
-        // console.log(JSON.parse(title?.replace(/\n/g,"") as string))
-        blogPostData.titleData = titleData
-        blogPostData.content = marked.parse(content as string)
         blogPostDatas.push(blogPostData)
     })
-    
     blogPostDatas.sort((a,b) => b.updatedat.localeCompare(a.updatedat))
     console.log(blogPostDatas)
+    const TODAY = new Date()
+    getBetweenDate(
+        new Date(TODAY.getFullYear(),TODAY.getMonth(),TODAY.getDate()),
+        new Date(TODAY.getFullYear(),TODAY.getMonth(),TODAY.getDate() -7),
+        blogPostDatas
+        )
+    // Object.entries<CommitDatas>(commitData.data.repository.commitsData).forEach((key,index) => {
+        
+    //     let blogPostData:BlogPostData = {} as BlogPostData
+    //     const dateArr:string[] = []
+    //     key[1].edges.forEach(value => {
+    //         dateArr.push(value.node.committedDate)
+    //     })
+
+    //     blogPostData.name = key[0]
+    //     blogPostData.createdat = dateArr[dateArr.length - 1]
+    //     blogPostData.updatedat = dateArr[0]
+
+    //     const entries = Object.values<ContentFile>(postData.object.entries).find(n => n.name.split(".")[0] === key[0])
+    //     let content = entries?.object.text
+
+    //     const startingPoint:number = entries?.object.text.indexOf("---\n{") as number;
+    //     const endingPoint:number = entries?.object.text.indexOf("}\n---") as number;
+
+    //     const title = content?.slice(startingPoint ,endingPoint + "---\n{".length + 1)
+    //     content = content?.replace(title as string,"")
+
+    //     const titleData = getPostJson("---\n{","---\n}",title as string)
+    //     blogPostData.titleData = titleData
+    //     blogPostData.content = marked.parse(content as string)
+    //     blogPostDatas.push(blogPostData)
+    // })
+    
+    
 
     return blogPostDatas
         
@@ -204,4 +179,14 @@ export async function getPostUpdate(content:{owner:string,repo:string,path:strin
 export function getPostJson(prefix:string,surfix:string,content:string){
     const postData:string = content.slice(prefix.length - 1,content.length - surfix.length).replace(/\n/g,"")
     return JSON.parse(postData)
+}
+
+
+export function getBetweenDate(fromDate:Date,toDate:Date,blogPostDatas:BlogPostData[]){
+    for(const node of blogPostDatas){
+        console.log(toDate.toISOString(),node.updatedat)
+        // 이렇게 비교하면 될듯
+        console.log(node.updatedat.localeCompare(toDate.toISOString()))
+        console.log(fromDate.toISOString().localeCompare(node.updatedat))
+    }
 }

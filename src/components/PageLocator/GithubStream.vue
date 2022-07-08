@@ -104,5 +104,6 @@ export default defineComponent({
 #GithubStream{
     display:flex;
     flex-direction: column;
+    width:32px;
 }
 </style>
