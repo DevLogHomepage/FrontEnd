@@ -16,10 +16,12 @@
 import { defineComponent } from 'vue'
 // import { getTesting } from '@core-graphQL/github'
 
+
+/**
+ * BlogPostStream 정의 부분입니다.
+ */
 export default defineComponent({
-    components:{
-        // CircleIndicatorVue
-    },
+    /** 컴포넌트 시작 설정 부분입니다. */
     setup(){
         // const {result} = getTesting()
         // console.log("testing" ,result)
@@ -37,6 +39,10 @@ export default defineComponent({
         //     loading
         // }
         
+    },
+    /** 컴포넌트 기본 정의 부분 */
+    components:{
+        // CircleIndicatorVue
     },
     // async mounted() {
     //     const owner = "dennis0324"

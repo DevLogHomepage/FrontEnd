@@ -21,7 +21,12 @@ export function returnNode(fileName:string,filePath:string):string{
       }
       `
 }
-
+/**
+ * graphql에 사용할 커밋 `query`를 반환합니다.
+ * 
+ * @param nodes 커밋 날짜를 불러오는 노드 배열입니다.
+ * @returns 커밋 날짜를 집어넣고 문자열로 반환값입니다.
+ */
 export function returnGetBlogCommitQuery(nodes:string[]):string{
     let commits = ''
     for(const node of nodes){
@@ -42,7 +47,7 @@ export function returnGetBlogCommitQuery(nodes:string[]):string{
 
     return query
 }
-
+/** 블로그의 모든 포스트 글을 방아옵니다. */
 export function returnGetBlogContentQuery(){
     const query = 
     `query RepoFiles($own:String!,$repo:String!){

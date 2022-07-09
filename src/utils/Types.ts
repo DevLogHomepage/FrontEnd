@@ -1,10 +1,13 @@
+/**
+ * 초반 리퀘스트 신호를 보낼 때 사용하는 형식입니다.
+ */
 export interface RequestInit{
     mode: string
     cache: string
 }
 
 /**
- * 
+ * 포스트 재목에 사용하는 형식입니다.
  */
 export interface PostTile{
     name: string,
@@ -57,7 +60,7 @@ export interface VueStatus<T>{
 }
 
 /** contribution 관리 타입 */
-
+/** contribution 캘린더의 정의 css입니다. */
 export interface ContributionCalendar{
     months: ContributionMonths[],
     totalContributions: number,
@@ -65,6 +68,7 @@ export interface ContributionCalendar{
     __typename:string
 }
 
+/** contribution 달의 정의하는 css입니다. */
 export interface ContributionMonths{
     firstDay: string,
     name: string,
@@ -72,12 +76,12 @@ export interface ContributionMonths{
     year:number,
     __typename:string
 }
-
+/** contributions 주를 정의하는 css입니다. */
 export interface ContributionWeeks{
     contributionDays: ContributionDays[],
     __typename:string
 }
-
+/** contributions 날을 정의하는 css입니다. */
 export interface ContributionDays{
     color:string,
     contributionCount: number,
@@ -88,6 +92,7 @@ export interface ContributionDays{
 }
 
 /** 블로그 최근 추가일과 업데이트 날짜를 구하기 위한 commit 날짜 응답 형식입니다. */
+/** 커밋 관련된 리퀘스트를 보낸후에 사용하는 반환합니다. */
 export interface CommitResponse{
     data:{
         repository:{
@@ -108,8 +113,7 @@ export interface ContentResponse{
     }
 }
 
-
-
+/** 각 커밋에 사용되는 노드를 정의하는 형식입니다. */
 export interface Node{
     node:{
         committedDate:string 
@@ -120,6 +124,7 @@ export interface Node{
     }
 }
 
+/** 각 블로그 포스팅 내용이 들어가 있는 형식입니다. */
 export interface ContentNode{
     name:string,
     object:{
@@ -128,7 +133,7 @@ export interface ContentNode{
     type:string
 }
 
-
+/** 사용하는 커밋 데이터의 파일의 기본 정보를 넣는 파일 형식입니다. */
 export interface ContentFile{
     name:string,
     object:{
@@ -137,7 +142,7 @@ export interface ContentFile{
     },
     type:string
 }
-
+/** 커밋 내용 데이터를 정의하는 부분입니다. */
 export interface CommitDatas{
     edges: Node[]
 }

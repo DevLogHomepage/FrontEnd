@@ -175,13 +175,26 @@ export async function getPostUpdate(content:{owner:string,repo:string,path:strin
 
 }
 
-
+/**
+ * 특정 문자열을 입력하면 `prefix`와 `surfix`으로 사이 간격을 구해 json화 시켜줍니다.
+ * 
+ * @param prefix 시작하는 특정 문자열 배열을 입력하는 매개변수입니다.
+ * @param surfix 끝나는 특정 문자열 배열을 입력하는 매개변수입니다.
+ * @param content 깃허브에서 받아온 포스트 글을 넣어ㅏ줍니다.
+ * @returns json 형식으로 각종 정보를 정리해줍니다.
+ */
 export function getPostJson(prefix:string,surfix:string,content:string){
     const postData:string = content.slice(prefix.length - 1,content.length - surfix.length).replace(/\n/g,"")
     return JSON.parse(postData)
 }
 
-
+/**
+ * 특정 범위에 있는 블로그 포스트를 찾기 위한 함수입니다.
+ * 
+ * @param fromDate 찾고자하는 블로그 포스트의 시작 범위
+ * @param toDate 찾고자하는 블로그 포스트의 끝 범위
+ * @param blogPostDatas 전체 블로그 포스트의 업데이트 날짜 배열
+ */
 export function getBetweenDate(fromDate:Date,toDate:Date,blogPostDatas:BlogPostData[]){
     let filteredPostDatas:BlogPostData[] = []
     for(const node of blogPostDatas){

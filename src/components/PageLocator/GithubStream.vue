@@ -18,16 +18,21 @@ import { computed, ref } from '@vue/reactivity'
 import gql from 'graphql-tag'
 import CircleIndicatorVue from './CircleIndicator.vue'
 import { ContributionDays,ContributionMonths,ContributionWeeks} from '@/Type'
-
+/**
+ * GithubStream의 정의 부분입니다.
+ */
 export default defineComponent({
+    /** 사용할 컴포넌트를 정의하는 부분입니다. */
     components:{
         CircleIndicatorVue
     },
+    /** 사용할 데이터를 정의하는 부분입니다. */
     data(){
         return{
             start: 0
         }
     },
+    /** 컴포넌트를 실행할 때 정의하는 부분입니다. */
     setup(){
         const today = new Date()
         const QUERY = gql`
@@ -80,6 +85,7 @@ export default defineComponent({
         }
         
     },
+    /** 컴포넌트에서 사용할 메소드를 정의하는 부분입니다. */
     methods: {
         /**
          * 
