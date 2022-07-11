@@ -8,7 +8,6 @@ import { BlogPostData, CommitDatas, CommitResponse, ContentFile, ContentNode } f
 import gql from 'graphql-tag'
 import {marked} from 'marked';
 import hljs from 'highlight.js'
-import prism from "prismjs";
 import { returnGetBlogCommitQuery, returnNode } from './query'
 
 
@@ -136,11 +135,13 @@ export async function getPostUpdate(content:{owner:string,repo:string,path:strin
     blogPostDatas.sort((a,b) => b.updatedat.localeCompare(a.updatedat))
     console.log(blogPostDatas)
     const TODAY = new Date()
-    getBetweenDate(
+    const testg = getBetweenDate(
         new Date(TODAY.getFullYear(),TODAY.getMonth(),TODAY.getDate()),
-        new Date(TODAY.getFullYear(),TODAY.getMonth(),TODAY.getDate() -7),
+        new Date(TODAY.getFullYear(),TODAY.getMonth(),TODAY.getDate() -60),
         blogPostDatas
         )
+
+    console.log(testg)
     // Object.entries<CommitDatas>(commitData.data.repository.commitsData).forEach((key,index) => {
         
     //     let blogPostData:BlogPostData = {} as BlogPostData
@@ -167,10 +168,8 @@ export async function getPostUpdate(content:{owner:string,repo:string,path:strin
     //     blogPostData.content = marked.parse(content as string)
     //     blogPostDatas.push(blogPostData)
     // })
-    
-    
 
-    return blogPostDatas
+    return testg
         
 
 }
@@ -203,13 +202,17 @@ export function getBetweenDate(fromDate:Date,toDate:Date,blogPostDatas:BlogPostD
         console.log(node.updatedat.localeCompare(toDate.toISOString()))
         console.log(fromDate.toISOString().localeCompare(node.updatedat))
         if(node.updatedat.localeCompare(toDate.toISOString()) !== 1){
-            continue
+            return filteredPostDatas
         }
         if(fromDate.toISOString().localeCompare(node.updatedat) !== 1){
-            continue
+            return filteredPostDatas
         }
         filteredPostDatas.push(node)
         
     }
-    console.log(filteredPostDatas)
+    return filteredPostDatas
+}
+
+export function getRecentPost(){
+
 }

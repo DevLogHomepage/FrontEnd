@@ -1,5 +1,5 @@
 import { GITHUB_TOKEN } from '@/../config'
-import { FolderResponse,PostTile } from '@/Type' 
+import { FileContentsResponse, FolderResponse,PostTile } from '@/Type' 
 
 export function githubRequest(relativeUrl: string) {
     const init = {} as RequestInit
@@ -37,7 +37,10 @@ export function githubFetch(request: Request): Promise<Response> {
 
 export function decodeBase64UTF8(encoded: string) {
     encoded = encoded.replace(/\s/g, '');
-    return decodeURIComponent(atob(encoded));
+    console.log(encoded[0])
+    return decodeURIComponent(atob(encoded).split('').map(function (c) {
+        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+      }).join(''))
 }
 
 /**
@@ -53,21 +56,42 @@ export async function getPostName(content:{owner:string,repo:string,path:string}
 
     if (response.status === 404) {
         throw new Error(`Repo "${content.owner}/${content.repo}" does not have a file named "${content.path}" in the "${branch}" branch.`);
-        }
-        if (!response.ok) {
+    }
+    if (!response.ok) {
         throw new Error(`Error fetching ${content.path}.`);
+    }
+    const file = await response.json() as FolderResponse[] | string
+    const arr:FolderResponse[] = file as FolderResponse[]
+    const PostTile:PostTile[] = []
+    for(const i of arr){
+        const temp = {
+            name: i.name,
+            path: i.path
         }
-        const file = await response.json() as FolderResponse[] | string
-        const arr:FolderResponse[] = file as FolderResponse[]
-        const PostTile:PostTile[] = []
-        for(const i of arr){
-            const temp = {
-                name: i.name,
-                path: i.path
-            }
-            PostTile.push(temp)
-        }
+        PostTile.push(temp)
+    }
     return PostTile
+}
+
+/**
+ * 깃허브 포스트에서 데이터를 가지고 옵니다.
+ * 
+ * @param content 
+ * @returns 
+ */
+export async function getContent(content:{owner:string,repo:string,path:string}):Promise<FileContentsResponse>{
+    const branch = 'main'
+    const request = githubRequest(`repos/${content.owner}/${content.repo}/contents/${content.path}?ref=main`)
+    const response = await githubFetch(request)
+    if (response.status === 404) {
+        throw new Error(`Repo "${content.owner}/${content.repo}" does not have a file named "${content.path}" in the "${branch}" branch.`);
+    }
+    if (!response.ok) {
+        throw new Error(`Error fetching ${content.path}.`);
+    }
+    const file = await response.json() as FileContentsResponse
+
+    return file
 }
 
 

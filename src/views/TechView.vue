@@ -7,15 +7,81 @@
         <div id="tech" class="tech" :class="[theme ? 'dark' : 'light']">
             <div class="tech-container">
                 <div class="left-sidebar">
-                    
-                    <!-- <div>
-                        search
-                    </div> -->
                     <PageLocater />
                 </div>
-                <div class="posts">
+                <div class="posts" @scroll="handleScroll">
                     <div v-if="response!.length <= 0">
                         로딩중입니다.
+                    </div>
+                    <div class="blogPost">
+                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse dapibus tempor bibendum. Fusce nec orci nibh. Mauris dolor nibh, pulvinar vel tempor eleifend, malesuada sed ipsum. Maecenas feugiat libero in luctus laoreet. In maximus nisi dictum eleifend euismod. Donec non porttitor arcu, nec cursus tellus. Ut mi enim, vestibulum at metus in, sodales dignissim tellus. Vivamus accumsan at nisi in tincidunt. Nulla sed varius lacus. Phasellus vitae metus et elit hendrerit mattis id mattis velit. Integer ut pretium erat.
+
+Mauris molestie odio sed elit auctor venenatis. Vivamus luctus ipsum nec risus dictum, ut viverra ante consectetur. Nullam placerat ac metus in feugiat. Praesent elementum nisi at sem tincidunt, vitae faucibus massa blandit. Phasellus feugiat nec nisl vel ultricies. Aliquam consectetur lacus ac arcu scelerisque aliquam. Proin facilisis finibus lacus in ultrices.
+
+In mollis gravida metus at lacinia. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Integer vehicula congue ex sed eleifend. Nunc sed orci eu est condimentum pulvinar. Nam malesuada laoreet tellus, sit amet lobortis diam iaculis sed. Proin maximus arcu nec tincidunt imperdiet. Integer imperdiet enim non ipsum interdum, id maximus ex posuere. Ut non risus quis purus scelerisque scelerisque. Quisque auctor euismod felis a fringilla.
+
+Proin at nisi non orci mattis elementum. Cras eleifend ex ut nibh interdum, a lacinia magna pulvinar. Vestibulum luctus leo sed auctor mollis. Mauris molestie diam luctus enim semper iaculis. Quisque eu nulla a nibh lacinia suscipit ut ut lacus. Donec eget mattis leo. Praesent id felis mi. Morbi at consectetur libero. Praesent sed augue a odio fringilla dapibus id ac urna. Aenean condimentum turpis vitae nisl hendrerit venenatis. Donec faucibus ex id ligula faucibus imperdiet. Nulla commodo egestas elit sit amet vulputate. Pellentesque volutpat imperdiet dolor fringilla sodales. Sed consequat dolor eget est consequat, vel consectetur lorem lobortis. Pellentesque vel odio quam.
+
+Cras vitae porta libero, vel maximus risus. Donec aliquam, leo ut rutrum dignissim, erat eros tincidunt urna, sit amet facilisis nisi diam in quam. Cras imperdiet interdum ante. Suspendisse ut orci arcu. Etiam id diam vel arcu condimentum commodo nec at leo. Mauris pharetra lorem ac rhoncus volutpat. Ut vestibulum urna libero, at euismod lectus sodales sed. Aliquam vel enim euismod orci venenatis ullamcorper. Sed hendrerit, nisl nec lobortis fringilla, lacus ante mattis neque, vitae dictum felis elit vitae ipsum. Sed vitae quam sit amet nisi dapibus porttitor. Etiam finibus facilisis imperdiet. Morbi bibendum tincidunt rutrum. Aenean laoreet ipsum eget dolor rhoncus iaculis.
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse dapibus tempor bibendum. Fusce nec orci nibh. Mauris dolor nibh, pulvinar vel tempor eleifend, malesuada sed ipsum. Maecenas feugiat libero in luctus laoreet. In maximus nisi dictum eleifend euismod. Donec non porttitor arcu, nec cursus tellus. Ut mi enim, vestibulum at metus in, sodales dignissim tellus. Vivamus accumsan at nisi in tincidunt. Nulla sed varius lacus. Phasellus vitae metus et elit hendrerit mattis id mattis velit. Integer ut pretium erat.
+
+Mauris molestie odio sed elit auctor venenatis. Vivamus luctus ipsum nec risus dictum, ut viverra ante consectetur. Nullam placerat ac metus in feugiat. Praesent elementum nisi at sem tincidunt, vitae faucibus massa blandit. Phasellus feugiat nec nisl vel ultricies. Aliquam consectetur lacus ac arcu scelerisque aliquam. Proin facilisis finibus lacus in ultrices.
+
+In mollis gravida metus at lacinia. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Integer vehicula congue ex sed eleifend. Nunc sed orci eu est condimentum pulvinar. Nam malesuada laoreet tellus, sit amet lobortis diam iaculis sed. Proin maximus arcu nec tincidunt imperdiet. Integer imperdiet enim non ipsum interdum, id maximus ex posuere. Ut non risus quis purus scelerisque scelerisque. Quisque auctor euismod felis a fringilla.
+
+Proin at nisi non orci mattis elementum. Cras eleifend ex ut nibh interdum, a lacinia magna pulvinar. Vestibulum luctus leo sed auctor mollis. Mauris molestie diam luctus enim semper iaculis. Quisque eu nulla a nibh lacinia suscipit ut ut lacus. Donec eget mattis leo. Praesent id felis mi. Morbi at consectetur libero. Praesent sed augue a odio fringilla dapibus id ac urna. Aenean condimentum turpis vitae nisl hendrerit venenatis. Donec faucibus ex id ligula faucibus imperdiet. Nulla commodo egestas elit sit amet vulputate. Pellentesque volutpat imperdiet dolor fringilla sodales. Sed consequat dolor eget est consequat, vel consectetur lorem lobortis. Pellentesque vel odio quam.
+
+Cras vitae porta libero, vel maximus risus. Donec aliquam, leo ut rutrum dignissim, erat eros tincidunt urna, sit amet facilisis nisi diam in quam. Cras imperdiet interdum ante. Suspendisse ut orci arcu. Etiam id diam vel arcu condimentum commodo nec at leo. Mauris pharetra lorem ac rhoncus volutpat. Ut vestibulum urna libero, at euismod lectus sodales sed. Aliquam vel enim euismod orci venenatis ullamcorper. Sed hendrerit, nisl nec lobortis fringilla, lacus ante mattis neque, vitae dictum felis elit vitae ipsum. Sed vitae quam sit amet nisi dapibus porttitor. Etiam finibus facilisis imperdiet. Morbi bibendum tincidunt rutrum. Aenean laoreet ipsum eget dolor rhoncus iaculis.
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse dapibus tempor bibendum. Fusce nec orci nibh. Mauris dolor nibh, pulvinar vel tempor eleifend, malesuada sed ipsum. Maecenas feugiat libero in luctus laoreet. In maximus nisi dictum eleifend euismod. Donec non porttitor arcu, nec cursus tellus. Ut mi enim, vestibulum at metus in, sodales dignissim tellus. Vivamus accumsan at nisi in tincidunt. Nulla sed varius lacus. Phasellus vitae metus et elit hendrerit mattis id mattis velit. Integer ut pretium erat.
+
+Mauris molestie odio sed elit auctor venenatis. Vivamus luctus ipsum nec risus dictum, ut viverra ante consectetur. Nullam placerat ac metus in feugiat. Praesent elementum nisi at sem tincidunt, vitae faucibus massa blandit. Phasellus feugiat nec nisl vel ultricies. Aliquam consectetur lacus ac arcu scelerisque aliquam. Proin facilisis finibus lacus in ultrices.
+
+In mollis gravida metus at lacinia. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Integer vehicula congue ex sed eleifend. Nunc sed orci eu est condimentum pulvinar. Nam malesuada laoreet tellus, sit amet lobortis diam iaculis sed. Proin maximus arcu nec tincidunt imperdiet. Integer imperdiet enim non ipsum interdum, id maximus ex posuere. Ut non risus quis purus scelerisque scelerisque. Quisque auctor euismod felis a fringilla.
+
+Proin at nisi non orci mattis elementum. Cras eleifend ex ut nibh interdum, a lacinia magna pulvinar. Vestibulum luctus leo sed auctor mollis. Mauris molestie diam luctus enim semper iaculis. Quisque eu nulla a nibh lacinia suscipit ut ut lacus. Donec eget mattis leo. Praesent id felis mi. Morbi at consectetur libero. Praesent sed augue a odio fringilla dapibus id ac urna. Aenean condimentum turpis vitae nisl hendrerit venenatis. Donec faucibus ex id ligula faucibus imperdiet. Nulla commodo egestas elit sit amet vulputate. Pellentesque volutpat imperdiet dolor fringilla sodales. Sed consequat dolor eget est consequat, vel consectetur lorem lobortis. Pellentesque vel odio quam.
+
+Cras vitae porta libero, vel maximus risus. Donec aliquam, leo ut rutrum dignissim, erat eros tincidunt urna, sit amet facilisis nisi diam in quam. Cras imperdiet interdum ante. Suspendisse ut orci arcu. Etiam id diam vel arcu condimentum commodo nec at leo. Mauris pharetra lorem ac rhoncus volutpat. Ut vestibulum urna libero, at euismod lectus sodales sed. Aliquam vel enim euismod orci venenatis ullamcorper. Sed hendrerit, nisl nec lobortis fringilla, lacus ante mattis neque, vitae dictum felis elit vitae ipsum. Sed vitae quam sit amet nisi dapibus porttitor. Etiam finibus facilisis imperdiet. Morbi bibendum tincidunt rutrum. Aenean laoreet ipsum eget dolor rhoncus iaculis.
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse dapibus tempor bibendum. Fusce nec orci nibh. Mauris dolor nibh, pulvinar vel tempor eleifend, malesuada sed ipsum. Maecenas feugiat libero in luctus laoreet. In maximus nisi dictum eleifend euismod. Donec non porttitor arcu, nec cursus tellus. Ut mi enim, vestibulum at metus in, sodales dignissim tellus. Vivamus accumsan at nisi in tincidunt. Nulla sed varius lacus. Phasellus vitae metus et elit hendrerit mattis id mattis velit. Integer ut pretium erat.
+
+Mauris molestie odio sed elit auctor venenatis. Vivamus luctus ipsum nec risus dictum, ut viverra ante consectetur. Nullam placerat ac metus in feugiat. Praesent elementum nisi at sem tincidunt, vitae faucibus massa blandit. Phasellus feugiat nec nisl vel ultricies. Aliquam consectetur lacus ac arcu scelerisque aliquam. Proin facilisis finibus lacus in ultrices.
+
+In mollis gravida metus at lacinia. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Integer vehicula congue ex sed eleifend. Nunc sed orci eu est condimentum pulvinar. Nam malesuada laoreet tellus, sit amet lobortis diam iaculis sed. Proin maximus arcu nec tincidunt imperdiet. Integer imperdiet enim non ipsum interdum, id maximus ex posuere. Ut non risus quis purus scelerisque scelerisque. Quisque auctor euismod felis a fringilla.
+
+Proin at nisi non orci mattis elementum. Cras eleifend ex ut nibh interdum, a lacinia magna pulvinar. Vestibulum luctus leo sed auctor mollis. Mauris molestie diam luctus enim semper iaculis. Quisque eu nulla a nibh lacinia suscipit ut ut lacus. Donec eget mattis leo. Praesent id felis mi. Morbi at consectetur libero. Praesent sed augue a odio fringilla dapibus id ac urna. Aenean condimentum turpis vitae nisl hendrerit venenatis. Donec faucibus ex id ligula faucibus imperdiet. Nulla commodo egestas elit sit amet vulputate. Pellentesque volutpat imperdiet dolor fringilla sodales. Sed consequat dolor eget est consequat, vel consectetur lorem lobortis. Pellentesque vel odio quam.
+
+Cras vitae porta libero, vel maximus risus. Donec aliquam, leo ut rutrum dignissim, erat eros tincidunt urna, sit amet facilisis nisi diam in quam. Cras imperdiet interdum ante. Suspendisse ut orci arcu. Etiam id diam vel arcu condimentum commodo nec at leo. Mauris pharetra lorem ac rhoncus volutpat. Ut vestibulum urna libero, at euismod lectus sodales sed. Aliquam vel enim euismod orci venenatis ullamcorper. Sed hendrerit, nisl nec lobortis fringilla, lacus ante mattis neque, vitae dictum felis elit vitae ipsum. Sed vitae quam sit amet nisi dapibus porttitor. Etiam finibus facilisis imperdiet. Morbi bibendum tincidunt rutrum. Aenean laoreet ipsum eget dolor rhoncus iaculis.
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse dapibus tempor bibendum. Fusce nec orci nibh. Mauris dolor nibh, pulvinar vel tempor eleifend, malesuada sed ipsum. Maecenas feugiat libero in luctus laoreet. In maximus nisi dictum eleifend euismod. Donec non porttitor arcu, nec cursus tellus. Ut mi enim, vestibulum at metus in, sodales dignissim tellus. Vivamus accumsan at nisi in tincidunt. Nulla sed varius lacus. Phasellus vitae metus et elit hendrerit mattis id mattis velit. Integer ut pretium erat.
+
+Mauris molestie odio sed elit auctor venenatis. Vivamus luctus ipsum nec risus dictum, ut viverra ante consectetur. Nullam placerat ac metus in feugiat. Praesent elementum nisi at sem tincidunt, vitae faucibus massa blandit. Phasellus feugiat nec nisl vel ultricies. Aliquam consectetur lacus ac arcu scelerisque aliquam. Proin facilisis finibus lacus in ultrices.
+
+In mollis gravida metus at lacinia. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Integer vehicula congue ex sed eleifend. Nunc sed orci eu est condimentum pulvinar. Nam malesuada laoreet tellus, sit amet lobortis diam iaculis sed. Proin maximus arcu nec tincidunt imperdiet. Integer imperdiet enim non ipsum interdum, id maximus ex posuere. Ut non risus quis purus scelerisque scelerisque. Quisque auctor euismod felis a fringilla.
+
+Proin at nisi non orci mattis elementum. Cras eleifend ex ut nibh interdum, a lacinia magna pulvinar. Vestibulum luctus leo sed auctor mollis. Mauris molestie diam luctus enim semper iaculis. Quisque eu nulla a nibh lacinia suscipit ut ut lacus. Donec eget mattis leo. Praesent id felis mi. Morbi at consectetur libero. Praesent sed augue a odio fringilla dapibus id ac urna. Aenean condimentum turpis vitae nisl hendrerit venenatis. Donec faucibus ex id ligula faucibus imperdiet. Nulla commodo egestas elit sit amet vulputate. Pellentesque volutpat imperdiet dolor fringilla sodales. Sed consequat dolor eget est consequat, vel consectetur lorem lobortis. Pellentesque vel odio quam.
+
+Cras vitae porta libero, vel maximus risus. Donec aliquam, leo ut rutrum dignissim, erat eros tincidunt urna, sit amet facilisis nisi diam in quam. Cras imperdiet interdum ante. Suspendisse ut orci arcu. Etiam id diam vel arcu condimentum commodo nec at leo. Mauris pharetra lorem ac rhoncus volutpat. Ut vestibulum urna libero, at euismod lectus sodales sed. Aliquam vel enim euismod orci venenatis ullamcorper. Sed hendrerit, nisl nec lobortis fringilla, lacus ante mattis neque, vitae dictum felis elit vitae ipsum. Sed vitae quam sit amet nisi dapibus porttitor. Etiam finibus facilisis imperdiet. Morbi bibendum tincidunt rutrum. Aenean laoreet ipsum eget dolor rhoncus iaculis.
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse dapibus tempor bibendum. Fusce nec orci nibh. Mauris dolor nibh, pulvinar vel tempor eleifend, malesuada sed ipsum. Maecenas feugiat libero in luctus laoreet. In maximus nisi dictum eleifend euismod. Donec non porttitor arcu, nec cursus tellus. Ut mi enim, vestibulum at metus in, sodales dignissim tellus. Vivamus accumsan at nisi in tincidunt. Nulla sed varius lacus. Phasellus vitae metus et elit hendrerit mattis id mattis velit. Integer ut pretium erat.
+
+Mauris molestie odio sed elit auctor venenatis. Vivamus luctus ipsum nec risus dictum, ut viverra ante consectetur. Nullam placerat ac metus in feugiat. Praesent elementum nisi at sem tincidunt, vitae faucibus massa blandit. Phasellus feugiat nec nisl vel ultricies. Aliquam consectetur lacus ac arcu scelerisque aliquam. Proin facilisis finibus lacus in ultrices.
+
+In mollis gravida metus at lacinia. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Integer vehicula congue ex sed eleifend. Nunc sed orci eu est condimentum pulvinar. Nam malesuada laoreet tellus, sit amet lobortis diam iaculis sed. Proin maximus arcu nec tincidunt imperdiet. Integer imperdiet enim non ipsum interdum, id maximus ex posuere. Ut non risus quis purus scelerisque scelerisque. Quisque auctor euismod felis a fringilla.
+
+Proin at nisi non orci mattis elementum. Cras eleifend ex ut nibh interdum, a lacinia magna pulvinar. Vestibulum luctus leo sed auctor mollis. Mauris molestie diam luctus enim semper iaculis. Quisque eu nulla a nibh lacinia suscipit ut ut lacus. Donec eget mattis leo. Praesent id felis mi. Morbi at consectetur libero. Praesent sed augue a odio fringilla dapibus id ac urna. Aenean condimentum turpis vitae nisl hendrerit venenatis. Donec faucibus ex id ligula faucibus imperdiet. Nulla commodo egestas elit sit amet vulputate. Pellentesque volutpat imperdiet dolor fringilla sodales. Sed consequat dolor eget est consequat, vel consectetur lorem lobortis. Pellentesque vel odio quam.
+
+Cras vitae porta libero, vel maximus risus. Donec aliquam, leo ut rutrum dignissim, erat eros tincidunt urna, sit amet facilisis nisi diam in quam. Cras imperdiet interdum ante. Suspendisse ut orci arcu. Etiam id diam vel arcu condimentum commodo nec at leo. Mauris pharetra lorem ac rhoncus volutpat. Ut vestibulum urna libero, at euismod lectus sodales sed. Aliquam vel enim euismod orci venenatis ullamcorper. Sed hendrerit, nisl nec lobortis fringilla, lacus ante mattis neque, vitae dictum felis elit vitae ipsum. Sed vitae quam sit amet nisi dapibus porttitor. Etiam finibus facilisis imperdiet. Morbi bibendum tincidunt rutrum. Aenean laoreet ipsum eget dolor rhoncus iaculis.
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse dapibus tempor bibendum. Fusce nec orci nibh. Mauris dolor nibh, pulvinar vel tempor eleifend, malesuada sed ipsum. Maecenas feugiat libero in luctus laoreet. In maximus nisi dictum eleifend euismod. Donec non porttitor arcu, nec cursus tellus. Ut mi enim, vestibulum at metus in, sodales dignissim tellus. Vivamus accumsan at nisi in tincidunt. Nulla sed varius lacus. Phasellus vitae metus et elit hendrerit mattis id mattis velit. Integer ut pretium erat.
+
+Mauris molestie odio sed elit auctor venenatis. Vivamus luctus ipsum nec risus dictum, ut viverra ante consectetur. Nullam placerat ac metus in feugiat. Praesent elementum nisi at sem tincidunt, vitae faucibus massa blandit. Phasellus feugiat nec nisl vel ultricies. Aliquam consectetur lacus ac arcu scelerisque aliquam. Proin facilisis finibus lacus in ultrices.
+
+In mollis gravida metus at lacinia. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Integer vehicula congue ex sed eleifend. Nunc sed orci eu est condimentum pulvinar. Nam malesuada laoreet tellus, sit amet lobortis diam iaculis sed. Proin maximus arcu nec tincidunt imperdiet. Integer imperdiet enim non ipsum interdum, id maximus ex posuere. Ut non risus quis purus scelerisque scelerisque. Quisque auctor euismod felis a fringilla.
+
+Proin at nisi non orci mattis elementum. Cras eleifend ex ut nibh interdum, a lacinia magna pulvinar. Vestibulum luctus leo sed auctor mollis. Mauris molestie diam luctus enim semper iaculis. Quisque eu nulla a nibh lacinia suscipit ut ut lacus. Donec eget mattis leo. Praesent id felis mi. Morbi at consectetur libero. Praesent sed augue a odio fringilla dapibus id ac urna. Aenean condimentum turpis vitae nisl hendrerit venenatis. Donec faucibus ex id ligula faucibus imperdiet. Nulla commodo egestas elit sit amet vulputate. Pellentesque volutpat imperdiet dolor fringilla sodales. Sed consequat dolor eget est consequat, vel consectetur lorem lobortis. Pellentesque vel odio quam.
+
+Cras vitae porta libero, vel maximus risus. Donec aliquam, leo ut rutrum dignissim, erat eros tincidunt urna, sit amet facilisis nisi diam in quam. Cras imperdiet interdum ante. Suspendisse ut orci arcu. Etiam id diam vel arcu condimentum commodo nec at leo. Mauris pharetra lorem ac rhoncus volutpat. Ut vestibulum urna libero, at euismod lectus sodales sed. Aliquam vel enim euismod orci venenatis ullamcorper. Sed hendrerit, nisl nec lobortis fringilla, lacus ante mattis neque, vitae dictum felis elit vitae ipsum. Sed vitae quam sit amet nisi dapibus porttitor. Etiam finibus facilisis imperdiet. Morbi bibendum tincidunt rutrum. Aenean laoreet ipsum eget dolor rhoncus iaculis.
+                    </div>
+                    <div >
+                        <button></button>
+                        {{page + 1}}
+                        <button></button>
                     </div>
                     <!-- <div v-else v-for="node in response" :key="node.name" class="blogPost">
                         <div class="blogPost-container">
@@ -51,6 +117,7 @@ import { defineComponent, PropType, ref } from 'vue';
 import { BlogPostData } from '@/utils/Types';
 import PageLocater from '@/components/PageLocator.vue'
 import * as grapqhl from '@core-graphQL/github'
+import * as rest from '@core-rest/github'
 import LogoDiv from '@/components/LogoDiv.vue';
 
 /**
@@ -81,13 +148,46 @@ export default defineComponent({
         theme: {
             required: true,
             type : Boolean as PropType<boolean>,
-
+        }
+    },
+    methods:{
+        handleScroll(event:Event){
+            this.yPosition = (event.target as HTMLElement).scrollTop
+            if((event.target as HTMLElement).scrollTop <= 0){
+                console.log()
+            }
+        }
+    },
+    data(){
+        const blogPost = ref<Element>();
+        const yPosition = ref<number>();
+        const BlogPostData = ref<BlogPostData[]>([]);
+        const page = ref<number>(0);
+        return {
+            blogPost,
+            yPosition,
+            BlogPostData,
+            page
         }
     },
     /** 컴포넌트 생성시에 실행되는 함수입니다. */
     async mounted() {
         const path ="tech"
         this.response = await grapqhl.getPostUpdate({owner:'dennis0324',repo:'blogPost',path:path},'tech');
+        
+        console.log("test",this.response)
+        for(const i of this.response){
+            const temp = await rest.getContent({owner:'dennis0324',repo:'blogPost',path:`${path}/${i.name}.md`})
+            
+            console.log("testing",rest.decodeBase64UTF8(temp.content))
+            //TODO 이거 함수 따로 하나 만들어서 제작하기
+            this.BlogPostData.push()
+        }
+
+        
+    },
+    unmounted(){
+        window.removeEventListener('scroll', this.handleScroll);
     }
 });
 
@@ -175,7 +275,7 @@ export default defineComponent({
     }
 
     /** 블로그 사진 크기 조정 */
-    .posts >>> img{
+    .posts:deep(img){
         width:45vw;
     }
 
@@ -201,25 +301,25 @@ export default defineComponent({
         
     }
     /** 블로그 코드 블럭 css */
-    .blogPost >>> pre code{
+    .blogPost:deep(pre code) {
         text-align: left !important;
         border-radius: 5px;
         background-color: transparent;
     }
     /** 블로그 코드 블럭 */
-    .blogPost >>> pre{
+    .blogPost:deep(pre){
         text-align: left !important;
         border-radius: 5px;
         padding: 10px;
         background-clip: border-box;
     }
     /** 라이트 모드에서의 블로그 포스트 코드 블럭 관련 css입니다. */
-    .light .blogPost >>> pre{
+    .light .blogPost:deep(pre){
         background-color: #878787;
 
     }
     /** 다크 모드에서의 블로그포스트 코드 블럭 관련 css입니다. */
-    .dark .blogPost >>> pre{
+    .dark .blogPost:deep(pre){
         background-color: #222222;
     }
     /** footer관련 css입니다. */
