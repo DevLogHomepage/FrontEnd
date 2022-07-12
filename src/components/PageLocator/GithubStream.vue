@@ -14,10 +14,10 @@
 <script lang="ts">
 import { defineComponent, watchEffect } from 'vue'
 import { useQuery } from '@vue/apollo-composable'
-import { computed, ref } from '@vue/reactivity'
+import { computed } from '@vue/reactivity'
 import gql from 'graphql-tag'
 import CircleIndicatorVue from './CircleIndicator.vue'
-import { ContributionDays,ContributionMonths,ContributionWeeks} from '@/Type'
+import { ContributionMonths,ContributionWeeks} from '@/Type'
 /**
  * GithubStream의 정의 부분입니다.
  */
