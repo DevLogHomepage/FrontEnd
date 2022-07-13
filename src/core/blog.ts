@@ -33,8 +33,8 @@ export async function getBlogPost(content:blogPostDataBasicInfo,page:number){
         blogPostData.titleData = getPostJson("---\n{","}\n---",contentStr)
         blogPostData.content =  marked.parse(getPostContent("---\n{","}\n---",contentStr))
         // console.log(getPostContent("---\n{","}\n---",contentStr))
-        blogPostData.createdat = i.createdat
-        blogPostData.updatedat = i.updatedat
+        blogPostData.createdat = i.createdat.split('T')[0]
+        blogPostData.updatedat = i.updatedat.split('T')[0]
 
         //TODO 이거 함수 따로 하나 만들어서 제작하기
         blogPostDatas.push(blogPostData)

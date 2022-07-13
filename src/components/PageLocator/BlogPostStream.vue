@@ -1,19 +1,17 @@
 <template>
-    <div v-if="true"></div>
-    <div>
-        t
-    </div>
-    <!-- <div v-else id="GithubStream">
-        <div v-for="i in githubData.weeks" :key="i" class="githubstream-div"> 
-            <div v-for="j in i.contributionDays" :key="j.Date" >
-                <CircleIndicatorVue :date="j.date" :contributionLevel="j.contributionLevel" :type="0"/>
-            </div>
+    <div v-if="blogPostStreamData.length <= 0">t</div>
+    <div v-else id="BlogPost">
+        <div v-for="i in blogPostStreamData" :key="i.date" class="githubstream-div"> 
+            <CircleIndicatorVue :type="1" :postType="i.type"/>
         </div>
-    </div> -->
+    </div>
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
+import { BlogPostData, BlogPostStreamData } from '@/utils/Types'
+import { defineComponent, PropType, ref } from 'vue'
+import CircleIndicatorVue from './CircleIndicator.vue'
+
 // import { getTesting } from '@core-graphQL/github'
 
 
@@ -23,26 +21,54 @@ import { defineComponent } from 'vue'
 export default defineComponent({
     /** 컴포넌트 시작 설정 부분입니다. */
     setup(){
-        // const {result} = getTesting()
-        // console.log("testing" ,result)
-        // let githubData = computed(() => result.value.repository.object.entries ?? [])
-        // githubData.value
-        // console.log(githubData)
-        // watchEffect(() => {
-        //     if(result.value !== undefined){
-        //         console.log(githubData)
-        //     }
-        // })
-
-        // return{
-        //     githubData,
-        //     loading
-        // }
-        
+        const blogPostStreamData = ref<BlogPostStreamData[]>([])
+        return{
+            blogPostStreamData
+        }
     },
     /** 컴포넌트 기본 정의 부분 */
     components:{
-        // CircleIndicatorVue
+        CircleIndicatorVue
+    },
+    props:{
+        BlogPostData:{
+            required:true,
+            type:Array as PropType<BlogPostData[]>,
+        },
+        startingDate:{
+            require:true,
+            type:Date
+        }
+    },
+    watch:{
+        BlogPostData(newBlog,oldBlog){
+            console.log("starting")
+            let tempDate = this.startingDate;
+            const startingDate = new Date(tempDate!.getFullYear(),tempDate!.getMonth(),tempDate!.getDate()-59)
+
+            const blogPostStreamDatas:BlogPostStreamData[] = []
+            while(startingDate!.toISOString().split('T')[0] !== tempDate!.toISOString().split('T')[0]){
+                // console.log(startingDate,tempDate)
+                const blogPostStreamData:BlogPostStreamData = {} as BlogPostStreamData
+
+                const a = tempDate!.toISOString().split('T')[0]
+                blogPostStreamData.type = []
+                for(const node of newBlog){
+                    if(a === node.createdat){
+                        blogPostStreamData.type.push(0)
+                    }
+                    else if(a === node.updatedat){
+                        blogPostStreamData.type.push(1)
+                    }
+                }
+                blogPostStreamData.date = a;
+                tempDate?.setDate(tempDate?.getDate() - 1);
+                blogPostStreamDatas.push(blogPostStreamData)
+            }
+
+            console.log("testing",blogPostStreamDatas)
+            this.blogPostStreamData = blogPostStreamDatas
+        }
     },
     // async mounted() {
     //     const owner = "dennis0324"

@@ -4,11 +4,13 @@
         <div v-else v-for="i in level" :class="'githubLevel-'+i" :key="i"></div>
     </div>
     <div v-else id="CircleIndicator-container">
-
+        <div v-if="typeLevel.length === 0" class="blogType-2"></div>
+        <div v-else v-for="i in typeLevel" :class="'blogType-'+i" :key="i"></div>
     </div>
 </template>
 
 <script lang="ts">
+import { propsToAttrMap } from '@vue/shared';
 import { defineComponent, PropType, ref } from 'vue'
 
 /**
@@ -21,8 +23,10 @@ export default defineComponent({
     setup(){
         /** 블로그 깃허브 contribution에 사용하는 레벨입니다. */
         const level = ref<number>(0);
+        const typeLevel = ref<number[]>([]);
         return {
-            level
+            level,
+            typeLevel
         }
     },
     /** 데이터를 사용할 경우 필요한 데이터를 정의하는 부분입니다. */
@@ -34,30 +38,37 @@ export default defineComponent({
     },
     /** 컴포넌트 생성시에 실행되는 부분입니다. */
     created(){
-        if(this.contributionLevel === 'NONE') 
-            this.level = 0
-        else if(this.contributionLevel === 'FIRST_QUARTILE')
-            this.level = 1
-        else if(this.contributionLevel === 'SECOND_QUARTILE')
-            this.level = 2
-        else if(this.contributionLevel === 'THIRD_QUARTILE')
-            this.level = 3
-        else if(this.contributionLevel === 'FOUTRH_QUARTILE')
-            this.level = 4
+        if(this.type === 0){
+            if(this.contributionLevel === 'NONE') 
+                this.level = 0
+            else if(this.contributionLevel === 'FIRST_QUARTILE')
+                this.level = 1
+            else if(this.contributionLevel === 'SECOND_QUARTILE')
+                this.level = 2
+            else if(this.contributionLevel === 'THIRD_QUARTILE')
+                this.level = 3
+            else if(this.contributionLevel === 'FOUTRH_QUARTILE')
+                this.level = 4
+        }
+        else{
+            this.typeLevel = this.postType!
+        }
+
     },
     /** 컴포넌트가 생성시에 필요한 properity를 정의하는 부분입니다. */
     props:{
         date:{
-            required: true,
             type: String as PropType<string | undefined>
         },
         contributionLevel:{
-            required: true,
             type: String as PropType<string | undefined>
         },
         type:{
             required: true,
             type: Number
+        },
+        postType:{
+            type:Array as PropType<number[]>
         }
     },
 
@@ -65,6 +76,7 @@ export default defineComponent({
 </script>
 
 <style scoped>
+
 /** 깃허브 혹은 블로그 원형 인디케이터를 정의하는 css입니다. */
 #CircleIndicator-container{
     display:flex;
@@ -86,6 +98,25 @@ export default defineComponent({
     margin:1px;
     border-radius: 50%;
 }
+
+
+.blogType-0,
+.blogType-1,
+.blogType-2
+{
+    width:6px;
+    height:6px;
+    margin:1px; 
+    border-radius: 50%; 
+}
+.blogType-0{
+    background-color: rgb(180, 255, 211);
+}
+
+.blogType-1{
+    background-color: rgb(255, 180, 180);
+}
+
 /** 깃허브 1단계 색 관련 css입니다. */
 .githubLevel-1{
     background-color:#0e4429;

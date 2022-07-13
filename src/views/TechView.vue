@@ -7,7 +7,7 @@
         <div id="tech" class="tech" :class="[theme ? 'dark' : 'light']">
             <div class="tech-container">
                 <div class="left-sidebar">
-                    <PageLocater />
+                    <PageLocater :BlogPostData="response"/>
                 </div>
                 <div class="posts" @scroll="handleScroll">
                     <div v-if="response!.length <= 0">

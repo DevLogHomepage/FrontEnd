@@ -103,7 +103,8 @@ export function getBetweenDate(fromDate:Date,toDate:Date,blogPostDatas:BlogPostD
         if(fromDate.toISOString().localeCompare(node.updatedat) !== 1){
             return filteredPostDatas
         }
-        filteredPostDatas.push(node)
+        /** 스택이 아닌 큐로 사용하기 위함 */
+        filteredPostDatas.splice(0,0,node)
         
     }
     return filteredPostDatas

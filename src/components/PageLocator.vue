@@ -7,11 +7,11 @@
                 </div>
             </div>
             <div id="pagelocater-indicator">
-                <GithubStream/>
+                <GithubStream :startingDate="Today"/>
                 <div id="MainStream">
                     <div v-for="i in 60" :key="i" class="mainstream-div"></div>
                 </div>
-                <BlogPostStream/>
+                <BlogPostStream :startingDate="Today" :BlogPostData="BlogPostData"/>
             </div>
         </div>
 
@@ -22,13 +22,20 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
+import { defineComponent, PropType } from 'vue'
 
 import GithubStream from './PageLocator/GithubStream.vue'
 import BlogPostStream from './PageLocator/BlogPostStream.vue'
+import { BlogPostData } from '@/utils/Types';
 
 export default defineComponent({
     name: "PageLocater",
+    setup(){
+        const Today = new Date()
+        return{
+            Today
+        }
+    },
     data() {
         return {
             contribute: ""
@@ -38,6 +45,12 @@ export default defineComponent({
         GithubStream,
         BlogPostStream
     },
+    props:{
+        BlogPostData:{
+            required:true,
+            type:Array as PropType<BlogPostData[]>
+        }
+    }
 
 })
 </script>

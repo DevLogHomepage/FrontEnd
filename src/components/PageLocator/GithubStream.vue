@@ -33,8 +33,7 @@ export default defineComponent({
         }
     },
     /** 컴포넌트를 실행할 때 정의하는 부분입니다. */
-    setup(){
-        const today = new Date()
+    setup(props){
         const QUERY = gql`
             query testing($userName:String!, $toDate:DateTime, $fromDate: DateTime) { 
                 user(login: $userName) {
@@ -62,8 +61,8 @@ export default defineComponent({
             }`;
         const { result,loading } = useQuery(QUERY, {
             userName: "dennis0324",
-            toDate: new Date(today.getFullYear(),today.getMonth(),today.getDate()).toISOString(),
-            fromDate: new Date(today.getFullYear(),today.getMonth(),today.getDate() - 59).toISOString()
+            toDate: new Date(props.startingDate.getFullYear(),props.startingDate.getMonth(),props.startingDate.getDate()).toISOString(),
+            fromDate: new Date(props.startingDate.getFullYear(),props.startingDate.getMonth(),props.startingDate.getDate() - 59).toISOString()
         });
         let githubData = computed(() => result.value.user.contributionsCollection.contributionCalendar ?? [])
         let githubDataWeek = computed(() => githubData.value.weeks.slice().reverse() ?? [])
@@ -84,6 +83,12 @@ export default defineComponent({
 
         }
         
+    },
+    props:{
+        startingDate:{
+            required:true,
+            type:Date
+        }
     },
     /** 컴포넌트에서 사용할 메소드를 정의하는 부분입니다. */
     methods: {

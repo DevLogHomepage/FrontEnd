@@ -59,9 +59,6 @@ export interface FileContentsResponse {
   download_url: string;
 }
 
-export interface RequestRepo{
-    
-}
 export interface VueStatus<T>{
     dep: Set<any>,
     __v_isRef: boolean,
@@ -109,7 +106,7 @@ export interface ContributionDays{
 export interface CommitResponse{
     data:{
         repository:{
-            commitsData:{},
+            commitsData:Record<string, never>,
 
         }
     }
@@ -178,4 +175,12 @@ export interface BlogPostData{
 export interface TitleData{
     title:string,
     tags:string[],
+}
+
+
+/** BlogPostStream에 관련된 타입 정의 */
+
+export interface BlogPostStreamData{
+    type:number[],
+    date:string
 }
