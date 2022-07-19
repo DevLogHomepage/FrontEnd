@@ -1,15 +1,11 @@
 <template>
     <div id="pagelocater">
         <div id="pageContainer">
-            <div id="current-week">
-                <div id="current-day">
-
-                </div>
-            </div>
+            <WeekIndicator :pageWeek="1" :pageDay="2"/>
             <div id="pagelocater-indicator">
                 <GithubStream :startingDate="Today"/>
                 <div id="MainStream">
-                    <div v-for="i in 60" :key="i" class="mainstream-div"></div>
+                    <div v-for="i in circleCount" :key="i" class="mainstream-div"></div>
                 </div>
                 <BlogPostStream :startingDate="Today" :BlogPostData="BlogPostData"/>
             </div>
@@ -22,18 +18,25 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType } from 'vue'
+import { defineComponent, PropType, ref } from 'vue'
 
 import GithubStream from './PageLocator/GithubStream.vue'
 import BlogPostStream from './PageLocator/BlogPostStream.vue'
+import WeekIndicator from './PageLocator/WeekIndicator.vue'
 import { BlogPostData } from '@/utils/Types';
 
 export default defineComponent({
     name: "PageLocater",
     setup(){
         const Today = new Date()
+        const tempMonth = new Date(Today.getFullYear(),Today.getMonth() - 2,Today.getDate())
+        let difference  = Today.getTime() - tempMonth.getTime();
+        const dayCount = Math.ceil(difference / (1000 * 3600 * 24));
+        console.log(dayCount)
+        const circleCount = ref<number>(dayCount);
         return{
-            Today
+            Today,
+            circleCount
         }
     },
     data() {
@@ -43,7 +46,8 @@ export default defineComponent({
     },
     components: { 
         GithubStream,
-        BlogPostStream
+        BlogPostStream,
+        WeekIndicator
     },
     props:{
         BlogPostData:{
@@ -57,18 +61,6 @@ export default defineComponent({
 
 <style scoped>
 
-#current-day{
-    background-color: rgba(255,187,0,.5);
-    height:8px;
-    width:100%;
-}
-
-#current-week{
-    background-color: rgba(255,187,0,.2);
-    height:56px;
-    width: 72px;
-    position: absolute;
-}
 
 #pagelocater{
     display:flex;

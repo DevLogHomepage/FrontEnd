@@ -7,13 +7,13 @@
         <div id="tech" class="tech" :class="[theme ? 'dark' : 'light']">
             <div class="tech-container">
                 <div class="left-sidebar">
-                    <PageLocater :BlogPostData="response"/>
+                    <PageLocater :BlogPostData="currentIndicator"/>
                 </div>
                 <div class="posts" @scroll="handleScroll">
-                    <div v-if="response!.length <= 0">
+                    <div v-if="currentPage!.length <= 0">
                         로딩중입니다.
                     </div>
-                    <div v-else v-for="node in response" :key="node.name" class="blogPost">
+                    <div v-else v-for="node in currentPage" :key="node.name" class="blogPost">
                         <div class="blogPost-container">
                             <div class="blogPost-create">
                                 <div class="blogPost-create-title">제작한 날짜</div>
@@ -24,10 +24,7 @@
                                 <div class="blogPost-create-content">{{node.updatedat}}</div>
                             </div>
                         </div>
-                        <!-- <div class="blogPost-title">{{node.titleData.title}}</div> -->
                         <div v-html="node.content"></div>
-                        <!-- {{node.content}} -->
-                        <!-- <div>{{node.titleData.tags}}</div> -->
                     </div>
                     <div>
                         <button></button>
@@ -51,7 +48,7 @@
 
 <script lang="ts">
 import { defineComponent, PropType, ref } from 'vue';
-import { BlogPostData } from '@/utils/Types';
+import { BlogPostData, BlogPostDataBasicInfo, BlogPostDataYear } from '@/utils/Types';
 import PageLocater from '@/components/PageLocator.vue'
 import * as blog from '@/core/blog'
 import LogoDiv from '@/components/LogoDiv.vue';
@@ -65,9 +62,16 @@ export default defineComponent({
     name: 'TechView',
     /** 컴포넌트 시작 설정 부분입니다. */
     setup(){
-        const response = ref<BlogPostData[]>([]);
+        const currentPage = ref<BlogPostData[]>([]);
+        const currentIndicator = ref<BlogPostData[]>([]);
+
+        const blogPostDataMap = ref<Map<Date, BlogPostData[]>>();
+        const currentDate = ref<Date>(new Date());
         return {
-            response
+            blogPostDataMap,
+            currentPage,
+            currentDate,
+            currentIndicator
         }
         // const date = new Date();
         // let currentMonth = new Date(date.getFullYear(),date.getMonth(),1);
@@ -98,24 +102,28 @@ export default defineComponent({
     data(){
         const blogPost = ref<Element>();
         const yPosition = ref<number>();
-        const BlogPostData = ref<BlogPostData[]>([]);
         const page = ref<number>(0);
         return {
             blogPost,
             yPosition,
-            BlogPostData,
             page
         }
     },
     /** 컴포넌트 생성시에 실행되는 함수입니다. */
     async mounted() {
-        console.log()
-    },
-    async created(){
+        const basicBlogInfo:BlogPostDataBasicInfo = {owner:'dennis0324',repo:'blogPost',path:'tech'}
 
-        this.response = await blog.getBlogPost({owner:'dennis0324',repo:'blogPost',path:'tech'},this.page);
+        this.blogPostDataMap = await blog.getBlogPost(basicBlogInfo);
+        
+        const receiveData = blog.getPageInfo(this.blogPostDataMap,this.page)
+        
+        const titles =  JSON.parse(JSON.stringify(receiveData[1]))
 
-        // this.response = temp
+        this.currentPage = await blog.getCurrentPage(basicBlogInfo,titles)
+        // blog.displayIndicator(this.blogPostDataYears,this.currentDate)
+        // this.currentPage = blog.getCurrentPage(this.page,this.BlogPostDataYears)
+
+        
     }
 })
 </script>

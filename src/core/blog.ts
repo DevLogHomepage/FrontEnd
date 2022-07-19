@@ -1,13 +1,22 @@
 
-import { BlogPostData, blogPostDataBasicInfo } from '@/utils/Types';
+import { BlogPostData, BlogPostDataBasicInfo, BlogPostDataYear } from '@/utils/Types';
 import * as github from '@/core/github'
 import {marked} from 'marked';
 import hljs from 'highlight.js'
 
-export async function getBlogPost(content:blogPostDataBasicInfo,page:number){
-    const blogPostDatas:BlogPostData[] = []
+export async function getBlogPost(content:BlogPostDataBasicInfo){
     const response = await github.getPostUpdate({owner:'dennis0324',repo:'blogPost',path:content.path});
-    for(const i of response){
+    return github.displayPost(response)
+}
+
+
+
+export async function getCurrentPage(content:BlogPostDataBasicInfo,postPage:BlogPostData[]){
+    
+    const blogPostDatas:BlogPostData[] = []
+
+    /** 현재 반환 받은 값을 모두 포스팅으로 표시하는 부분입니다. */
+    for(const i of postPage){
         const blogPostData:BlogPostData = {} as BlogPostData
         const temp = await github.getContent({owner:'dennis0324',repo:'blogPost',path:`${content.path}/${i.name}.md`})
         const contentStr =  github.decodeBase64UTF8(temp.content)
@@ -43,6 +52,16 @@ export async function getBlogPost(content:blogPostDataBasicInfo,page:number){
     return blogPostDatas
 }
 
+export function displayIndicator(blogPostDataYears:BlogPostDataYear[],currentDate:Date){
+    const Today = new Date();
+    let funcResult:BlogPostData[] = [];
+
+    const firstMonth = blogPostDataYears[Today.getFullYear() - currentDate.getFullYear()].data[currentDate.getMonth()].data
+    funcResult = funcResult.concat(firstMonth)
+    
+    return funcResult
+}
+
 /**
  * 특정 문자열을 입력하면 `prefix`와 `surfix`으로 사이 간격을 구해 json화 시켜줍니다.
  * 
@@ -69,4 +88,14 @@ export function getPostContent(prefix:string,surfix:string,content:string){
     return content
 }
 
+
+export function getPageInfo(blogPostDataMap:Map<Date, BlogPostData[]>,page:number){
+    const returnValue:BlogPostData[] = [];
+    const iter = blogPostDataMap.entries()
+    for(let i = 0 ; i < page; i++){
+        iter.next()
+    }
+
+    return iter.next().value
+}
 

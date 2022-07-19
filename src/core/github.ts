@@ -1,5 +1,5 @@
 import { GITHUB_TOKEN } from '@/../config'
-import { FileContentsResponse, FolderResponse,PostTile } from '@/Type' 
+import { BlogPostDataMonth, BlogPostDataYear, FileContentsResponse, FolderResponse,PostTile } from '@/Type' 
 
 import { BlogPostData, CommitDatas, CommitResponse } from '@/Type'
 import {marked} from 'marked';
@@ -7,7 +7,7 @@ import { getQuery, returnGetBlogCommitQuery, returnNode } from './query'
 
 
 /**
- * 깃허브에서 포스트를 가지고 옵니다.
+ * 깃허브에서 포스트 이름과 디렉토리를 가지고 옵니다.
  * 
  * @param content `owner`: 사용자, `repo`: 레포지토리, `path`: 특정 파일 디렉토리
  * @param path 가지고올 파일 이름
@@ -52,9 +52,7 @@ import { getQuery, returnGetBlogCommitQuery, returnNode } from './query'
         })
 
     const commitData:CommitResponse = await commitDatas.json() as CommitResponse
-
     const blogPostDatas:BlogPostData[] = []
-    // const postData = commitData.data.repository.content.entries.find(n => n.name == path) as ContentNode
     Object.entries<CommitDatas>(commitData.data.repository.commitsData).forEach(key => {
         const blogPostData:BlogPostData = {} as BlogPostData
 
@@ -69,16 +67,10 @@ import { getQuery, returnGetBlogCommitQuery, returnNode } from './query'
         blogPostDatas.push(blogPostData)
     })
     blogPostDatas.sort((a,b) => b.updatedat.localeCompare(a.updatedat))
-    const TODAY = new Date()
-    const testg = getBetweenDate(
-        new Date(TODAY.getFullYear(),TODAY.getMonth(),TODAY.getDate()),
-        new Date(TODAY.getFullYear(),TODAY.getMonth(),TODAY.getDate() -60),
-        blogPostDatas
-    )
 
-    console.log(testg)
 
-    return testg
+
+    return blogPostDatas
 }
 
 
@@ -198,8 +190,8 @@ export async function getPostName(content:{owner:string,repo:string,path:string}
 /**
  * 깃허브 포스트에서 데이터를 가지고 옵니다.
  * 
- * @param content 
- * @returns 
+ * @param content 깃허브의 기본 정보를 넣는 변수입니다.
+ * @returns json 형식으로 파일을 반환합니다.
  */
 export async function getContent(content:{owner:string,repo:string,path:string}):Promise<FileContentsResponse>{
     const branch = 'main'
@@ -216,3 +208,65 @@ export async function getContent(content:{owner:string,repo:string,path:string})
     return file
 }
 
+/**
+ * 받아온 2주간의 데이터에서 1주일치면 블로그에 표시해준다.
+ * 
+ * @param blogPostDatas 깃허브에서 받아온 전체 블로그 글입니다.
+ * @param page 현재 블로그가 표시하고 있는 페이지 위치입니다.
+ * @returns 각 년,월로 분류 된 배열로 출력합니다.
+ */
+export function displayPost(blogPostDatas:BlogPostData[]):Map<Date,BlogPostData[]> {
+    const TODAY = new Date()
+    /**
+     * monthDate: 깃허브/ 블로그 인디케이터 시작점
+     * weekDate: 블로그 포스트 시작점
+     */
+    const currentDay = TODAY.getDay();
+    const pastDay = new Date(TODAY.getFullYear(),TODAY.getMonth(),TODAY.getDate() - 6).getDay()
+    const temp =  new Map<Date,BlogPostData[]>()//startingDate,BlogPostData
+
+    for(const blogPostData of blogPostDatas){
+
+        const weekday = new Date(blogPostData.updatedat)
+
+
+        const subtract = (8 + (weekday.getDay() - pastDay)) % 8
+        const add = (8 + (currentDay - weekday.getDay())) & 8
+
+        const startDate = new Date(weekday);
+        const endDate = new Date(weekday);
+        startDate.setDate(weekday.getDate() - subtract);
+        endDate.setDate(weekday.getDate() + add);
+
+        if(!checkWeekExist(temp,startDate))
+            temp.set(startDate,[])
+
+        temp.get(startDate)?.push(blogPostData)
+
+    }
+
+    return temp
+}
+
+/**
+ * 
+ * @param blogPostDataYears 
+ * @param blogPostData 
+ * @returns 
+ */
+export function isYearExist(blogPostDataYears:BlogPostDataYear[],blogPostData:BlogPostData){
+    const result = blogPostDataYears.filter(element => element.year === parseInt(blogPostData.updatedat))
+    console.log(result)
+    return result.length >= 1
+}
+
+/**
+ * 현재 `map`에 특정 날짜가 있는지 확인합니다.
+ * 
+ * @param checkMap 포함된 날짜 시작지점과 `BlogPostData`를 포함한 `map`입니다.
+ * @param date 찾고자 하는 날짜를 입력합니다.
+ * @returns 있는지 없는지 확인하고 배열을 반환합니다.
+ */
+export function checkWeekExist(checkMap:Map<Date,BlogPostData[]>,date:Date){
+    return checkMap.get(date)
+}

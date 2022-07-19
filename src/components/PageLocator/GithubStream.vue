@@ -62,7 +62,7 @@ export default defineComponent({
         const { result,loading } = useQuery(QUERY, {
             userName: "dennis0324",
             toDate: new Date(props.startingDate.getFullYear(),props.startingDate.getMonth(),props.startingDate.getDate()).toISOString(),
-            fromDate: new Date(props.startingDate.getFullYear(),props.startingDate.getMonth(),props.startingDate.getDate() - 59).toISOString()
+            fromDate: new Date(props.startingDate.getFullYear(),props.startingDate.getMonth() - 2,props.startingDate.getDate()).toISOString()
         });
         let githubData = computed(() => result.value.user.contributionsCollection.contributionCalendar ?? [])
         let githubDataWeek = computed(() => githubData.value.weeks.slice().reverse() ?? [])

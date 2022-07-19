@@ -2,7 +2,7 @@
 /**
  * 블로그 포스트를 각종 정보를 api에서 받아오기 위해 사용하는 기본 데이터 양식입니다.
  */
-export interface blogPostDataBasicInfo{
+export interface BlogPostDataBasicInfo{
     /** 현재 받아올 깃허브의 아이디입니다. */
     owner:string,
     /** 현재 사용할 레파지토리 이름입니다. */
@@ -161,13 +161,24 @@ export interface CommitDatas{
  * 깃허브 블로그 글을 작성할때의 기본적인 정보를 입력하는 데이터 타입입니다.
  */
 export interface BlogPostData{
+    startingDate:string,
     name:string,
     content:string,
     createdat:string,
     updatedat:string,
     titleData:TitleData
-    
 }
+
+export interface BlogPostDataMonth{
+    month:number,
+    data:BlogPostData[]
+}
+
+export interface BlogPostDataYear{
+    year:number,
+    data:BlogPostDataMonth[]
+}
+
 
 /**
  *  깃허브에서 글을 가지고 와서 특정 `prefix` ,`surfix`를 지정해서 `title`과 `tags` 받아옵니다.
