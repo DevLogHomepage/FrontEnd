@@ -90,7 +90,6 @@ export function getPostContent(prefix:string,surfix:string,content:string){
 
 
 export function getPageInfo(blogPostDataMap:Map<Date, BlogPostData[]>,page:number){
-    const returnValue:BlogPostData[] = [];
     const iter = blogPostDataMap.entries()
     for(let i = 0 ; i < page; i++){
         iter.next()

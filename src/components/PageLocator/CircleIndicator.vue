@@ -10,7 +10,6 @@
 </template>
 
 <script lang="ts">
-import { propsToAttrMap } from '@vue/shared';
 import { defineComponent, PropType, ref } from 'vue'
 
 /**
@@ -51,7 +50,7 @@ export default defineComponent({
                 this.level = 4
         }
         else{
-            this.typeLevel = this.postType!
+            this.typeLevel = this.postType as number[]
         }
 
     },

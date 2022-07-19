@@ -1,9 +1,8 @@
 import { GITHUB_TOKEN } from '@/../config'
-import { BlogPostDataMonth, BlogPostDataYear, FileContentsResponse, FolderResponse,PostTile } from '@/Type' 
+import { BlogPostDataYear, FileContentsResponse, FolderResponse,PostTile } from '@/Type' 
 
 import { BlogPostData, CommitDatas, CommitResponse } from '@/Type'
-import {marked} from 'marked';
-import { getQuery, returnGetBlogCommitQuery, returnNode } from './query'
+import { returnGetBlogCommitQuery, returnNode } from './query'
 
 
 /**

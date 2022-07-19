@@ -48,11 +48,10 @@
 
 <script lang="ts">
 import { defineComponent, PropType, ref } from 'vue';
-import { BlogPostData, BlogPostDataBasicInfo, BlogPostDataYear } from '@/utils/Types';
+import { BlogPostData, BlogPostDataBasicInfo } from '@/utils/Types';
 import PageLocater from '@/components/PageLocator.vue'
 import * as blog from '@/core/blog'
 import LogoDiv from '@/components/LogoDiv.vue';
-import * as github from '@/core/github'
 
 /**
  * TechView의 정의 부분입니다.
@@ -73,11 +72,6 @@ export default defineComponent({
             currentDate,
             currentIndicator
         }
-        // const date = new Date();
-        // let currentMonth = new Date(date.getFullYear(),date.getMonth(),1);
-        // let nextMonth = new Date(date.getFullYear(),date.getMonth() + 1,1);
-        // let difference  = nextMonth.getTime() - currentMonth.getTime();
-        // const dayCount = Math.ceil(difference / (1000 * 3600 * 24));
     },
     /** 컴포넌트 기본 정의 부분 */
     components:{

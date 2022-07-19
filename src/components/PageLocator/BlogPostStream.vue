@@ -41,7 +41,7 @@ export default defineComponent({
         }
     },
     watch:{
-        BlogPostData(newBlog,_){
+        BlogPostData(newBlog){
             /** proxy{} 없애주는 작업입니다. */
             const PostChanged = JSON.parse(JSON.stringify(newBlog))
 
