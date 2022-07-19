@@ -5,7 +5,7 @@
             <div id="pagelocater-indicator">
                 <GithubStream :startingDate="Today"/>
                 <div id="MainStream">
-                    <div v-for="i in circleCount" :key="i" class="mainstream-div"></div>
+                    <div v-for="i in 62" :key="i" :class="['mainstream-div',(i < circleCount) ? 'on' : 'off']"></div>
                 </div>
                 <BlogPostStream :startingDate="Today" :BlogPostData="BlogPostData"/>
             </div>
@@ -26,7 +26,10 @@ import WeekIndicator from './PageLocator/WeekIndicator.vue'
 import { BlogPostData } from '@/utils/Types';
 
 export default defineComponent({
+    /** 컴포넌트 이름의 정의입니다. */
     name: "PageLocater",
+    /** 컴포넌트 시작 설정 부분입니다. */
+    /** 현재 달과 지난 달의 총 일수를 구합니다. */
     setup(){
         const Today = new Date()
         const tempMonth = new Date(Today.getFullYear(),Today.getMonth() - 2,Today.getDate())
@@ -101,13 +104,21 @@ export default defineComponent({
     border-radius: 50%;
     margin: 1px;
 }
-.dark #MainStream .mainstream-div{
 
+
+.dark #MainStream .mainstream-div.on{
     background-color:#fff;
-    
 }
-.light #MainStream .mainstream-div{
-    background-color:#2B2B2B;
+.dark #MainStream .mainstream-div.off{
+    background-color:rgba(255, 255, 255, 0.3);
+}
+
+
+.light #MainStream .mainstream-div.on{
+    background-color:#2b2b2b;
+}
+.light #MainStream .mainstream-div.off{
+    background-color:rgba(43, 43, 43, 0.3);
 }
 #BlogPostStream{
     display:flex;

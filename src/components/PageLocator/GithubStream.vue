@@ -22,6 +22,8 @@ import { ContributionMonths,ContributionWeeks} from '@/Type'
  * GithubStream의 정의 부분입니다.
  */
 export default defineComponent({
+    /** 컴포넌트 이름의 정의입니다. */
+    name:"GithubStream",
     /** 사용할 컴포넌트를 정의하는 부분입니다. */
     components:{
         CircleIndicatorVue
@@ -32,7 +34,11 @@ export default defineComponent({
             start: 0
         }
     },
-    /** 컴포넌트를 실행할 때 정의하는 부분입니다. */
+    /** 
+     * 컴포넌트를 실행할 때 정의하는 부분입니다. 
+     * 
+     * 깃허브에서 모든 contirbutionCalendar를 가지고 와서 사용하기 쉬운 방식으로 바꿔서 값을 넣어줍니다.
+     */
     setup(props){
         const QUERY = gql`
             query testing($userName:String!, $toDate:DateTime, $fromDate: DateTime) { 
@@ -84,6 +90,7 @@ export default defineComponent({
         }
         
     },
+    /** 기본 properity의 정의 */
     props:{
         startingDate:{
             required:true,

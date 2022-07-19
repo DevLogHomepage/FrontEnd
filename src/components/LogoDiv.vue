@@ -19,6 +19,7 @@
 import { defineComponent, PropType, ref } from 'vue'
 
 export default defineComponent({
+    /** 컴포넌트 시작 설정 부분입니다. */
     setup() {
         /**
          * 모스 사진 넣기 사용합니다.
@@ -48,16 +49,19 @@ export default defineComponent({
             isHome
         }
     },
+    /** 기본 properity의 정의 */
     props :{
         typePage: {
             type : String as PropType<string>,
         }
     },
+    /** VIEW가 사용하는 메소드를 정의하는 부분입니다. */
     methods : {
         setHome(value:boolean) {
             this.isHome = value
         }
     },
+    /** 컴포넌트 생성시에 실행되는 함수입니다. */
     mounted() {
         if(this.typePage === 'home'){
             this.setHome(true)

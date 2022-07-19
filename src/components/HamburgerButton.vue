@@ -11,13 +11,16 @@
 import { defineComponent, ref } from 'vue'
 
 export default defineComponent({
+    /** 컴포넌트 이름의 정의입니다. */
     name: 'HamburgerButton',
+    /** 컴포넌트 시작 설정 부분입니다. */
     setup() {
         let open = ref<boolean>(false);
         return {
             open
         }
     },
+    /** VIEW가 사용하는 메소드를 정의하는 부분입니다. */
     methods:{
         setClick(){
             this.open = !this.open

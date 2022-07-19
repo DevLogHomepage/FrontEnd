@@ -12,13 +12,14 @@ import { BlogPostData, BlogPostStreamData } from '@/utils/Types'
 import { defineComponent, PropType, ref } from 'vue'
 import CircleIndicatorVue from './CircleIndicator.vue'
 
-// import { getTesting } from '@core-graphQL/github'
 
 
 /**
  * BlogPostStream 정의 부분입니다.
  */
 export default defineComponent({
+    /** 컴포넌트 이름의 정의입니다. */
+    name:"BlogPostStream",
     /** 컴포넌트 시작 설정 부분입니다. */
     setup(){
         const blogPostStreamData = ref<BlogPostStreamData[]>([])
@@ -30,6 +31,7 @@ export default defineComponent({
     components:{
         CircleIndicatorVue
     },
+    /** 기본 properity의 정의 */
     props:{
         BlogPostData:{
             required:true,
@@ -40,7 +42,13 @@ export default defineComponent({
             type:Date
         }
     },
+    /** 변수를 지속적으로 확인하는 함수를 선언하는 부분입니다. */
     watch:{
+        /**
+         * BlogPostData가 들어오면 circleIndicator가 사용할 수 있도록 만들어주는 `watch`함수입니다.
+         * 
+         * @param newBlog 변경된 사항이 있으면 들어오는 매개변수입니다.
+         */
         BlogPostData(newBlog){
             /** proxy{} 없애주는 작업입니다. */
             const PostChanged = JSON.parse(JSON.stringify(newBlog))

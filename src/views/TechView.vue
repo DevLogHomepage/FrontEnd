@@ -1,7 +1,4 @@
-<!-- 
-    여기서 해야할 일은 일단 GITHUB에서 가져오는 방식을 바꿔야한다 COMMIT만 가지고 오고 나머지는 천천히 가지고 오는걸로
 
- -->
 <template>
     <main>
         <div id="tech" class="tech" :class="[theme ? 'dark' : 'light']">
@@ -85,7 +82,13 @@ export default defineComponent({
             type : Boolean as PropType<boolean>,
         }
     },
+    /** VIEW가 사용하는 메소드를 정의하는 부분입니다. */
     methods:{
+        /**
+         * 스크롤 이벤트를 헨들링해주는 함수입니다.
+         * 
+         * @param event 스크롤 이벤트가 들어오는 매개변수입니다.
+         */
         handleScroll(event:Event){
             this.yPosition = (event.target as HTMLElement).scrollTop
             if((event.target as HTMLElement).scrollTop <= 0){
@@ -93,6 +96,7 @@ export default defineComponent({
             }
         }
     },
+    /** 이 VIEW가 사용하는 데이터를 정의하는 함수입니다. */
     data(){
         const blogPost = ref<Element>();
         const yPosition = ref<number>();
@@ -107,12 +111,16 @@ export default defineComponent({
     async mounted() {
         const basicBlogInfo:BlogPostDataBasicInfo = {owner:'dennis0324',repo:'blogPost',path:'tech'}
 
+        /** 받아온 데이터를 1주일 단위로 분해해서 반환받습니다. */
         this.blogPostDataMap = await blog.getBlogPost(basicBlogInfo);
         
+        /** 받아온 데이터를 토대로 현재 페이지에서 포스트를 받아옵니다. */
         const receiveData = blog.getPageInfo(this.blogPostDataMap,this.page)
         
+        /** proxy{} 형태를 일반 배열로 변경해줍니다. */
         const titles =  JSON.parse(JSON.stringify(receiveData[1]))
 
+        /** 포스트 이름을 받아온 후, 포스트 content를 받아옵니다. */
         this.currentPage = await blog.getCurrentPage(basicBlogInfo,titles)
         // blog.displayIndicator(this.blogPostDataYears,this.currentDate)
         // this.currentPage = blog.getCurrentPage(this.page,this.BlogPostDataYears)
