@@ -98,3 +98,19 @@ export function getPageInfo(blogPostDataMap:Map<Date, BlogPostData[]>,page:numbe
     return iter.next().value
 }
 
+export function returnIncludeMonth(date:Date){
+    const TODAY = new Date()
+    const CURRENT = new Date()
+    const PAST = new Date()
+    PAST.setMonth(PAST.getMonth() - 1)
+    let count = 0;
+    while(date.getTime() > CURRENT.getTime() || date.getTime() < PAST.getTime()){
+        count++;
+        CURRENT.setMonth(CURRENT.getMonth() - 2)
+        PAST.setMonth(PAST.getMonth() - 2)
+    }
+
+    console.log(count)
+    TODAY.setMonth(TODAY.getMonth() - count * 2)
+    return TODAY
+}

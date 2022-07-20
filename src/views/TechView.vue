@@ -4,10 +4,10 @@
         <div id="tech" class="tech" :class="[theme ? 'dark' : 'light']">
             <div class="tech-container">
                 <div class="left-sidebar">
-                    <PageLocater :BlogPostData="currentIndicator"/>
+                    <PageLocater :BlogPostData="currentPage" :BlogPostDataYear="currentIndicator" :currentDate="currentDate"/>
                 </div>
                 <div class="posts" @scroll="handleScroll">
-                    <div v-if="currentPage!.length <= 0">
+                    <div v-if="currentPage!.length <= 0" class="loading">
                         로딩중입니다.
                     </div>
                     <div v-else v-for="node in currentPage" :key="node.name" class="blogPost">
@@ -45,10 +45,11 @@
 
 <script lang="ts">
 import { defineComponent, PropType, ref } from 'vue';
-import { BlogPostData, BlogPostDataBasicInfo } from '@/utils/Types';
+import { BlogPostData, BlogPostDataBasicInfo, BlogPostDataYear } from '@/utils/Types';
 import PageLocater from '@/components/PageLocator.vue'
 import * as blog from '@/core/blog'
 import LogoDiv from '@/components/LogoDiv.vue';
+import * as github from '@/core/github';
 
 /**
  * TechView의 정의 부분입니다.
@@ -59,7 +60,7 @@ export default defineComponent({
     /** 컴포넌트 시작 설정 부분입니다. */
     setup(){
         const currentPage = ref<BlogPostData[]>([]);
-        const currentIndicator = ref<BlogPostData[]>([]);
+        const currentIndicator = ref<BlogPostDataYear[]>([]);
 
         const blogPostDataMap = ref<Map<Date, BlogPostData[]>>();
         const currentDate = ref<Date>(new Date());
@@ -100,7 +101,7 @@ export default defineComponent({
     data(){
         const blogPost = ref<Element>();
         const yPosition = ref<number>();
-        const page = ref<number>(0);
+        const page = ref<number>(1);
         return {
             blogPost,
             yPosition,
@@ -119,9 +120,13 @@ export default defineComponent({
         
         /** proxy{} 형태를 일반 배열로 변경해줍니다. */
         const titles =  JSON.parse(JSON.stringify(receiveData[1]))
+        this.currentDate = receiveData[0] as Date
 
         /** 포스트 이름을 받아온 후, 포스트 content를 받아옵니다. */
         this.currentPage = await blog.getCurrentPage(basicBlogInfo,titles)
+
+        this.currentIndicator = github.displayIndicator(this.blogPostDataMap)
+        console.log(this.currentIndicator)
         // blog.displayIndicator(this.blogPostDataYears,this.currentDate)
         // this.currentPage = blog.getCurrentPage(this.page,this.BlogPostDataYears)
 

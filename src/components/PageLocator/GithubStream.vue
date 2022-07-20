@@ -12,12 +12,13 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, watchEffect } from 'vue'
+import { defineComponent, watch, watchEffect } from 'vue'
 import { useQuery } from '@vue/apollo-composable'
-import { computed } from '@vue/reactivity'
+import { computed, ref } from '@vue/reactivity'
 import gql from 'graphql-tag'
 import CircleIndicatorVue from './CircleIndicator.vue'
-import { ContributionMonths,ContributionWeeks} from '@/Type'
+import { ContributionMonths,ContributionWeeks, githubContributionResponse} from '@/Type'
+
 /**
  * GithubStream의 정의 부분입니다.
  */
@@ -40,49 +41,23 @@ export default defineComponent({
      * 깃허브에서 모든 contirbutionCalendar를 가지고 와서 사용하기 쉬운 방식으로 바꿔서 값을 넣어줍니다.
      */
     setup(props){
-        const QUERY = gql`
-            query testing($userName:String!, $toDate:DateTime, $fromDate: DateTime) { 
-                user(login: $userName) {
-                    contributionsCollection(from: $fromDate, to: $toDate) {
-                        contributionCalendar {
-                            totalContributions
-                            weeks {
-                                contributionDays {
-                                weekday
-                                date 
-                                contributionCount 
-                                color
-                                contributionLevel
-                                }
-                            }
-                            months  {
-                                name
-                                year
-                                firstDay
-                                totalWeeks  
-                            }
-                        }
-                    }
-                }
-            }`;
-        const { result,loading } = useQuery(QUERY, {
-            userName: "dennis0324",
-            toDate: new Date(props.startingDate.getFullYear(),props.startingDate.getMonth(),props.startingDate.getDate()).toISOString(),
-            fromDate: new Date(props.startingDate.getFullYear(),props.startingDate.getMonth() - 2,props.startingDate.getDate()).toISOString()
-        });
-        let githubData = computed(() => result.value.user.contributionsCollection.contributionCalendar ?? [])
-        let githubDataWeek = computed(() => githubData.value.weeks.slice().reverse() ?? [])
-        let githubDataMonth = computed(() => githubData.value.months.slice().reverse() ?? [])
+        
 
 
-        watchEffect(() => {
-            if(result.value !== undefined){
-                console.log()
-            }
-        })
 
+        // watch(props.startingDate,() => {
+        //     console.log("testing")
+        //     // if(result.value !== undefined){
+        //     //     console.log()
+        //     // }
+        // })
+
+        const temp = ref<githubContributionResponse>();
+        const githubDataWeek = ref<ContributionWeeks[]>([]);
+        const githubDataMonth = ref<ContributionMonths[]>([]);
+        const loading = ref<boolean>();
         return{
-            githubData,
+            temp,
             githubDataWeek,
             githubDataMonth,
             loading,
@@ -113,7 +88,57 @@ export default defineComponent({
             }
             return result
         },
-    }
+    },
+    watch:{
+        async startingDate(newValue:Date){
+            const QUERY = `
+                query testing($userName:String!, $toDate:DateTime, $fromDate: DateTime) { 
+                    user(login: $userName) {
+                        contributionsCollection(from: $fromDate, to: $toDate) {
+                            contributionCalendar {
+                                totalContributions
+                                weeks {
+                                    contributionDays {
+                                    weekday
+                                    date 
+                                    contributionCount 
+                                    color
+                                    contributionLevel
+                                    }
+                                }
+                                months  {
+                                    name
+                                    year
+                                    firstDay
+                                    totalWeeks  
+                                }
+                            }
+                        }
+                    }
+                }`;
+
+            const queryValue = {
+                "userName":"dennis0324",
+                "toDate":new Date(newValue.getFullYear(),newValue.getMonth(),newValue.getDate()).toISOString(),
+                "fromDate":new Date(newValue.getFullYear(),newValue.getMonth() - 1,newValue.getDate()).toISOString()}
+            const endpoint = "https://api.github.com/graphql"
+            let commitDatas = await fetch(endpoint,
+            {
+                method: 'POST',
+                headers: {
+                'Content-Type': 'application/json',
+                'Authorization':'bearer '
+                },
+                body:JSON.stringify({
+                query:QUERY,
+                variables: queryValue
+                })
+            })
+            commitDatas = await commitDatas.json()
+            console.log(commitDatas)
+            console.log(process.env)
+        }
+    },
 })
 
 </script>

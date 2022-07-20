@@ -1,5 +1,5 @@
 import { GITHUB_TOKEN } from '@/../config'
-import { BlogPostDataYear, FileContentsResponse, FolderResponse,PostTile } from '@/Type' 
+import { BlogPostDataMonth, BlogPostDataYear, FileContentsResponse, FolderResponse,PostTile } from '@/Type' 
 
 import { BlogPostData, CommitDatas, CommitResponse } from '@/Type'
 import { returnGetBlogCommitQuery, returnNode } from './query'
@@ -216,10 +216,6 @@ export async function getContent(content:{owner:string,repo:string,path:string})
  */
 export function displayPost(blogPostDatas:BlogPostData[]):Map<Date,BlogPostData[]> {
     const TODAY = new Date()
-    /**
-     * monthDate: 깃허브/ 블로그 인디케이터 시작점
-     * weekDate: 블로그 포스트 시작점
-     */
     const currentDay = TODAY.getDay();
     const pastDay = new Date(TODAY.getFullYear(),TODAY.getMonth(),TODAY.getDate() - 6).getDay()
     const temp =  new Map<Date,BlogPostData[]>()//startingDate,BlogPostData
@@ -247,17 +243,7 @@ export function displayPost(blogPostDatas:BlogPostData[]):Map<Date,BlogPostData[
     return temp
 }
 
-/**
- * 
- * @param blogPostDataYears 
- * @param blogPostData 
- * @returns 
- */
-export function isYearExist(blogPostDataYears:BlogPostDataYear[],blogPostData:BlogPostData){
-    const result = blogPostDataYears.filter(element => element.year === parseInt(blogPostData.updatedat))
-    console.log(result)
-    return result.length >= 1
-}
+
 
 /**
  * 현재 `map`에 특정 날짜가 있는지 확인합니다.
@@ -268,4 +254,40 @@ export function isYearExist(blogPostDataYears:BlogPostDataYear[],blogPostData:Bl
  */
 export function checkWeekExist(checkMap:Map<Date,BlogPostData[]>,date:Date){
     return checkMap.get(date)
+}
+
+
+export function displayIndicator(blogPostDatas:Map<Date,BlogPostData[]>){
+    const blogPostDataYears:BlogPostDataYear[] = []
+    const TODAY = new Date();
+    for(const node of blogPostDatas.values()){
+        for(const blogPostData of node){
+            const postedDate = new Date(blogPostData.updatedat)
+            const year = postedDate.getFullYear();
+            const tempBlogPostDataYear:BlogPostDataYear = {
+                year:year,
+                data:[...Array(12)].map((_,index) => { return {month:index,data:[] as BlogPostData[]} as BlogPostDataMonth})
+            } as BlogPostDataYear
+
+            if(!isYearExist(blogPostDataYears,blogPostData)){
+                blogPostDataYears.push(tempBlogPostDataYear)
+            }
+
+            const blogPostDataMonths =  blogPostDataYears[TODAY.getFullYear() - year].data
+            blogPostDataMonths[postedDate.getMonth()].data.push(blogPostData)
+        }
+    }
+
+    return blogPostDataYears
+}
+
+/**
+ * 
+ * @param blogPostDataYears 
+ * @param blogPostData 
+ * @returns 
+ */
+ export function isYearExist(blogPostDataYears:BlogPostDataYear[],blogPostData:BlogPostData){
+    const result = blogPostDataYears.filter(element => element.year === parseInt(blogPostData.updatedat))
+    return result.length >= 1
 }

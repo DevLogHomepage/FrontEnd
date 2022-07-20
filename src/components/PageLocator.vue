@@ -18,12 +18,14 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType, ref } from 'vue'
+import { defineComponent, Prop, PropType, ref } from 'vue'
 
 import GithubStream from './PageLocator/GithubStream.vue'
 import BlogPostStream from './PageLocator/BlogPostStream.vue'
 import WeekIndicator from './PageLocator/WeekIndicator.vue'
-import { BlogPostData } from '@/utils/Types';
+import { BlogPostData, BlogPostDataYear } from '@/utils/Types';
+
+import * as blog from '@/core/blog'
 
 export default defineComponent({
     /** 컴포넌트 이름의 정의입니다. */
@@ -56,6 +58,52 @@ export default defineComponent({
         BlogPostData:{
             required:true,
             type:Array as PropType<BlogPostData[]>
+        },
+        BlogPostDataYear:{
+            required:true,
+            type:Array as PropType<BlogPostDataYear[]>
+        },
+        currentDate:{
+            require:true,
+            type:Date
+        }
+    },
+    watch:{
+        currentDate(newValue:Date){
+            if(this.BlogPostDataYear !== undefined){
+                this.updateIndicator()
+            }
+            // const secondMonth = this.BlogPostDataYear[TODAY.getFullYear() - secondDate.getFullYear()].data[secondDate.getMonth()].data
+
+            // firstMonth = firstMonth.concat(secondMonth)
+            // console.log(firstMonth)
+        },
+        BlogPostDataYear(newValue:BlogPostDataYear[]){
+            if(this.BlogPostDataYear !== undefined){
+                this.updateIndicator()
+            }
+        }
+    },
+    methods:{
+        updateIndicator(){
+            if(this.BlogPostDataYear.length <= 0){
+                return
+            }
+            console.log("testing",this.BlogPostDataYear)
+            const TODAY = new Date()
+            const currentDate = this.currentDate as Date
+            console.log(currentDate)
+            let secondDate = new Date(currentDate)
+            secondDate.setMonth(currentDate.getMonth() - 1)
+
+
+            let firstMonth = this.BlogPostDataYear[TODAY.getFullYear() - currentDate.getFullYear()].data[currentDate.getMonth()].data
+            console.log(firstMonth)
+            const secondMonth = this.BlogPostDataYear[TODAY.getFullYear() - secondDate.getFullYear()].data[secondDate.getMonth()].data
+            console.log(secondMonth)
+
+            this.Today = blog.returnIncludeMonth(currentDate)
+            console.log(this.Today)
         }
     }
 

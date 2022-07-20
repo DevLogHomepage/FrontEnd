@@ -70,11 +70,20 @@ export interface VueStatus<T>{
 }
 
 /** contribution 관리 타입 */
+
+export interface githubContributionResponse{
+    user:{
+        contributionsCollection:{
+            contributionCalendar:ContributionCalendar
+        }
+    }
+}
+
 /** contribution 캘린더의 정의 css입니다. */
 export interface ContributionCalendar{
     months: ContributionMonths[],
     totalContributions: number,
-    weeks: ContributionDays[],
+    weeks: ContributionWeeks[],
     __typename:string
 }
 
@@ -195,3 +204,5 @@ export interface BlogPostStreamData{
     type:number[],
     date:string
 }
+
+
