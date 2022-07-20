@@ -18,6 +18,7 @@ import { computed, ref } from '@vue/reactivity'
 import gql from 'graphql-tag'
 import CircleIndicatorVue from './CircleIndicator.vue'
 import { ContributionMonths,ContributionWeeks, githubContributionResponse} from '@/Type'
+import axios from 'axios'
 
 /**
  * GithubStream의 정의 부분입니다.
@@ -89,56 +90,10 @@ export default defineComponent({
             return result
         },
     },
-    watch:{
-        async startingDate(newValue:Date){
-            const QUERY = `
-                query testing($userName:String!, $toDate:DateTime, $fromDate: DateTime) { 
-                    user(login: $userName) {
-                        contributionsCollection(from: $fromDate, to: $toDate) {
-                            contributionCalendar {
-                                totalContributions
-                                weeks {
-                                    contributionDays {
-                                    weekday
-                                    date 
-                                    contributionCount 
-                                    color
-                                    contributionLevel
-                                    }
-                                }
-                                months  {
-                                    name
-                                    year
-                                    firstDay
-                                    totalWeeks  
-                                }
-                            }
-                        }
-                    }
-                }`;
-
-            const queryValue = {
-                "userName":"dennis0324",
-                "toDate":new Date(newValue.getFullYear(),newValue.getMonth(),newValue.getDate()).toISOString(),
-                "fromDate":new Date(newValue.getFullYear(),newValue.getMonth() - 1,newValue.getDate()).toISOString()}
-            const endpoint = "https://api.github.com/graphql"
-            let commitDatas = await fetch(endpoint,
-            {
-                method: 'POST',
-                headers: {
-                'Content-Type': 'application/json',
-                'Authorization':'bearer '
-                },
-                body:JSON.stringify({
-                query:QUERY,
-                variables: queryValue
-                })
-            })
-            commitDatas = await commitDatas.json()
-            console.log(commitDatas)
-            console.log(process.env)
-        }
-    },
+    async mounted(){
+        const response = await axios.get(`http://localhost:3000/githubContirbutions/?startingDate=${this.startingDate}`)
+        console.log(response)
+    }
 })
 
 </script>

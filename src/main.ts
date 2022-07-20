@@ -9,6 +9,9 @@ import { DefaultApolloClient } from '@vue/apollo-composable'
 import { ApolloClient, createHttpLink, InMemoryCache } from '@apollo/client/core'
 import {GITHUB_TOKEN} from '@/../config'
 
+import * as gitub from "@/core/github"
+import axios from 'axios'
+
 // HTTP connection to the API
 const httpLink = createHttpLink({
   // You should use an absolute URL here
@@ -27,11 +30,11 @@ const apolloClient = new ApolloClient({
   cache,
 })
 
+
 const app = createApp({
     setup(){
         provide(DefaultApolloClient,apolloClient)
     },
-
     render: () => h(App)
 })
 
