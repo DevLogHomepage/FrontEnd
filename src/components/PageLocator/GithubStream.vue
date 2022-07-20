@@ -90,9 +90,24 @@ export default defineComponent({
             return result
         },
     },
+    watch:{
+        async startingDate(){
+            console.log('staringDate',this.startingDate)
+            const response = await axios.get(`http://localhost:3000/githubContirbutions/?startingDate=${this.startingDate}`)
+            const githubResponse = response.data.data as githubContributionResponse 
+            if(response !== undefined){
+                console.log(githubResponse)
+                
+                const githubMonths = githubResponse.user.contributionsCollection.contributionCalendar.months.slice().reverse()
+                const githubWeeks = githubResponse.user.contributionsCollection.contributionCalendar.weeks.slice().reverse()
+
+                this.githubDataMonth = githubMonths;
+                this.githubDataWeek = githubWeeks;
+            }
+        }
+    },
     async mounted(){
-        const response = await axios.get(`http://localhost:3000/githubContirbutions/?startingDate=${this.startingDate}`)
-        console.log(response)
+        console.log()
     }
 })
 

@@ -84,10 +84,6 @@ import { returnGetBlogCommitQuery, returnNode } from './query'
 export function getBetweenDate(fromDate:Date,toDate:Date,blogPostDatas:BlogPostData[]){
     const filteredPostDatas:BlogPostData[] = []
     for(const node of blogPostDatas){
-        console.log(toDate.toISOString(),node.updatedat)
-        // 이렇게 비교하면 될듯
-        console.log(node.updatedat.localeCompare(toDate.toISOString()))
-        console.log(fromDate.toISOString().localeCompare(node.updatedat))
         if(node.updatedat.localeCompare(toDate.toISOString()) !== 1){
             return filteredPostDatas
         }
@@ -214,11 +210,11 @@ export async function getContent(content:{owner:string,repo:string,path:string})
  * @param page 현재 블로그가 표시하고 있는 페이지 위치입니다.
  * @returns 각 년,월로 분류 된 배열로 출력합니다.
  */
-export function displayPost(blogPostDatas:BlogPostData[]):Map<Date,BlogPostData[]> {
+export function displayPost(blogPostDatas:BlogPostData[]):Map<string,BlogPostData[]> {
     const TODAY = new Date()
     const currentDay = TODAY.getDay();
     const pastDay = new Date(TODAY.getFullYear(),TODAY.getMonth(),TODAY.getDate() - 6).getDay()
-    const temp =  new Map<Date,BlogPostData[]>()//startingDate,BlogPostData
+    const temp =  new Map<string,BlogPostData[]>()//startingDate,BlogPostData
 
     for(const blogPostData of blogPostDatas){
 
@@ -234,9 +230,9 @@ export function displayPost(blogPostDatas:BlogPostData[]):Map<Date,BlogPostData[
         endDate.setDate(weekday.getDate() + add);
 
         if(!checkWeekExist(temp,startDate))
-            temp.set(startDate,[])
-
-        temp.get(startDate)?.push(blogPostData)
+            temp.set(startDate.toISOString().split('T')[0],[])
+        blogPostData.backDate = startDate.toISOString().split('T')[1]
+        temp.get(startDate.toISOString().split('T')[0])?.push(blogPostData)
 
     }
 
@@ -252,12 +248,12 @@ export function displayPost(blogPostDatas:BlogPostData[]):Map<Date,BlogPostData[
  * @param date 찾고자 하는 날짜를 입력합니다.
  * @returns 있는지 없는지 확인하고 배열을 반환합니다.
  */
-export function checkWeekExist(checkMap:Map<Date,BlogPostData[]>,date:Date){
-    return checkMap.get(date)
+export function checkWeekExist(checkMap:Map<string,BlogPostData[]>,date:Date){
+    return checkMap.get(date.toISOString().split('T')[0])
 }
 
 
-export function displayIndicator(blogPostDatas:Map<Date,BlogPostData[]>){
+export function displayIndicator(blogPostDatas:Map<string,BlogPostData[]>){
     const blogPostDataYears:BlogPostDataYear[] = []
     const TODAY = new Date();
     for(const node of blogPostDatas.values()){

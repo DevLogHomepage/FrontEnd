@@ -1,7 +1,7 @@
 <template>
     <div v-if="blogPostStreamData.length <= 0">t</div>
     <div v-else id="BlogPost">
-        <div v-for="i in blogPostStreamData" :class="i.date" :key="i.date" class="githubstream-div"> 
+        <div v-for="i in blogPostStreamData" :class="i.date" :key="i.date" class="githubstream-div blog"> 
             <CircleIndicatorVue :type="1" :postType="i.type"/>
         </div>
     </div>
@@ -54,8 +54,8 @@ export default defineComponent({
             const PostChanged = JSON.parse(JSON.stringify(newBlog))
 
             const date = this.startingDate as Date;
-            let tempDate = new Date(date.getFullYear(),date.getMonth(),date.getDate());
-            const startingDate = new Date(tempDate.getFullYear(),tempDate.getMonth() - 2,tempDate.getDate())
+            let tempDate = new Date(date.getFullYear(),date.getMonth(),date.getDate(),date.getHours(),date.getMinutes(),date.getSeconds());
+            const startingDate = new Date(tempDate.getFullYear(),tempDate.getMonth() - 2,tempDate.getDate(),date.getHours(),date.getMinutes(),date.getSeconds())
 
             const blogPostStreamDatas:BlogPostStreamData[] = []
             while(startingDate.toISOString().split('T')[0] !== tempDate.toISOString().split('T')[0]){
@@ -67,7 +67,6 @@ export default defineComponent({
                 const a = tempDate.toISOString().split('T')[0]
 
                 blogPostStreamData.type = []
-
 
                 /** 현재 가지고 있는 모든 포스트 확인해보기 */
                 for(const node of PostChanged){

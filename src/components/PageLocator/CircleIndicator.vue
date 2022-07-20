@@ -3,7 +3,7 @@
         <div v-if="level == 0" class="githubLevel-0"></div>
         <div v-else v-for="i in level" :class="'githubLevel-'+i" :key="i"></div>
     </div>
-    <div v-else id="CircleIndicator-container">
+    <div v-else id="CircleIndicator-container-blog">
         <div v-if="typeLevel.length === 0" class="blogType-2"></div>
         <div v-else v-for="i in typeLevel" :class="'blogType-'+i" :key="i"></div>
     </div>
@@ -80,6 +80,10 @@ export default defineComponent({
 #CircleIndicator-container{
     display:flex;
     flex-direction:row-reverse;
+}
+
+#CircleIndicator-container-blog{
+    display:flex;
 }
 /** 깃허브 0단계 표시 관련 css입니다. */
 .githubLevel-0{

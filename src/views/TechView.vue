@@ -62,7 +62,7 @@ export default defineComponent({
         const currentPage = ref<BlogPostData[]>([]);
         const currentIndicator = ref<BlogPostDataYear[]>([]);
 
-        const blogPostDataMap = ref<Map<Date, BlogPostData[]>>();
+        const blogPostDataMap = ref<Map<string, BlogPostData[]>>();
         const currentDate = ref<Date>(new Date());
         return {
             blogPostDataMap,
@@ -101,7 +101,7 @@ export default defineComponent({
     data(){
         const blogPost = ref<Element>();
         const yPosition = ref<number>();
-        const page = ref<number>(1);
+        const page = ref<number>(0);
         return {
             blogPost,
             yPosition,
@@ -114,13 +114,13 @@ export default defineComponent({
 
         /** 받아온 데이터를 1주일 단위로 분해해서 반환받습니다. */
         this.blogPostDataMap = await blog.getBlogPost(basicBlogInfo);
-        
+        console.log(this.blogPostDataMap)
         /** 받아온 데이터를 토대로 현재 페이지에서 포스트를 받아옵니다. */
         const receiveData = blog.getPageInfo(this.blogPostDataMap,this.page)
-        
+
         /** proxy{} 형태를 일반 배열로 변경해줍니다. */
         const titles =  JSON.parse(JSON.stringify(receiveData[1]))
-        this.currentDate = receiveData[0] as Date
+        this.currentDate = new Date(`${receiveData[0]}`) as Date
 
         /** 포스트 이름을 받아온 후, 포스트 content를 받아옵니다. */
         this.currentPage = await blog.getCurrentPage(basicBlogInfo,titles)

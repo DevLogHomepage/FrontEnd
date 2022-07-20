@@ -175,7 +175,8 @@ export interface BlogPostData{
     content:string,
     createdat:string,
     updatedat:string,
-    titleData:TitleData
+    titleData:TitleData,
+    backDate:string
 }
 
 export interface BlogPostDataMonth{

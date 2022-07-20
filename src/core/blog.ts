@@ -17,6 +17,7 @@ export async function getCurrentPage(content:BlogPostDataBasicInfo,postPage:Blog
 
     /** 현재 반환 받은 값을 모두 포스팅으로 표시하는 부분입니다. */
     for(const i of postPage){
+        console.log(i)
         const blogPostData:BlogPostData = {} as BlogPostData
         const temp = await github.getContent({owner:'dennis0324',repo:'blogPost',path:`${content.path}/${i.name}.md`})
         const contentStr =  github.decodeBase64UTF8(temp.content)
@@ -89,7 +90,7 @@ export function getPostContent(prefix:string,surfix:string,content:string){
 }
 
 
-export function getPageInfo(blogPostDataMap:Map<Date, BlogPostData[]>,page:number){
+export function getPageInfo(blogPostDataMap:Map<string, BlogPostData[]>,page:number){
     const iter = blogPostDataMap.entries()
     for(let i = 0 ; i < page; i++){
         iter.next()
@@ -104,6 +105,7 @@ export function returnIncludeMonth(date:Date){
     const PAST = new Date()
     PAST.setMonth(PAST.getMonth() - 1)
     let count = 0;
+
     while(date.getTime() > CURRENT.getTime() || date.getTime() < PAST.getTime()){
         count++;
         CURRENT.setMonth(CURRENT.getMonth() - 2)

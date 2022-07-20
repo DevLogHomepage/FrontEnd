@@ -89,21 +89,17 @@ export default defineComponent({
             if(this.BlogPostDataYear.length <= 0){
                 return
             }
-            console.log("testing",this.BlogPostDataYear)
             const TODAY = new Date()
             const currentDate = this.currentDate as Date
-            console.log(currentDate)
+            console.log('currentDate',currentDate)
             let secondDate = new Date(currentDate)
             secondDate.setMonth(currentDate.getMonth() - 1)
 
 
             let firstMonth = this.BlogPostDataYear[TODAY.getFullYear() - currentDate.getFullYear()].data[currentDate.getMonth()].data
-            console.log(firstMonth)
             const secondMonth = this.BlogPostDataYear[TODAY.getFullYear() - secondDate.getFullYear()].data[secondDate.getMonth()].data
-            console.log(secondMonth)
 
             this.Today = blog.returnIncludeMonth(currentDate)
-            console.log(this.Today)
         }
     }
 
