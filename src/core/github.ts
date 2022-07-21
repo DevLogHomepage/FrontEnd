@@ -124,7 +124,7 @@ export function githubRequest(relativeUrl: string) {
 export function githubFetch(request: Request): Promise<Response> {
     return fetch(request).then(response => {
         if (response.status === 401) {
-            console.log()
+            console.log('깃허브로 부터 응답 받을 수 없음')
         }
         if (response.status === 403) {
             response.json().then(data => {

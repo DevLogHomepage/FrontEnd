@@ -12,10 +12,8 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, watch, watchEffect } from 'vue'
-import { useQuery } from '@vue/apollo-composable'
-import { computed, ref } from '@vue/reactivity'
-import gql from 'graphql-tag'
+import { defineComponent } from 'vue'
+import { ref } from '@vue/reactivity'
 import CircleIndicatorVue from './CircleIndicator.vue'
 import { ContributionMonths,ContributionWeeks, githubContributionResponse} from '@/Type'
 import axios from 'axios'

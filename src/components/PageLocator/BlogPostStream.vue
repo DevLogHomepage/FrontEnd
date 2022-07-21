@@ -24,6 +24,7 @@ export default defineComponent({
     name:"BlogPostStream",
     /** 컴포넌트 시작 설정 부분입니다. */
     setup(){
+        
         const blogPostStreamData = ref<BlogPostStreamData[][]>([])
         return{
             blogPostStreamData
@@ -34,6 +35,9 @@ export default defineComponent({
             perChunk:7
         }
     },
+    emits:[
+        'setBlogPostStreamData'
+    ],
     /** 컴포넌트 기본 정의 부분 */
     components:{
         CircleIndicatorVue
@@ -56,7 +60,14 @@ export default defineComponent({
          * 
          * @param newBlog 변경된 사항이 있으면 들어오는 매개변수입니다.
          */
-        BlogPostData(newBlog){
+        BlogPostData(){
+            if(this.BlogPostData !== undefined){
+                this.setBlogPostData(this.BlogPostData)
+            }
+        }
+    },
+    methods:{
+        setBlogPostData(newBlog:BlogPostData[]){
             /** proxy{} 없애주는 작업입니다. */
             const PostChanged = JSON.parse(JSON.stringify(newBlog))
 
@@ -65,7 +76,6 @@ export default defineComponent({
             const startingDate = new Date(tempDate.getFullYear(),tempDate.getMonth() - 2,tempDate.getDate(),date.getHours(),date.getMinutes(),date.getSeconds())
 
             const blogPostStreamDatas:BlogPostStreamData[] = []
-            let count = 0;
             while(startingDate.toISOString().split('T')[0] !== tempDate.toISOString().split('T')[0]){
                 /** 저장하기 위한 임시 변수 생성 */
                 const blogPostStreamData:BlogPostStreamData = {} as BlogPostStreamData
@@ -99,8 +109,14 @@ export default defineComponent({
 
                 return resultArray
             }, [])
+            this.$emit('setBlogPostStreamData',this.blogPostStreamData)
+
         }
     },
+    mounted(){
+
+        this.setBlogPostData(this.BlogPostData)
+    }
 })
 
 </script>

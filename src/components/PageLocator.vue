@@ -7,7 +7,7 @@
                 <div id="MainStream">
                     <div v-for="i in 62" :key="i" :class="['mainstream-div',(i < circleCount) ? 'on' : 'off']"></div>
                 </div>
-                <BlogPostStream :startingDate="Today" :BlogPostData="githubIndicator"/>
+                <BlogPostStream :startingDate="Today" :BlogPostData="githubIndicator" @setBlogPostStreamData="setPageWeekDate"/>
             </div>
         </div>
 
@@ -18,12 +18,12 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, Prop, PropType, ref } from 'vue'
+import { defineComponent, PropType, ref } from 'vue'
 
 import GithubStream from './PageLocator/GithubStream.vue'
 import BlogPostStream from './PageLocator/BlogPostStream.vue'
 import WeekIndicator from './PageLocator/WeekIndicator.vue'
-import { BlogPostData, BlogPostDataYear } from '@/utils/Types';
+import { BlogPostData, BlogPostDataYear, BlogPostStreamData } from '@/utils/Types';
 
 import * as blog from '@/core/blog'
 
@@ -56,6 +56,10 @@ export default defineComponent({
         WeekIndicator
     },
     props:{
+        BlogPostData:{
+            required:true,
+            type:Array as PropType<BlogPostData[]>
+        },
         BlogPostDataYear:{
             required:true,
             type:Array as PropType<BlogPostDataYear[]>
@@ -63,7 +67,7 @@ export default defineComponent({
         currentDate:{
             require:true,
             type:Date
-        }
+        },
     },
     watch:{
         currentDate(newValue:Date){
@@ -75,7 +79,7 @@ export default defineComponent({
             const dayCount = Math.ceil(difference / (1000 * 3600 * 24));
             this.circleCount = dayCount
         },
-        BlogPostDataYear(newValue:BlogPostDataYear[]){
+        BlogPostDataYear(){
             if(this.BlogPostDataYear !== undefined){
                 this.updateIndicator()
             }
@@ -88,7 +92,6 @@ export default defineComponent({
             }
             const TODAY = new Date()
             const currentDate = this.currentDate as Date
-            console.log('currentDat',currentDate)
             let secondDate = new Date(currentDate)
             secondDate.setMonth(currentDate.getMonth() - 1)
 
@@ -98,6 +101,9 @@ export default defineComponent({
 
             this.githubIndicator = firstMonth.concat(secondMonth)
             this.Today = blog.returnIncludeMonth(currentDate)
+        },
+        setPageWeekDate(date:BlogPostStreamData[][]){
+            console.log(date)
         }
     },
     mounted(){

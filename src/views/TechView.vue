@@ -11,7 +11,7 @@
                 </div>
                 <div v-else>
                     <div  class="posts" @scroll="handleScroll">
-                        <div  v-for="node in currentPage" :key="node.name" class="blogPost">
+                        <div  v-for="node in currentPage" :key="node.name" class="blogPost" v-on:load="addPost">
                             <div class="blogPost-container">
                                 <div class="blogPost-create">
                                     <div class="blogPost-create-title">제작한 날짜</div>
@@ -68,12 +68,16 @@ export default defineComponent({
         const blogPostDataMap = ref<Map<string, BlogPostData[]>>();
         const currentDate = ref<Date>(new Date());
         const totalPage = ref<number>(0)
+        const postSections = ref<HTMLElement[]>([])
+        const posts = ref<HTMLElement>()
         return {
             blogPostDataMap,
             currentPage,
             currentDate,
             currentIndicator,
-            totalPage
+            totalPage,
+            postSections,
+            posts
         }
     },
     /** 컴포넌트 기본 정의 부분 */
@@ -97,9 +101,17 @@ export default defineComponent({
          */
         handleScroll(event:Event){
             this.yPosition = (event.target as HTMLElement).scrollTop
-            if((event.target as HTMLElement).scrollTop <= 0){
-                console.log()
-            }
+
+            this.postSections.forEach((section,index) => {
+                const htmlElement = section as HTMLElement
+                let top = (this.posts as HTMLElement).scrollTop;
+                let offset = htmlElement.offsetTop - 150;
+                let height = htmlElement.offsetHeight;
+
+                if (top >= offset && top < offset + height){
+                    console.log(index)
+                }
+            })
         },
         increaseNumber(){
             if(this.page < this.totalPage - 1)
@@ -108,6 +120,14 @@ export default defineComponent({
         decreaseNumber(){
             if(this.page > 0)
                 this.page--
+        },
+        addPost(){
+            const sections = document.querySelectorAll(".blogPost");
+
+            
+            const posts = document.querySelector(".posts")
+            this.postSections = [...sections.values()] as HTMLElement[]
+            this.posts = posts as HTMLElement
         },
         async getBlogPost(){
             const basicBlogInfo:BlogPostDataBasicInfo = {owner:'dennis0324',repo:'blogPost',path:'tech'}
@@ -142,12 +162,14 @@ export default defineComponent({
         this.getBlogPost()
     },
     watch:{
-        page(newValue:number){
+        page(){
             this.getBlogPost()
         },
-        // blogPostDataMap(){
-        //     github.displayIndicator(this.blogPostDataMap)
-        // }
+        currentPage(){
+            this.$nextTick(() => {
+                this.addPost();
+            });
+        }
     }
 })
 </script>
