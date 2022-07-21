@@ -6,31 +6,34 @@
                 <div class="left-sidebar">
                     <PageLocater :BlogPostData="currentPage" :BlogPostDataYear="currentIndicator" :currentDate="currentDate"/>
                 </div>
-                <div class="posts" @scroll="handleScroll">
-                    <div v-if="currentPage!.length <= 0" class="loading">
-                        로딩중입니다.
-                    </div>
-                    <div v-else v-for="node in currentPage" :key="node.name" class="blogPost">
-                        <div class="blogPost-container">
-                            <div class="blogPost-create">
-                                <div class="blogPost-create-title">제작한 날짜</div>
-                                <div class="blogPost-create-content">{{node.createdat}}</div>
-                            </div>
-                            <div class="blogPost-update">
-                                <div class="blogPost-create-title">업데이트 날짜</div>
-                                <div class="blogPost-create-content">{{node.updatedat}}</div>
-                            </div>
-                        </div>
-                        <div v-html="node.content"></div>
-                    </div>
-                    <div>
-                        <button></button>
-                        {{page + 1}}
-                        <button></button>
-                    </div>
-
+                <div v-if="currentPage!.length <= 0" class="loading">
+                    로딩중입니다.
                 </div>
-
+                <div v-else>
+                    <div  class="posts" @scroll="handleScroll">
+                        <div  v-for="node in currentPage" :key="node.name" class="blogPost">
+                            <div class="blogPost-container">
+                                <div class="blogPost-create">
+                                    <div class="blogPost-create-title">제작한 날짜</div>
+                                    <div class="blogPost-create-content">{{node.createdat}}</div>
+                                </div>
+                                <div class="blogPost-update">
+                                    <div class="blogPost-create-title">업데이트 날짜</div>
+                                    <div class="blogPost-create-content">{{node.updatedat}}</div>
+                                </div>
+                                
+                            </div>
+                            <div class="blog-title">{{node.titleData.title}}</div>
+                            <div v-html="node.content"></div>
+                            <div>{{node.titleData.tags}}</div>
+                        </div>
+                    </div>
+                </div>
+                <div >
+                    <button @click="decreaseNumber"></button>
+                    {{page + 1}}/{{totalPage}}
+                    <button @click="increaseNumber"></button>
+                </div>
             </div>
 
         </div>
@@ -64,11 +67,13 @@ export default defineComponent({
 
         const blogPostDataMap = ref<Map<string, BlogPostData[]>>();
         const currentDate = ref<Date>(new Date());
+        const totalPage = ref<number>(0)
         return {
             blogPostDataMap,
             currentPage,
             currentDate,
-            currentIndicator
+            currentIndicator,
+            totalPage
         }
     },
     /** 컴포넌트 기본 정의 부분 */
@@ -95,6 +100,30 @@ export default defineComponent({
             if((event.target as HTMLElement).scrollTop <= 0){
                 console.log()
             }
+        },
+        increaseNumber(){
+            if(this.page < this.totalPage - 1)
+                this.page++
+        },
+        decreaseNumber(){
+            if(this.page > 0)
+                this.page--
+        },
+        async getBlogPost(){
+            const basicBlogInfo:BlogPostDataBasicInfo = {owner:'dennis0324',repo:'blogPost',path:'tech'}
+
+            /** 받아온 데이터를 1주일 단위로 분해해서 반환받습니다. */
+            this.blogPostDataMap = await blog.getBlogPost(basicBlogInfo);
+            /** 받아온 데이터를 토대로 현재 페이지에서 포스트를 받아옵니다. */
+            const receiveData = blog.getPageInfo(this.blogPostDataMap,this.page)
+
+            /** proxy{} 형태를 일반 배열로 변경해줍니다. */
+            const titles =  JSON.parse(JSON.stringify(receiveData[1]))
+            this.currentDate = blog.returnIncludeMonth(new Date(`${receiveData[0]}`) as Date)
+            this.totalPage = [...this.blogPostDataMap.values()].length
+            /** 포스트 이름을 받아온 후, 포스트 content를 받아옵니다. */
+            this.currentPage = await blog.getCurrentPage(basicBlogInfo,titles)
+            this.currentIndicator = github.displayIndicator(this.blogPostDataMap)
         }
     },
     /** 이 VIEW가 사용하는 데이터를 정의하는 함수입니다. */
@@ -110,33 +139,24 @@ export default defineComponent({
     },
     /** 컴포넌트 생성시에 실행되는 함수입니다. */
     async mounted() {
-        const basicBlogInfo:BlogPostDataBasicInfo = {owner:'dennis0324',repo:'blogPost',path:'tech'}
-
-        /** 받아온 데이터를 1주일 단위로 분해해서 반환받습니다. */
-        this.blogPostDataMap = await blog.getBlogPost(basicBlogInfo);
-        console.log(this.blogPostDataMap)
-        /** 받아온 데이터를 토대로 현재 페이지에서 포스트를 받아옵니다. */
-        const receiveData = blog.getPageInfo(this.blogPostDataMap,this.page)
-
-        /** proxy{} 형태를 일반 배열로 변경해줍니다. */
-        const titles =  JSON.parse(JSON.stringify(receiveData[1]))
-        this.currentDate = new Date(`${receiveData[0]}`) as Date
-
-        /** 포스트 이름을 받아온 후, 포스트 content를 받아옵니다. */
-        this.currentPage = await blog.getCurrentPage(basicBlogInfo,titles)
-
-        this.currentIndicator = github.displayIndicator(this.blogPostDataMap)
-        console.log(this.currentIndicator)
-        // blog.displayIndicator(this.blogPostDataYears,this.currentDate)
-        // this.currentPage = blog.getCurrentPage(this.page,this.BlogPostDataYears)
-
-        
+        this.getBlogPost()
+    },
+    watch:{
+        page(newValue:number){
+            this.getBlogPost()
+        },
+        // blogPostDataMap(){
+        //     github.displayIndicator(this.blogPostDataMap)
+        // }
     }
 })
 </script>
 
 <style scoped>
-/** 블로그 포스트 기본 정보 관련 css */
+    .blog-title{
+        font-size: 45px;
+    }
+    /** 블로그 포스트 기본 정보 관련 css */
     .blogPost-container{
         display: flex;
     }
@@ -205,7 +225,8 @@ export default defineComponent({
 
     /** 블로그 사진 크기 조정 */
     .posts:deep(img){
-        width:45vw;
+        object-fit: cover;
+        max-width: 45vw;
     }
 
     /** 블로그 개시글 관련 css */

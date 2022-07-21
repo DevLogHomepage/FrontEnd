@@ -17,7 +17,6 @@ export async function getCurrentPage(content:BlogPostDataBasicInfo,postPage:Blog
 
     /** 현재 반환 받은 값을 모두 포스팅으로 표시하는 부분입니다. */
     for(const i of postPage){
-        console.log(i)
         const blogPostData:BlogPostData = {} as BlogPostData
         const temp = await github.getContent({owner:'dennis0324',repo:'blogPost',path:`${content.path}/${i.name}.md`})
         const contentStr =  github.decodeBase64UTF8(temp.content)
@@ -112,7 +111,6 @@ export function returnIncludeMonth(date:Date){
         PAST.setMonth(PAST.getMonth() - 2)
     }
 
-    console.log(count)
     TODAY.setMonth(TODAY.getMonth() - count * 2)
     return TODAY
 }

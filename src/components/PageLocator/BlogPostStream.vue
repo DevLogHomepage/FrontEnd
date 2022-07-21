@@ -1,8 +1,10 @@
 <template>
     <div v-if="blogPostStreamData.length <= 0">t</div>
     <div v-else id="BlogPost">
-        <div v-for="i in blogPostStreamData" :class="i.date" :key="i.date" class="githubstream-div blog"> 
-            <CircleIndicatorVue :type="1" :postType="i.type"/>
+        <div v-for="(i,index) in blogPostStreamData" class="blogstream-div-week" :key="index"> 
+            <div v-for="j in i" :class="j.date" :key="j.date" class="blogstream-div blog" >
+                <CircleIndicatorVue :type="1" :postType="j.type"/>
+            </div>
         </div>
     </div>
 </template>
@@ -22,9 +24,14 @@ export default defineComponent({
     name:"BlogPostStream",
     /** 컴포넌트 시작 설정 부분입니다. */
     setup(){
-        const blogPostStreamData = ref<BlogPostStreamData[]>([])
+        const blogPostStreamData = ref<BlogPostStreamData[][]>([])
         return{
             blogPostStreamData
+        }
+    },
+    data(){
+        return{
+            perChunk:7
         }
     },
     /** 컴포넌트 기본 정의 부분 */
@@ -58,8 +65,8 @@ export default defineComponent({
             const startingDate = new Date(tempDate.getFullYear(),tempDate.getMonth() - 2,tempDate.getDate(),date.getHours(),date.getMinutes(),date.getSeconds())
 
             const blogPostStreamDatas:BlogPostStreamData[] = []
+            let count = 0;
             while(startingDate.toISOString().split('T')[0] !== tempDate.toISOString().split('T')[0]){
-
                 /** 저장하기 위한 임시 변수 생성 */
                 const blogPostStreamData:BlogPostStreamData = {} as BlogPostStreamData
 
@@ -81,7 +88,17 @@ export default defineComponent({
                 tempDate?.setDate(tempDate?.getDate() - 1);
                 blogPostStreamDatas.push(blogPostStreamData)
             }
-            this.blogPostStreamData = blogPostStreamDatas
+
+            this.blogPostStreamData = blogPostStreamDatas.reduce((resultArray:BlogPostStreamData[][], item, index) => { 
+                const chunkIndex = Math.floor(index/this.perChunk)
+                if(!resultArray[chunkIndex]) {
+                    resultArray[chunkIndex] = [] // start a new chunk
+                }
+
+                resultArray[chunkIndex].push(item)
+
+                return resultArray
+            }, [])
         }
     },
 })

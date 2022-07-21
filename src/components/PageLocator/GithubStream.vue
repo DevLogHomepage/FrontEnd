@@ -41,18 +41,7 @@ export default defineComponent({
      * 
      * 깃허브에서 모든 contirbutionCalendar를 가지고 와서 사용하기 쉬운 방식으로 바꿔서 값을 넣어줍니다.
      */
-    setup(props){
-        
-
-
-
-        // watch(props.startingDate,() => {
-        //     console.log("testing")
-        //     // if(result.value !== undefined){
-        //     //     console.log()
-        //     // }
-        // })
-
+    setup(){
         const temp = ref<githubContributionResponse>();
         const githubDataWeek = ref<ContributionWeeks[]>([]);
         const githubDataMonth = ref<ContributionMonths[]>([]);
@@ -92,11 +81,9 @@ export default defineComponent({
     },
     watch:{
         async startingDate(){
-            console.log('staringDate',this.startingDate)
             const response = await axios.get(`http://localhost:3000/githubContirbutions/?startingDate=${this.startingDate}`)
             const githubResponse = response.data.data as githubContributionResponse 
             if(response !== undefined){
-                console.log(githubResponse)
                 
                 const githubMonths = githubResponse.user.contributionsCollection.contributionCalendar.months.slice().reverse()
                 const githubWeeks = githubResponse.user.contributionsCollection.contributionCalendar.weeks.slice().reverse()
@@ -105,9 +92,6 @@ export default defineComponent({
                 this.githubDataWeek = githubWeeks;
             }
         }
-    },
-    async mounted(){
-        console.log()
     }
 })
 

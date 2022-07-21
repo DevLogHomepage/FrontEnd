@@ -7,7 +7,7 @@
                 <div id="MainStream">
                     <div v-for="i in 62" :key="i" :class="['mainstream-div',(i < circleCount) ? 'on' : 'off']"></div>
                 </div>
-                <BlogPostStream :startingDate="Today" :BlogPostData="BlogPostData"/>
+                <BlogPostStream :startingDate="Today" :BlogPostData="githubIndicator"/>
             </div>
         </div>
 
@@ -33,15 +33,16 @@ export default defineComponent({
     /** 컴포넌트 시작 설정 부분입니다. */
     /** 현재 달과 지난 달의 총 일수를 구합니다. */
     setup(){
+        const githubIndicator = ref<BlogPostData[]>([]);
         const Today = new Date()
         const tempMonth = new Date(Today.getFullYear(),Today.getMonth() - 2,Today.getDate())
         let difference  = Today.getTime() - tempMonth.getTime();
         const dayCount = Math.ceil(difference / (1000 * 3600 * 24));
-        console.log(dayCount)
         const circleCount = ref<number>(dayCount);
         return{
             Today,
-            circleCount
+            circleCount,
+            githubIndicator
         }
     },
     data() {
@@ -55,10 +56,6 @@ export default defineComponent({
         WeekIndicator
     },
     props:{
-        BlogPostData:{
-            required:true,
-            type:Array as PropType<BlogPostData[]>
-        },
         BlogPostDataYear:{
             required:true,
             type:Array as PropType<BlogPostDataYear[]>
@@ -73,16 +70,16 @@ export default defineComponent({
             if(this.BlogPostDataYear !== undefined){
                 this.updateIndicator()
             }
-            // const secondMonth = this.BlogPostDataYear[TODAY.getFullYear() - secondDate.getFullYear()].data[secondDate.getMonth()].data
-
-            // firstMonth = firstMonth.concat(secondMonth)
-            // console.log(firstMonth)
+            const tempMonth = new Date(newValue.getFullYear(),newValue.getMonth() - 2,newValue.getDate())
+            let difference  = newValue.getTime() - tempMonth.getTime();
+            const dayCount = Math.ceil(difference / (1000 * 3600 * 24));
+            this.circleCount = dayCount
         },
         BlogPostDataYear(newValue:BlogPostDataYear[]){
             if(this.BlogPostDataYear !== undefined){
                 this.updateIndicator()
             }
-        }
+        },
     },
     methods:{
         updateIndicator(){
@@ -91,7 +88,7 @@ export default defineComponent({
             }
             const TODAY = new Date()
             const currentDate = this.currentDate as Date
-            console.log('currentDate',currentDate)
+            console.log('currentDat',currentDate)
             let secondDate = new Date(currentDate)
             secondDate.setMonth(currentDate.getMonth() - 1)
 
@@ -99,8 +96,12 @@ export default defineComponent({
             let firstMonth = this.BlogPostDataYear[TODAY.getFullYear() - currentDate.getFullYear()].data[currentDate.getMonth()].data
             const secondMonth = this.BlogPostDataYear[TODAY.getFullYear() - secondDate.getFullYear()].data[secondDate.getMonth()].data
 
+            this.githubIndicator = firstMonth.concat(secondMonth)
             this.Today = blog.returnIncludeMonth(currentDate)
         }
+    },
+    mounted(){
+        this.updateIndicator()
     }
 
 })

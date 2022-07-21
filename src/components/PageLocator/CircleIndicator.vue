@@ -46,8 +46,9 @@ export default defineComponent({
                 this.level = 2
             else if(this.contributionLevel === 'THIRD_QUARTILE')
                 this.level = 3
-            else if(this.contributionLevel === 'FOUTRH_QUARTILE')
+            else if(this.contributionLevel === 'FOURTH_QUARTILE')
                 this.level = 4
+
         }
         else{
             this.typeLevel = this.postType as number[]
