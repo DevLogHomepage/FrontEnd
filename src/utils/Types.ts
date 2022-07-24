@@ -207,3 +207,8 @@ export interface BlogPostStreamData{
 }
 
 
+export interface TypeTime{
+    month:number,
+    date:number,
+    year:number,
+}

@@ -22,101 +22,30 @@ import CircleIndicatorVue from './CircleIndicator.vue'
 export default defineComponent({
     /** 컴포넌트 이름의 정의입니다. */
     name:"BlogPostStream",
-    /** 컴포넌트 시작 설정 부분입니다. */
-    setup(){
-        
-        const blogPostStreamData = ref<BlogPostStreamData[][]>([])
-        return{
-            blogPostStreamData
-        }
-    },
-    data(){
-        return{
-            perChunk:7
-        }
-    },
-    emits:[
-        'setBlogPostStreamData'
-    ],
     /** 컴포넌트 기본 정의 부분 */
     components:{
         CircleIndicatorVue
     },
     /** 기본 properity의 정의 */
     props:{
-        BlogPostData:{
+        blogPostStreamData:{
             required:true,
-            type:Array as PropType<BlogPostData[]>,
+            type:Array as PropType<BlogPostStreamData[][]>
         },
-        startingDate:{
-            require:true,
-            type:Date
+        ready:{
+            required:true,
+            type:Boolean
         }
     },
-    /** 변수를 지속적으로 확인하는 함수를 선언하는 부분입니다. */
     watch:{
-        /**
-         * BlogPostData가 들어오면 circleIndicator가 사용할 수 있도록 만들어주는 `watch`함수입니다.
-         * 
-         * @param newBlog 변경된 사항이 있으면 들어오는 매개변수입니다.
-         */
-        BlogPostData(){
-            if(this.BlogPostData !== undefined){
-                this.setBlogPostData(this.BlogPostData)
-            }
+        blogPostStreamData(){
+            console.log(this.blogPostStreamData)
         }
-    },
-    methods:{
-        setBlogPostData(newBlog:BlogPostData[]){
-            /** proxy{} 없애주는 작업입니다. */
-            const PostChanged = JSON.parse(JSON.stringify(newBlog))
-
-            const date = this.startingDate as Date;
-            let tempDate = new Date(date.getFullYear(),date.getMonth(),date.getDate(),date.getHours(),date.getMinutes(),date.getSeconds());
-            const startingDate = new Date(tempDate.getFullYear(),tempDate.getMonth() - 2,tempDate.getDate(),date.getHours(),date.getMinutes(),date.getSeconds())
-
-            const blogPostStreamDatas:BlogPostStreamData[] = []
-            while(startingDate.toISOString().split('T')[0] !== tempDate.toISOString().split('T')[0]){
-                /** 저장하기 위한 임시 변수 생성 */
-                const blogPostStreamData:BlogPostStreamData = {} as BlogPostStreamData
-
-                /** 현재 루프 돌아가고 있는 date 앞 날짜만 가지고 오기 */
-                const a = tempDate.toISOString().split('T')[0]
-
-                blogPostStreamData.type = []
-
-                /** 현재 가지고 있는 모든 포스트 확인해보기 */
-                for(const node of PostChanged){
-                    if(a === node.createdat.split('T')[0]){
-                        blogPostStreamData.type.push(0)
-                    }
-                    else if(a === node.updatedat.split('T')[0]){
-                        blogPostStreamData.type.push(1)
-                    }
-                }
-                blogPostStreamData.date = a;
-                tempDate?.setDate(tempDate?.getDate() - 1);
-                blogPostStreamDatas.push(blogPostStreamData)
-            }
-
-            this.blogPostStreamData = blogPostStreamDatas.reduce((resultArray:BlogPostStreamData[][], item, index) => { 
-                const chunkIndex = Math.floor(index/this.perChunk)
-                if(!resultArray[chunkIndex]) {
-                    resultArray[chunkIndex] = [] // start a new chunk
-                }
-
-                resultArray[chunkIndex].push(item)
-
-                return resultArray
-            }, [])
-            this.$emit('setBlogPostStreamData',this.blogPostStreamData)
-
-        }
-    },
-    mounted(){
-
-        this.setBlogPostData(this.BlogPostData)
     }
+    // mounted(){
+
+    //     this.setBlogPostData(this.BlogPostData)
+    // }
 })
 
 </script>

@@ -3,15 +3,20 @@
     <main>
         <div id="tech" class="tech" :class="[theme ? 'dark' : 'light']">
             <div class="tech-container">
+
                 <div class="left-sidebar">
-                    <PageLocater :BlogPostData="currentPage" :BlogPostDataYear="currentIndicator" :currentDate="currentDate"/>
+                    <SearchBox/>
+                    <PageLocater :datas="{
+                        blogPostDataYear:monthlyTitle,
+                        watchingPostIndex:watchingPostIndex}" 
+                        :page="page" :ready="ready" :currentDate="currentDate" :blogPostDataMap="(blogPostDataMap)" :currentContents="currentContents"/>
                 </div>
-                <div v-if="currentPage!.length <= 0" class="loading">
+                <div v-if="currentContents!.length <= 0" class="loading">
                     로딩중입니다.
                 </div>
                 <div v-else>
                     <div  class="posts" @scroll="handleScroll">
-                        <div  v-for="node in currentPage" :key="node.name" class="blogPost" v-on:load="addPost">
+                        <div  v-for="node in currentContents" :key="node.name" class="blogPost" v-on:load="addSections">
                             <div class="blogPost-container">
                                 <div class="blogPost-create">
                                     <div class="blogPost-create-title">제작한 날짜</div>
@@ -48,11 +53,12 @@
 
 <script lang="ts">
 import { defineComponent, PropType, ref } from 'vue';
-import { BlogPostData, BlogPostDataBasicInfo, BlogPostDataYear } from '@/utils/Types';
+import { BlogPostData, BlogPostDataBasicInfo, BlogPostDataYear, BlogPostStreamData, TypeTime } from '@/utils/Types';
 import PageLocater from '@/components/PageLocator.vue'
 import * as blog from '@/core/blog'
 import LogoDiv from '@/components/LogoDiv.vue';
 import * as github from '@/core/github';
+import SearchBox from '../components/SearchBox.vue';
 
 /**
  * TechView의 정의 부분입니다.
@@ -62,34 +68,63 @@ export default defineComponent({
     name: 'TechView',
     /** 컴포넌트 시작 설정 부분입니다. */
     setup(){
-        const currentPage = ref<BlogPostData[]>([]);
-        const currentIndicator = ref<BlogPostDataYear[]>([]);
+        const TODAY = new Date()
+        /** 월마다 나눈 블로그 포스트 배열입니다. */
+        const monthlyTitle = ref<BlogPostDataYear[]>([]);
 
-        const blogPostDataMap = ref<Map<string, BlogPostData[]>>();
-        const currentDate = ref<Date>(new Date());
         const totalPage = ref<number>(0)
         const postSections = ref<HTMLElement[]>([])
         const posts = ref<HTMLElement>()
+        const watchingPostIndex = ref<number>(0);
+        
+        /** 본 사이트가 로딩을 완료하기 위해 정보의 다운이 끝났을 경우 사용하는 boolean 변수 */
+        const ready = ref<boolean>(false);
+
+
+        const blogPostDataMap = ref<Map<string, BlogPostData[]>>(new Map());
+
+        const currentDate = ref<string>('');
+        const blogStreamIndiData = ref<BlogPostStreamData[][]>([]);
+        const currentContents = ref<BlogPostData[]>([]);
         return {
             blogPostDataMap,
-            currentPage,
+            currentContents,
             currentDate,
-            currentIndicator,
+            monthlyTitle,
             totalPage,
             postSections,
-            posts
+            posts,
+            watchingPostIndex,
+            ready,
+
+
+            blogStreamIndiData
         }
     },
     /** 컴포넌트 기본 정의 부분 */
     components:{
-        PageLocater,
-        LogoDiv
-    },
+    PageLocater,
+    LogoDiv,
+    SearchBox
+},
     /** 기본 properity의 정의 */
     props :{
         theme: {
             required: true,
             type : Boolean as PropType<boolean>,
+        }
+    },
+        /** 이 VIEW가 사용하는 데이터를 정의하는 함수입니다. */
+    data(){
+        const blogPost = ref<Element>();
+        const yPosition = ref<number>();
+        const page = ref<number>(0);
+        return {
+            blogPost,
+            yPosition,
+            page,
+            perChunk:7,
+            basicBlogInfo: {owner:'dennis0324',repo:'blogPost',path:'tech'}
         }
     },
     /** VIEW가 사용하는 메소드를 정의하는 부분입니다. */
@@ -108,66 +143,93 @@ export default defineComponent({
                 let offset = htmlElement.offsetTop - 150;
                 let height = htmlElement.offsetHeight;
 
+
                 if (top >= offset && top < offset + height){
-                    console.log(index)
+                    this.watchingPostIndex = index
                 }
             })
         },
         increaseNumber(){
             if(this.page < this.totalPage - 1)
                 this.page++
+
         },
         decreaseNumber(){
             if(this.page > 0)
                 this.page--
         },
-        addPost(){
+        addSections(){
             const sections = document.querySelectorAll(".blogPost");
-
-            
             const posts = document.querySelector(".posts")
             this.postSections = [...sections.values()] as HTMLElement[]
-            this.posts = posts as HTMLElement
+            this.posts = posts as HTMLElement 
         },
-        async getBlogPost(){
-            const basicBlogInfo:BlogPostDataBasicInfo = {owner:'dennis0324',repo:'blogPost',path:'tech'}
+        async setBlogPost(){
 
             /** 받아온 데이터를 1주일 단위로 분해해서 반환받습니다. */
-            this.blogPostDataMap = await blog.getBlogPost(basicBlogInfo);
-            /** 받아온 데이터를 토대로 현재 페이지에서 포스트를 받아옵니다. */
-            const receiveData = blog.getPageInfo(this.blogPostDataMap,this.page)
+            this.blogPostDataMap = await blog.getBlogPost(this.basicBlogInfo);
+            const [date,titles] = blog.getPageInfo(this.blogPostDataMap,this.page)
+            this.setTotalPage(this.blogPostDataMap)
+            this.setCurrentDate(date)
+            this.setCurrentContents(titles)
+            this.ready = true
+        },
+        /**
+         * 매달로 쪼개진 배열 만들어서 저장합니다. 
+         * 
+         * @param titles 블로그 포스트 내용을 받아오기 위해 받아온 포스트 기본 정보입니다.
+         */
+        async setCurrentContents(titles:BlogPostData[]){
+            console.log("titles",titles)
+            this.currentContents = await blog.getCurrentPage(this.basicBlogInfo,titles)
+        },
+        /**
+         * 블로그 좌측에 인디게이터를 띄우기 위해서 사용하는 함수입니다.
+         * 
+         * @param blogPostDataMap 날짜와 그 주에 해당하는 블로그 포스트가 저장된 변수를 매겨변수로 받습니다.
+         */
+        // setCurrentContents(blogPostDataMap:Map<string, BlogPostData[]>){
+        //     console.log("blogPostDataMap",blogPostDataMap)
 
-            /** proxy{} 형태를 일반 배열로 변경해줍니다. */
-            const titles =  JSON.parse(JSON.stringify(receiveData[1]))
-            this.currentDate = blog.returnIncludeMonth(new Date(`${receiveData[0]}`) as Date)
-            this.totalPage = [...this.blogPostDataMap.values()].length
-            /** 포스트 이름을 받아온 후, 포스트 content를 받아옵니다. */
-            this.currentPage = await blog.getCurrentPage(basicBlogInfo,titles)
-            this.currentIndicator = github.displayIndicator(this.blogPostDataMap)
-        }
-    },
-    /** 이 VIEW가 사용하는 데이터를 정의하는 함수입니다. */
-    data(){
-        const blogPost = ref<Element>();
-        const yPosition = ref<number>();
-        const page = ref<number>(0);
-        return {
-            blogPost,
-            yPosition,
-            page
-        }
+        //     this.monthlyTitle = github.displayIndicator(blogPostDataMap)
+        //     // this.setBlogIndicaterData(blogPostDataMap)
+
+        //     console.log("monthlyTitle",this.monthlyTitle)
+        // },
+        /**
+         * 현재의 날짜를 설정해줍니다.
+         * @param date `ISOstring의 형식으로 `T`의 앞부분을 string 값으로 받습니다.
+         */
+        setCurrentDate(date:string){
+            const startOfWeek = blog.returnIncludeMonth(new Date(date))
+            console.log(blog.getFrontDate(startOfWeek))
+            this.currentDate = blog.getFrontDate(startOfWeek)
+        },
+        /**
+         * 블로그의 전체 페이지를 설정합니다.
+         * 
+         * @param blogPostDataMap 날짜와 그 주에 해당하는 블로그 포스트가 저장된 변수를 매겨변수로 받습니다.
+         */
+        setTotalPage(blogPostDataMap:Map<string, BlogPostData[]>){
+            this.totalPage = [...blogPostDataMap.values()].length
+        },
+        
+
     },
     /** 컴포넌트 생성시에 실행되는 함수입니다. */
     async mounted() {
-        this.getBlogPost()
+        this.setBlogPost()
+        // const TODAY = new Date()
+        // this.currentDate = blog.getFrontDate(TODAY)
+        // this.setBlogIndicaterData()
     },
     watch:{
         page(){
-            this.getBlogPost()
+            this.setBlogPost()
         },
         currentPage(){
             this.$nextTick(() => {
-                this.addPost();
+                this.addSections();
             });
         }
     }
@@ -175,6 +237,7 @@ export default defineComponent({
 </script>
 
 <style scoped>
+    
     .blog-title{
         font-size: 45px;
     }
@@ -264,6 +327,14 @@ export default defineComponent({
         display:flex;
     }
 
+    .left-sidebar{
+        display: flex;
+        flex-direction: column;
+        margin: 0 50px;
+        padding: 0 100px;
+        border-right: solid 1px #707070;
+
+    }
     /** 블로그 포스팅 */
     .posts{
         height:80vh;

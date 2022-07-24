@@ -1,14 +1,19 @@
 <template>
-    <div v-if="loading"></div>
+<Transition name="fade">
+    <div v-if="githubDataMonth.length <= 0"></div>
     <div v-else id="GithubStream">
-        <div v-for="(i,index) in displayMonth()" :key="index"  class="githubstream-div">
-            <div v-for="(week,indexWeek) in i" :key="indexWeek" class="week">
-                <div v-for="(day,indexDay) in week.contributionDays.slice().reverse()"  :key="indexDay" :class="['day',day.date]">
-                    <CircleIndicatorVue :date="day.date" :contributionLevel="day.contributionLevel" :type="0"/>
+        <TransitionGroup name="fade">
+            <div v-for="(i,index) in displayMonth()" :key="index"  class="githubstream-div">
+                <div v-for="(week,indexWeek) in i" :key="indexWeek" class="week">
+                    <div v-for="(day,indexDay) in week.contributionDays.slice().reverse()"  :key="indexDay" :class="['day',day.date]">
+                        <CircleIndicatorVue :date="day.date" :contributionLevel="day.contributionLevel" :type="0"/>
+                    </div>
                 </div>
             </div>
-        </div>
+        </TransitionGroup>
     </div>
+</Transition>
+
 </template>
 
 <script lang="ts">
@@ -57,7 +62,7 @@ export default defineComponent({
     props:{
         startingDate:{
             required:true,
-            type:Date
+            type:String
         }
     },
     /** 컴포넌트에서 사용할 메소드를 정의하는 부분입니다. */
@@ -76,9 +81,8 @@ export default defineComponent({
             }
             return result
         },
-    },
-    watch:{
-        async startingDate(){
+        async updateIndicator(){
+            this.githubDataMonth = []
             const response = await axios.get(`http://localhost:3000/githubContirbutions/?startingDate=${this.startingDate}`)
             const githubResponse = response.data.data as githubContributionResponse 
             if(response !== undefined){
@@ -90,12 +94,45 @@ export default defineComponent({
                 this.githubDataWeek = githubWeeks;
             }
         }
+    },
+    watch:{
+        async startingDate(newValue,oleValue){
+            console.log('githubstreamwatch>>',newValue,oleValue)
+            await this.updateIndicator()
+        }
+    },
+    mounted(){
+        this.updateIndicator()
     }
 })
 
 </script>
 
 <style scoped>
+.fade-enter-from{
+    opacity: 0;
+}
+
+.fade-enter-to{
+    opacity: 1;
+}
+
+.fade-enter-active{
+    transition: all 0.3s ease-in-out;
+}
+
+.fade-leave-from{
+    opacity: 1;
+}
+
+.fade-leave-to{
+    opacity: 0;
+}
+
+.fade-enter-active{
+    transition: all 0.3s ease-in-out;
+}
+
 #GithubStream{
     display:flex;
     flex-direction: column;

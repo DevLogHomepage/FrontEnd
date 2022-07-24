@@ -89,7 +89,7 @@ export function getPostContent(prefix:string,surfix:string,content:string){
 }
 
 
-export function getPageInfo(blogPostDataMap:Map<string, BlogPostData[]>,page:number){
+export function getPageInfo(blogPostDataMap:Map<string, BlogPostData[]>,page:number):[string,BlogPostData[]]{
     const iter = blogPostDataMap.entries()
     for(let i = 0 ; i < page; i++){
         iter.next()
@@ -102,7 +102,7 @@ export function returnIncludeMonth(date:Date){
     const TODAY = new Date()
     const CURRENT = new Date()
     const PAST = new Date()
-    PAST.setMonth(PAST.getMonth() - 1)
+    PAST.setMonth(PAST.getMonth() - 2)
     let count = 0;
 
     while(date.getTime() > CURRENT.getTime() || date.getTime() < PAST.getTime()){
@@ -110,7 +110,11 @@ export function returnIncludeMonth(date:Date){
         CURRENT.setMonth(CURRENT.getMonth() - 2)
         PAST.setMonth(PAST.getMonth() - 2)
     }
-
     TODAY.setMonth(TODAY.getMonth() - count * 2)
     return TODAY
+}
+
+
+export function getFrontDate(date:Date){
+    return date.toISOString().split('T')[0]
 }
