@@ -41,7 +41,6 @@ export async function getCurrentPage(content:BlogPostDataBasicInfo,postPage:Blog
 
         blogPostData.titleData = getPostJson("---\n{","}\n---",contentStr)
         blogPostData.content =  marked.parse(getPostContent("---\n{","}\n---",contentStr))
-        // console.log(getPostContent("---\n{","}\n---",contentStr))
         blogPostData.createdat = i.createdat.split('T')[0]
         blogPostData.updatedat = i.updatedat.split('T')[0]
 

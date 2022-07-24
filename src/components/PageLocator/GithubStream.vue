@@ -84,6 +84,7 @@ export default defineComponent({
         async updateIndicator(){
             this.githubDataMonth = []
             const response = await axios.get(`http://localhost:3000/githubContirbutions/?startingDate=${this.startingDate}`)
+            console.log(response)
             const githubResponse = response.data.data as githubContributionResponse 
             if(response !== undefined){
                 
@@ -97,7 +98,6 @@ export default defineComponent({
     },
     watch:{
         async startingDate(newValue,oleValue){
-            console.log('githubstreamwatch>>',newValue,oleValue)
             await this.updateIndicator()
         }
     },

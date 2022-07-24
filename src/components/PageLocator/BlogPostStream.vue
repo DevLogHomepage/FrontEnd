@@ -37,15 +37,6 @@ export default defineComponent({
             type:Boolean
         }
     },
-    watch:{
-        blogPostStreamData(){
-            console.log(this.blogPostStreamData)
-        }
-    }
-    // mounted(){
-
-    //     this.setBlogPostData(this.BlogPostData)
-    // }
 })
 
 </script>

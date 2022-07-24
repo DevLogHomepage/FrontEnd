@@ -65,12 +65,9 @@ export default defineComponent({
         WeekIndicator
     },
     props:{
-        datas:{
-            required:true,
-            type:Object as PropType<{
-                blogPostDataYear: BlogPostDataYear[],
-                watchingPostIndex: number
-            }>
+        watchingPostIndex: {
+            type:Number,
+            default:0
         },
         page:{
             type:Number
@@ -92,16 +89,7 @@ export default defineComponent({
         }
     },
     watch:{
-        indicatorStaringDate(newValue:Date,oldValue){
-            console.log('indicatorStaringDate>>',newValue,oldValue)
-            if(this.currentDate === undefined){
-                return
-            }
-            // this.updateIndicator()
-            this.setBlogPostStreamIndicater()
-        },
         currentContents(newValue,oldValue){
-            console.log("currentContents",newValue,oldValue)
             this.setPageWeekDate(this.blogPostStreamData)
         },
         currentDate(){
@@ -109,25 +97,8 @@ export default defineComponent({
         },
     },
     methods:{
-        setBlogPostStreamIndicater(){
-            if(this.datas.blogPostDataYear.length <= 0){
-                return
-            }
-            const TODAY = new Date()
-            const currentDate = new Date(this.currentDate as string)
-            let secondDate = new Date(currentDate)
-            secondDate.setMonth(currentDate.getMonth() - 1)
-
-            let firstMonth = this.datas.blogPostDataYear[TODAY.getFullYear() - currentDate.getFullYear()].data[currentDate.getMonth()].data
-            const secondMonth = this.datas.blogPostDataYear[TODAY.getFullYear() - secondDate.getFullYear()].data[secondDate.getMonth()].data
-            this.BlogStreamIndicatorData = firstMonth.concat(secondMonth)
-            console.log('pageLocator',currentDate.toISOString().split('T')[0])
-            this.Today = currentDate.toISOString().split('T')[0]
-        },
         setPageWeekDate(date:BlogPostStreamData[][]){
-            console.log("datadata",date)
-            console.log("this.datas.watchingPostIndex",this.datas.watchingPostIndex)
-            const compareDate = this.currentContents[this.datas.watchingPostIndex].updatedat.split('T')[0]
+            const compareDate = this.currentContents[this.watchingPostIndex].updatedat.split('T')[0]
             for(const weekIndex in date){
                 for(const dayIndex in date[weekIndex]){
                     if(date[weekIndex][dayIndex].date === compareDate){
@@ -137,6 +108,12 @@ export default defineComponent({
                 }
             }
         },
+
+        /**
+         * 좌측에 목차를 만들어주기 위해서 일주일별로 저장되는 `map`입니다.
+         * 
+         * @param blogPostDataMap 일주일을 시작하는 날짜와 그안에 들어가있는 포스트 배열을 저장해줍니다.
+         */
         setBlogIndicaterData(blogPostDataMap:Map<string, BlogPostData[]>):BlogPostData[]{
             const arr = [...blogPostDataMap.entries()].filter(([date,_]) => {
                 const firstMonth = new Date(this.currentDate as string)
@@ -154,9 +131,9 @@ export default defineComponent({
                 for(const e of blogPostData)
                 returnValue.push(e)
             }
-            console.log("returnValue",returnValue) 
             return returnValue
         },
+
         // 일부 받아온 데이터를 2달치를 채운 희소행렬 방식으로 바꿔어줍니다.
         setBlogStreamIndiData(blogPostData:BlogPostData[]){
             const PostChanged = JSON.parse(JSON.stringify(blogPostData))

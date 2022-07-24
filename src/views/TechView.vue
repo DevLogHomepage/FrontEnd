@@ -6,9 +6,7 @@
 
                 <div class="left-sidebar">
                     <SearchBox/>
-                    <PageLocater :datas="{
-                        blogPostDataYear:monthlyTitle,
-                        watchingPostIndex:watchingPostIndex}" 
+                    <PageLocater :watchingPostIndex="watchingPostIndex"
                         :page="page" :ready="ready" :currentDate="currentDate" :blogPostDataMap="(blogPostDataMap)" :currentContents="currentContents"/>
                 </div>
                 <div v-if="currentContents!.length <= 0" class="loading">
@@ -68,18 +66,18 @@ export default defineComponent({
     name: 'TechView',
     /** 컴포넌트 시작 설정 부분입니다. */
     setup(){
-        const TODAY = new Date()
-        /** 월마다 나눈 블로그 포스트 배열입니다. */
-        const monthlyTitle = ref<BlogPostDataYear[]>([]);
-
-        const totalPage = ref<number>(0)
+        /** 로딩 후에 생성되는 htmlElement 관리 refer입니다. */
         const postSections = ref<HTMLElement[]>([])
         const posts = ref<HTMLElement>()
-        const watchingPostIndex = ref<number>(0);
         
         /** 본 사이트가 로딩을 완료하기 위해 정보의 다운이 끝났을 경우 사용하는 boolean 변수 */
         const ready = ref<boolean>(false);
 
+        /** 현재 보고 있는 포스트 위치 */
+        const watchingPostIndex = ref<number>(0);
+
+        /**  */
+        const totalPage = ref<number>(0)
 
         const blogPostDataMap = ref<Map<string, BlogPostData[]>>(new Map());
 
@@ -90,14 +88,11 @@ export default defineComponent({
             blogPostDataMap,
             currentContents,
             currentDate,
-            monthlyTitle,
             totalPage,
             postSections,
             posts,
             watchingPostIndex,
             ready,
-
-
             blogStreamIndiData
         }
     },
@@ -116,11 +111,9 @@ export default defineComponent({
     },
         /** 이 VIEW가 사용하는 데이터를 정의하는 함수입니다. */
     data(){
-        const blogPost = ref<Element>();
         const yPosition = ref<number>();
         const page = ref<number>(0);
         return {
-            blogPost,
             yPosition,
             page,
             perChunk:7,
@@ -129,6 +122,20 @@ export default defineComponent({
     },
     /** VIEW가 사용하는 메소드를 정의하는 부분입니다. */
     methods:{
+
+        /**
+         * 
+         */
+        async setBlogPost(){
+            /** 받아온 데이터를 1주일 단위로 분해해서 반환받습니다. */
+            this.blogPostDataMap = await blog.getBlogPost(this.basicBlogInfo);
+            const [date,titles] = blog.getPageInfo(this.blogPostDataMap,this.page)
+            this.setTotalPage(this.blogPostDataMap)
+            this.setCurrentDate(date)
+            this.setCurrentContents(titles)
+            this.ready = true
+        },
+
         /**
          * 스크롤 이벤트를 헨들링해주는 함수입니다.
          * 
@@ -149,62 +156,52 @@ export default defineComponent({
                 }
             })
         },
+
+        /**
+         * 페이지를 하나 올립니다.
+         */
         increaseNumber(){
             if(this.page < this.totalPage - 1)
                 this.page++
 
         },
+
+        /**
+         * 페이지를 하나 내립니다.
+         */
         decreaseNumber(){
             if(this.page > 0)
                 this.page--
         },
+
+        /**
+         * 섹션이 나오면 감지후 추가해줍니다.
+         */
         addSections(){
             const sections = document.querySelectorAll(".blogPost");
             const posts = document.querySelector(".posts")
             this.postSections = [...sections.values()] as HTMLElement[]
             this.posts = posts as HTMLElement 
         },
-        async setBlogPost(){
 
-            /** 받아온 데이터를 1주일 단위로 분해해서 반환받습니다. */
-            this.blogPostDataMap = await blog.getBlogPost(this.basicBlogInfo);
-            const [date,titles] = blog.getPageInfo(this.blogPostDataMap,this.page)
-            this.setTotalPage(this.blogPostDataMap)
-            this.setCurrentDate(date)
-            this.setCurrentContents(titles)
-            this.ready = true
-        },
         /**
          * 매달로 쪼개진 배열 만들어서 저장합니다. 
          * 
          * @param titles 블로그 포스트 내용을 받아오기 위해 받아온 포스트 기본 정보입니다.
          */
         async setCurrentContents(titles:BlogPostData[]){
-            console.log("titles",titles)
             this.currentContents = await blog.getCurrentPage(this.basicBlogInfo,titles)
         },
-        /**
-         * 블로그 좌측에 인디게이터를 띄우기 위해서 사용하는 함수입니다.
-         * 
-         * @param blogPostDataMap 날짜와 그 주에 해당하는 블로그 포스트가 저장된 변수를 매겨변수로 받습니다.
-         */
-        // setCurrentContents(blogPostDataMap:Map<string, BlogPostData[]>){
-        //     console.log("blogPostDataMap",blogPostDataMap)
 
-        //     this.monthlyTitle = github.displayIndicator(blogPostDataMap)
-        //     // this.setBlogIndicaterData(blogPostDataMap)
-
-        //     console.log("monthlyTitle",this.monthlyTitle)
-        // },
         /**
          * 현재의 날짜를 설정해줍니다.
          * @param date `ISOstring의 형식으로 `T`의 앞부분을 string 값으로 받습니다.
          */
         setCurrentDate(date:string){
             const startOfWeek = blog.returnIncludeMonth(new Date(date))
-            console.log(blog.getFrontDate(startOfWeek))
             this.currentDate = blog.getFrontDate(startOfWeek)
         },
+
         /**
          * 블로그의 전체 페이지를 설정합니다.
          * 
@@ -213,15 +210,10 @@ export default defineComponent({
         setTotalPage(blogPostDataMap:Map<string, BlogPostData[]>){
             this.totalPage = [...blogPostDataMap.values()].length
         },
-        
-
     },
     /** 컴포넌트 생성시에 실행되는 함수입니다. */
     async mounted() {
         this.setBlogPost()
-        // const TODAY = new Date()
-        // this.currentDate = blog.getFrontDate(TODAY)
-        // this.setBlogIndicaterData()
     },
     watch:{
         page(){
@@ -298,7 +290,6 @@ export default defineComponent({
 
 
     /** tech view 페이지 조정 */
-
     #tech{
         height:100%;
         display: flex;
