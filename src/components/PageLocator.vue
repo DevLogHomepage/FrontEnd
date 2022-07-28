@@ -12,6 +12,22 @@
         </div>
         <div class="date-indicator">Recent Post: {}</div>
         <div class="date-indicator">Post in a Row : {}</div>
+        <div id="pagelocater-helper">
+            <div class="flex-horizontal">
+                <div class="mainstream-div blogType-1 pagelocater-conatainer">
+                </div>
+                <div>
+                    updated
+                </div>
+            </div>
+            <div class="flex-horizontal">
+                <div class="mainstream-div blogType-0 pagelocater-conatainer">
+                </div>
+                <div>
+                    created
+                </div>
+            </div>
+        </div>
     </div>
 
 </template>
@@ -22,7 +38,7 @@ import { defineComponent, PropType, ref } from 'vue'
 import GithubStream from './PageLocator/GithubStream.vue'
 import BlogPostStream from './PageLocator/BlogPostStream.vue'
 import WeekIndicator from './PageLocator/WeekIndicator.vue'
-import { BlogPostData, BlogPostDataYear, BlogPostStreamData, TypeTime } from '@/utils/Types';
+import { BlogPostData,  BlogPostStreamData } from '@/utils/Types';
 
 import * as blog from '@/core/blog'
 
@@ -214,7 +230,7 @@ export default defineComponent({
     flex-direction: column;
 }
 
-#MainStream .mainstream-div{
+.mainstream-div{
     width:6px;
     height:6px;
     border-radius: 50%;
@@ -250,5 +266,22 @@ export default defineComponent({
     
 }
 
+#pagelocater-helper{
+    margin:15px 0;
+    background-color:#202020;
+    border-radius: 10px;
+    width:100%;
+}
 
+.pagelocater-conatainer{
+    margin:15px;
+}
+
+.blogType-1 {
+    background-color: rgb(255, 180, 180);
+}
+
+.blogType-0{
+    background-color: rgb(180, 255, 211);
+}
 </style>

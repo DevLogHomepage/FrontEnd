@@ -1,6 +1,6 @@
 <template>
 <Transition name="fade">
-    <div v-if="githubDataMonth.length <= 0"></div>
+    <div v-if="githubDataMonth.length <= 0" id="GithubStream"></div>
     <div v-else id="GithubStream">
         <TransitionGroup name="fade">
             <div v-for="(i,index) in displayMonth()" :key="index"  class="githubstream-div">

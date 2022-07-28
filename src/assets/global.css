@@ -31,3 +31,9 @@
     background-color: rgb(138, 138, 138) !important;
     color:#fff;
 } */
+
+
+.flex-horizontal{
+    display:flex;
+    align-items: center;
+}

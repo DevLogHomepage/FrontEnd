@@ -9,11 +9,11 @@
                     <PageLocater :watchingPostIndex="watchingPostIndex"
                         :page="page" :ready="ready" :currentDate="currentDate" :blogPostDataMap="(blogPostDataMap)" :currentContents="currentContents"/>
                 </div>
-                <div v-if="currentContents!.length <= 0" class="loading">
-                    로딩중입니다.
-                </div>
-                <div v-else>
-                    <div  class="posts" @scroll="handleScroll">
+                <div class="post-container">
+                    <div v-if="currentContents!.length <= 0" class="loading posts">
+                        로딩중입니다.
+                    </div>
+                    <div v-else class="posts" @scroll="handleScroll">
                         <div  v-for="node in currentContents" :key="node.name" class="blogPost" v-on:load="addSections">
                             <div class="blogPost-container">
                                 <div class="blogPost-create">
@@ -28,14 +28,21 @@
                             </div>
                             <div class="blog-title">{{node.titleData.title}}</div>
                             <div v-html="node.content"></div>
-                            <div>{{node.titleData.tags}}</div>
+                            <div class="divider"></div>
+                            <div id="blog-footer">
+                                <div id="blog-footer-title">tag</div> 
+                                <div id="tag-container">
+                                    <div v-for="(i,index) in node.titleData.tags" :key="index" id="tag">{{i}}</div>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div >
-                    <button @click="decreaseNumber"></button>
-                    {{page + 1}}/{{totalPage}}
-                    <button @click="increaseNumber"></button>
+                    <PaginationVue :totalPage="totalPage" :currentPage="page" />
+                    <!-- <div id="pagination">
+                        <button @click="decreaseNumber"></button>
+                        {{page + 1}}/{{totalPage}}
+                        <button @click="increaseNumber"></button>
+                    </div> -->
                 </div>
             </div>
 
@@ -55,7 +62,7 @@ import { BlogPostData, BlogPostDataBasicInfo, BlogPostDataYear, BlogPostStreamDa
 import PageLocater from '@/components/PageLocator.vue'
 import * as blog from '@/core/blog'
 import LogoDiv from '@/components/LogoDiv.vue';
-import * as github from '@/core/github';
+import PaginationVue from "@/components/PaginationVue.vue"
 import SearchBox from '../components/SearchBox.vue';
 
 /**
@@ -100,7 +107,8 @@ export default defineComponent({
     components:{
     PageLocater,
     LogoDiv,
-    SearchBox
+    SearchBox,
+    PaginationVue
 },
     /** 기본 properity의 정의 */
     props :{
@@ -122,7 +130,6 @@ export default defineComponent({
     },
     /** VIEW가 사용하는 메소드를 정의하는 부분입니다. */
     methods:{
-
         /**
          * 
          */
@@ -229,7 +236,19 @@ export default defineComponent({
 </script>
 
 <style scoped>
-    
+    .divider{
+        margin:20px 0;
+        width:100%;
+        height:1px;
+    }
+
+    .dark .divider{
+        background-color: #707070;
+    }
+
+    .light .divider{
+        background-color: #000000;
+    }
     .blog-title{
         font-size: 45px;
     }
@@ -326,9 +345,13 @@ export default defineComponent({
         border-right: solid 1px #707070;
 
     }
+
+    .post-container{
+        height:100%;
+    }
     /** 블로그 포스팅 */
     .posts{
-        height:80vh;
+        height:75vh;
         width:50vw;
         overflow-y: scroll;
         padding: 10px;
@@ -367,5 +390,29 @@ export default defineComponent({
     #LogoDiv{
         margin-left:2vw;
 
+    }
+
+    #tag-container{
+        display:flex;
+    }
+
+    .dark #tag{
+        margin:5px;
+        background-color: #fff;
+        color:#000000;
+        padding:5px;
+        border-radius: 2px;
+    }
+
+    #blog-footer-title{
+        padding:5px;
+        font-size: 20px;
+    }
+
+    #pagination{
+        height: 5vh;
+        display:flex;
+        align-items: center;
+        justify-content: center;
     }
 </style>

@@ -1,5 +1,5 @@
 <template>
-    <div v-if="blogPostStreamData.length <= 0">t</div>
+    <div v-if="blogPostStreamData.length <= 0"></div>
     <div v-else id="BlogPost">
         <div v-for="(i,index) in blogPostStreamData" class="blogstream-div-week" :key="index"> 
             <div v-for="j in i" :class="j.date" :key="j.date" class="blogstream-div blog" >
