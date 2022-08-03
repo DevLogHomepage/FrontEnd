@@ -1,4 +1,7 @@
 
+<!-- 
+    페이지 만들때 처음부터 그냥 2개로 쪼개서 표시
+ -->
 <template>
     <main>
         <div id="tech" class="tech" :class="[theme ? 'dark' : 'light']">
@@ -6,43 +9,48 @@
 
                 <div class="left-sidebar">
                     <SearchBox/>
-                    <PageLocater :watchingPostIndex="watchingPostIndex"
-                        :page="page" :ready="ready" :currentDate="currentDate" :blogPostDataMap="(blogPostDataMap)" :currentContents="currentContents"/>
+                    <!-- <PageLocater 
+                        :blogPostDataMap="blogPostDataMap" 
+                        :data="{
+                            currentDate:currentDate,
+                            watchingPage:watchingPage,
+                            currentContents:currentContents
+                        }"
+                        /> -->
                 </div>
                 <div class="post-container">
-                    <div v-if="currentContents!.length <= 0" class="loading posts">
-                        로딩중입니다.
+                    <div v-if="currentContents.get().length <= 0" class="loading posts">
+                        <img src="@/assets/loading-dark.gif" alt="" >
                     </div>
                     <div v-else class="posts" @scroll="handleScroll">
-                        <div  v-for="node in currentContents" :key="node.name" class="blogPost" v-on:load="addSections">
-                            <div class="blogPost-container">
-                                <div class="blogPost-create">
-                                    <div class="blogPost-create-title">제작한 날짜</div>
-                                    <div class="blogPost-create-content">{{node.createdat}}</div>
+                        <div v-for="(nodeTemp,index) in currentContents.get()" :key="index">
+                            <div  v-for="node in nodeTemp" :key="node.name" class="blogPost countPost" v-on:load="addSections">
+                                <div class="blogPost-container">
+                                    <div class="blogPost-create">
+                                        <div class="blogPost-create-title">제작한 날짜</div>
+                                        <div class="blogPost-create-content">{{node.createdat}}</div>
+                                    </div>
+                                    <div class="blogPost-update">
+                                        <div class="blogPost-create-title">업데이트 날짜</div>
+                                        <div class="blogPost-create-content">{{node.updatedat}}</div>
+                                    </div>
+                                    
                                 </div>
-                                <div class="blogPost-update">
-                                    <div class="blogPost-create-title">업데이트 날짜</div>
-                                    <div class="blogPost-create-content">{{node.updatedat}}</div>
-                                </div>
-                                
-                            </div>
-                            <div class="blog-title">{{node.titleData.title}}</div>
-                            <div v-html="node.content"></div>
-                            <div class="divider"></div>
-                            <div id="blog-footer">
-                                <div id="blog-footer-title">tag</div> 
-                                <div id="tag-container">
-                                    <div v-for="(i,index) in node.titleData.tags" :key="index" id="tag">{{i}}</div>
+                                <div class="blog-title">{{node.titleData.title}}</div>
+                                <div v-html="node.content"></div>
+                                <div class="divider"></div>
+                                <div id="blog-footer">
+                                    <div id="blog-footer-title">tag</div> 
+                                    <div id="tag-container">
+                                        <div v-for="(i,index) in node.titleData.tags" :key="index" id="tag">{{i}}</div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
+                        
+                        <div v-if="!(page.current==page.total -1) " id="infinite-loading" class="flex-horizontal countPost" ><img src="@/assets/loading-dark.gif" alt="" ></div>
                     </div>
-                    <PaginationVue :totalPage="totalPage" :currentPage="page" />
-                    <!-- <div id="pagination">
-                        <button @click="decreaseNumber"></button>
-                        {{page + 1}}/{{totalPage}}
-                        <button @click="increaseNumber"></button>
-                    </div> -->
+                    
                 </div>
             </div>
 
@@ -58,12 +66,26 @@
 
 <script lang="ts">
 import { defineComponent, PropType, ref } from 'vue';
-import { BlogPostData, BlogPostDataBasicInfo, BlogPostDataYear, BlogPostStreamData, TypeTime } from '@/utils/Types';
-import PageLocater from '@/components/PageLocator.vue'
+import { BlogPostData } from '@/utils/Types';
 import * as blog from '@/core/blog'
 import LogoDiv from '@/components/LogoDiv.vue';
-import PaginationVue from "@/components/PaginationVue.vue"
 import SearchBox from '../components/SearchBox.vue';
+import BlogPostDataClass from '@/classes/BlogPostData';
+import CurrentContents from '@/classes/CurrentConents'
+
+export interface Page{
+    loading:number,
+    current:number,
+    total:number,
+    watching:number
+}
+
+export interface Post{
+    sections:HTMLElement[],
+    container:HTMLElement | undefined,
+    yPos:number,
+    index:number
+}
 
 /**
  * TechView의 정의 부분입니다.
@@ -74,42 +96,35 @@ export default defineComponent({
     /** 컴포넌트 시작 설정 부분입니다. */
     setup(){
         /** 로딩 후에 생성되는 htmlElement 관리 refer입니다. */
-        const postSections = ref<HTMLElement[]>([])
-        const posts = ref<HTMLElement>()
-        
-        /** 본 사이트가 로딩을 완료하기 위해 정보의 다운이 끝났을 경우 사용하는 boolean 변수 */
-        const ready = ref<boolean>(false);
+        //post 섹션
+        const currentDate = ref<string>('');
 
-        /** 현재 보고 있는 포스트 위치 */
-        const watchingPostIndex = ref<number>(0);
+        const post = ref<Post>({sections:[],container:undefined,yPos:0,index:0});
 
         /**  */
-        const totalPage = ref<number>(0)
+        const page = ref<Page>({loading:0,current:0,total:0,watching:0} as Page)
 
-        const blogPostDataMap = ref<Map<string, BlogPostData[]>>(new Map());
+        const blogPostData = ref<BlogPostDataClass>(new BlogPostDataClass());
 
-        const currentDate = ref<string>('');
-        const blogStreamIndiData = ref<BlogPostStreamData[][]>([]);
-        const currentContents = ref<BlogPostData[]>([]);
+        // const blogStreamIndiData = ref<BlogPostStreamData[][]>([]);
+        const currentContents = ref<CurrentContents>(new CurrentContents());
         return {
-            blogPostDataMap,
+            blogPostData,
             currentContents,
+
+            page,
+
+            post,
+
             currentDate,
-            totalPage,
-            postSections,
-            posts,
-            watchingPostIndex,
-            ready,
-            blogStreamIndiData
         }
     },
     /** 컴포넌트 기본 정의 부분 */
     components:{
-    PageLocater,
-    LogoDiv,
-    SearchBox,
-    PaginationVue
-},
+    // PageLocater,
+        LogoDiv,
+        SearchBox,
+    },
     /** 기본 properity의 정의 */
     props :{
         theme: {
@@ -119,13 +134,10 @@ export default defineComponent({
     },
         /** 이 VIEW가 사용하는 데이터를 정의하는 함수입니다. */
     data(){
-        const yPosition = ref<number>();
-        const page = ref<number>(0);
+        
         return {
-            yPosition,
-            page,
             perChunk:7,
-            basicBlogInfo: {owner:'dennis0324',repo:'blogPost',path:'tech'}
+            basicBlogInfo: {owner:'dennis0324',repo:'blogPost',path:'tech'},
         }
     },
     /** VIEW가 사용하는 메소드를 정의하는 부분입니다. */
@@ -133,14 +145,32 @@ export default defineComponent({
         /**
          * 
          */
-        async setBlogPost(){
+        async settingTechView(){
             /** 받아온 데이터를 1주일 단위로 분해해서 반환받습니다. */
-            this.blogPostDataMap = await blog.getBlogPost(this.basicBlogInfo);
-            const [date,titles] = blog.getPageInfo(this.blogPostDataMap,this.page)
-            this.setTotalPage(this.blogPostDataMap)
-            this.setCurrentDate(date)
-            this.setCurrentContents(titles)
-            this.ready = true
+            const tempTitle = await blog.getBlogTitles(this.basicBlogInfo);
+            this.blogPostData.setMap(tempTitle)
+            console.log(this.blogPostData.splitWeek())
+            const data = blog.getPageInfo(this.blogPostData.splitWeek(),this.page.loading)
+            this.getCurrentPage(data.blogPosts)
+            this.setTotalPage()
+            this.blogPostData.splitMonth()
+            if(this.page.current !== this.page.loading)
+                this.page.current++;
+        },
+
+        /**
+         * 매달로 쪼개진 배열 만들어서 저장합니다. 
+         * 
+         * @param titles 블로그 포스트 내용을 받아오기 위해 받아온 포스트 기본 정보입니다.
+         */
+        async getCurrentPage(titles:BlogPostData[]){
+            const temp = await blog.getCurrentPage(this.basicBlogInfo,titles)
+            console.log("contentTemp",temp)
+            this.currentContents.push(temp)
+            
+            this.$nextTick(() => {
+                this.addSections();
+            });
         },
 
         /**
@@ -149,55 +179,43 @@ export default defineComponent({
          * @param event 스크롤 이벤트가 들어오는 매개변수입니다.
          */
         handleScroll(event:Event){
-            this.yPosition = (event.target as HTMLElement).scrollTop
+            this.post.yPos = (event.target as HTMLElement).scrollTop
 
-            this.postSections.forEach((section,index) => {
+            this.post.sections.forEach((section,index) => {
                 const htmlElement = section as HTMLElement
-                let top = (this.posts as HTMLElement).scrollTop;
+                let top = (this.post.container as HTMLElement).scrollTop;
                 let offset = htmlElement.offsetTop - 150;
                 let height = htmlElement.offsetHeight;
 
-
                 if (top >= offset && top < offset + height){
-                    this.watchingPostIndex = index
+                    this.post.index = index
                 }
+                console.log(this.post.index)
             })
-        },
 
-        /**
-         * 페이지를 하나 올립니다.
-         */
-        increaseNumber(){
-            if(this.page < this.totalPage - 1)
-                this.page++
+            let bottom = (this.post.container as HTMLElement).scrollHeight - (this.post.container as HTMLElement).clientHeight - (this.post.yPos as number)
 
-        },
-
-        /**
-         * 페이지를 하나 내립니다.
-         */
-        decreaseNumber(){
-            if(this.page > 0)
-                this.page--
+            if(bottom == 0){
+                if(this.page.loading === this.page.current){
+                    
+                    if(this.page.current < this.page.total - 1){
+                        console.log("bottom")
+                        this.page.loading++
+                        this.settingTechView()
+                    }
+                }
+            }
         },
 
         /**
          * 섹션이 나오면 감지후 추가해줍니다.
          */
         addSections(){
-            const sections = document.querySelectorAll(".blogPost");
+            const sections = document.querySelectorAll(".countPost");
             const posts = document.querySelector(".posts")
-            this.postSections = [...sections.values()] as HTMLElement[]
-            this.posts = posts as HTMLElement 
-        },
+            this.post.sections = [...sections.values()] as HTMLElement[]
+            this.post.container = posts as HTMLElement 
 
-        /**
-         * 매달로 쪼개진 배열 만들어서 저장합니다. 
-         * 
-         * @param titles 블로그 포스트 내용을 받아오기 위해 받아온 포스트 기본 정보입니다.
-         */
-        async setCurrentContents(titles:BlogPostData[]){
-            this.currentContents = await blog.getCurrentPage(this.basicBlogInfo,titles)
         },
 
         /**
@@ -214,22 +232,35 @@ export default defineComponent({
          * 
          * @param blogPostDataMap 날짜와 그 주에 해당하는 블로그 포스트가 저장된 변수를 매겨변수로 받습니다.
          */
-        setTotalPage(blogPostDataMap:Map<string, BlogPostData[]>){
-            this.totalPage = [...blogPostDataMap.values()].length
+        setTotalPage(){
+            this.page.total = this.blogPostData.splitWeek().length
         },
+
     },
     /** 컴포넌트 생성시에 실행되는 함수입니다. */
     async mounted() {
-        this.setBlogPost()
+        this.settingTechView()
     },
     watch:{
-        page(){
-            this.setBlogPost()
+        /**
+         * 현재 포스트 내용이 바뀌면 실행됩니다.
+         */
+        currentContents:{
+            handler: function() {
+                this.$nextTick(() => {
+                    this.addSections();
+                });
+            },
+            deep: true
         },
-        currentPage(){
-            this.$nextTick(() => {
-                this.addSections();
-            });
+        /** 
+         * 현재 `post`와 관련된 내용이 변경될 경우 수정합니다.
+         */
+        post:{
+            handler:function(){
+                this.page.watching = blog.getPageIndex(this.blogPostData.splitMonth(),this.post.index)
+            },
+            deep:true
         }
     }
 })
@@ -414,5 +445,12 @@ export default defineComponent({
         display:flex;
         align-items: center;
         justify-content: center;
+    }
+
+    #infinite-loading{
+        justify-content: center;
+    }
+    #infinite-loading img{
+        width:200px;
     }
 </style>

@@ -1,12 +1,14 @@
 
-import { BlogPostData, BlogPostDataBasicInfo, BlogPostDataYear } from '@/utils/Types';
+import { BlogPostData, BlogPostDataBasicInfo, BlogPostDataYear, BlogStreamData } from '@/utils/Types';
 import * as github from '@/core/github'
 import {marked} from 'marked';
 import hljs from 'highlight.js'
 
-export async function getBlogPost(content:BlogPostDataBasicInfo){
-    const response = await github.getPostUpdate({owner:'dennis0324',repo:'blogPost',path:content.path});
-    return github.displayPost(response)
+export async function getBlogTitles(content:BlogPostDataBasicInfo){
+    const response = await github.getPostTitles({owner:'dennis0324',repo:'blogPost',path:content.path});
+    // console.log(response)
+    return github.returnBlogMap(response)
+    // return response
 }
 
 
@@ -88,13 +90,13 @@ export function getPostContent(prefix:string,surfix:string,content:string){
 }
 
 
-export function getPageInfo(blogPostDataMap:Map<string, BlogPostData[]>,page:number):[string,BlogPostData[]]{
-    const iter = blogPostDataMap.entries()
-    for(let i = 0 ; i < page; i++){
-        iter.next()
-    }
-
-    return iter.next().value
+export function getPageInfo(blogPostDataMap:BlogStreamData[],page:number){
+    // const iter = blogPostDataMap.()
+    // for(let i = 0 ; i < page; i++){
+    //     iter.next()
+    // }
+    console.log("blogPostDataMap",blogPostDataMap[page],"page",page)
+    return blogPostDataMap[page]
 }
 
 export function returnIncludeMonth(date:Date){
@@ -116,4 +118,21 @@ export function returnIncludeMonth(date:Date){
 
 export function getFrontDate(date:Date){
     return date.toISOString().split('T')[0]
+}
+
+export function getBackDate(date:Date){
+    return date.toISOString().split('T')[1]
+}
+
+
+export function getPageIndex(blogPostDatas:BlogStreamData[],watchingIndex:number){
+    let temp = 0;
+    let index = 0;
+    for(const node of blogPostDatas){
+        if(temp + node.blogPosts.length <= watchingIndex){
+            temp += node.blogPosts.length
+            index += 1
+        }
+    }
+    return index;
 }

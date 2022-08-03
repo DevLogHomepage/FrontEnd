@@ -1,5 +1,5 @@
 import { GITHUB_TOKEN } from '@/../config'
-import { BlogPostDataMonth, BlogPostDataYear, FileContentsResponse, FolderResponse,PostTile } from '@/Type' 
+import { BlogPostDataMonth, BlogPostDataYear, BlogPostStreamData, BlogStreamData, FileContentsResponse, FolderResponse,PostTile } from '@/Type' 
 
 import { BlogPostData, CommitDatas, CommitResponse } from '@/Type'
 import { returnGetBlogCommitQuery, returnNode } from './query'
@@ -12,7 +12,7 @@ import { returnGetBlogCommitQuery, returnNode } from './query'
  * @param path 가지고올 파일 이름
  * @returns HTMLElement 형식의 `string` 배열입니다.
  */
- export async function getPostUpdate(content:{owner:string,repo:string,path:string}) : Promise<BlogPostData[]>{
+ export async function getPostTitles(content:{owner:string,repo:string,path:string}) : Promise<BlogPostData[]>{
     /** 깃허브에서 파일 이름을 가지고 옵니다. */
     // const query = await getQuery({owner:content.owner,repo:content.repo,path:content.path})
     const fileDate = await getPostName({owner:content.owner,repo:content.repo,path:content.path})
@@ -28,10 +28,7 @@ import { returnGetBlogCommitQuery, returnNode } from './query'
     /** 글을 가지고 올 때 사용하는 query입니다. */
     const query = returnGetBlogCommitQuery(nodes)
 
-
-
     const queryValue = {"own":"dennis0324","repo":"blogPost"}
-    
 
     /** github gql api  */
     const endpoint = "https://api.github.com/graphql"
@@ -66,7 +63,6 @@ import { returnGetBlogCommitQuery, returnNode } from './query'
         blogPostDatas.push(blogPostData)
     })
     blogPostDatas.sort((a,b) => b.updatedat.localeCompare(a.updatedat))
-
 
 
     return blogPostDatas
@@ -204,39 +200,47 @@ export async function getContent(content:{owner:string,repo:string,path:string})
 }
 
 /**
- * 받아온 2주간의 데이터에서 1주일치면 블로그에 표시해준다.
+ * 받아온 2달의 데이터에서 1주일치로 나누어 주며 `map`형식으로 반환합니다.
  * 
  * @param blogPostDatas 깃허브에서 받아온 전체 블로그 글입니다.
  * @param page 현재 블로그가 표시하고 있는 페이지 위치입니다.
  * @returns 각 년,월로 분류 된 배열로 출력합니다.
  */
-export function displayPost(blogPostDatas:BlogPostData[]):Map<string,BlogPostData[]> {
-    const TODAY = new Date()
+export function returnBlogMap(blogPostDatas:BlogPostData[]) {
+    const TODAY = new Date(Date.now())
     const currentDay = TODAY.getDay();
     const pastDay = new Date(TODAY.getFullYear(),TODAY.getMonth(),TODAY.getDate() - 6).getDay()
-    const temp =  new Map<string,BlogPostData[]>()//startingDate,BlogPostData
+    const returnValue:BlogStreamData[] =  []
 
     for(const blogPostData of blogPostDatas){
 
         const weekday = new Date(blogPostData.updatedat)
 
-
         const subtract = (8 + (weekday.getDay() - pastDay)) % 8
-        const add = (8 + (currentDay - weekday.getDay())) & 8
+        // const add = (8 + (currentDay - weekday.getDay())) & 8
 
+        
         const startDate = new Date(weekday);
-        const endDate = new Date(weekday);
         startDate.setDate(weekday.getDate() - subtract);
-        endDate.setDate(weekday.getDate() + add);
 
-        if(!checkWeekExist(temp,startDate))
-            temp.set(startDate.toISOString().split('T')[0],[])
-        blogPostData.backDate = startDate.toISOString().split('T')[1]
-        temp.get(startDate.toISOString().split('T')[0])?.push(blogPostData)
-
+        const index = checkWeekExist(returnValue,startDate);
+        if(index === -1){
+            const splitDate = startDate.toISOString().split('T')
+            const temp:BlogStreamData = {
+                month:`${splitDate[0]}`,
+                backdate:`${splitDate[1]}`,
+                blogPosts:[]
+            } as BlogStreamData
+            returnValue.push(temp)
+            returnValue[returnValue.length - 1].blogPosts.push(blogPostData)
+        }
+        else{
+            returnValue[index].blogPosts.push(blogPostData)
+        }
+        
     }
 
-    return temp
+    return returnValue
 }
 
 
@@ -248,8 +252,12 @@ export function displayPost(blogPostDatas:BlogPostData[]):Map<string,BlogPostDat
  * @param date 찾고자 하는 날짜를 입력합니다.
  * @returns 있는지 없는지 확인하고 배열을 반환합니다.
  */
-export function checkWeekExist(checkMap:Map<string,BlogPostData[]>,date:Date){
-    return checkMap.get(date.toISOString().split('T')[0])
+export function checkWeekExist(blogStreamData:BlogStreamData[],date:Date){
+    return blogStreamData.findIndex((item,i) => {
+        if(item.month === date.toISOString().split('T')[0]){
+            return i;
+        }
+    })
 }
 
 

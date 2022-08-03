@@ -172,11 +172,16 @@ export interface CommitDatas{
 export interface BlogPostData{
     startingDate:string,
     name:string,
-    content:string,
+    content:string ,
     createdat:string,
     updatedat:string,
     titleData:TitleData,
-    backDate:string
+}
+
+export interface BlogStreamData{
+    month:string,
+    backdate:string,
+    blogPosts:BlogPostData[]
 }
 
 export interface BlogPostDataMonth{
