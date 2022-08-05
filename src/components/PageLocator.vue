@@ -1,7 +1,7 @@
 <template>
     <div id="pagelocater">
         <div id="pageContainer">
-            <WeekIndicator :currentDay="watchingDate" :postStreamData="postStreamData"/>
+            <WeekIndicator :currentDay="watchingDate" :postStreamData="postStreamData" :dayCount="datas.circleCount"/>
             <div id="pagelocater-indicator">
                 <GithubStream :startingDate="datas.date"/>
                 <div id="MainStream">
@@ -33,7 +33,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, Prop, PropType, ref, watch } from 'vue'
+import { defineComponent, PropType, ref } from 'vue'
 
 import GithubStream from './PageLocator/GithubStream.vue'
 import BlogPostStream from './PageLocator/BlogPostStream.vue'

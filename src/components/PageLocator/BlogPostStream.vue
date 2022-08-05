@@ -11,7 +11,7 @@
 
 <script lang="ts">
 import { BlogPostData, BlogPostStreamData } from '@/utils/Types'
-import { defineComponent, PropType, ref } from 'vue'
+import { defineComponent, PropType } from 'vue'
 import CircleIndicatorVue from './CircleIndicator.vue'
 
 
@@ -32,14 +32,10 @@ export default defineComponent({
     },
     /** 기본 properity의 정의 */
     props:{
+        /** 포스트의 업데이트와 생성의 데이터가 저장되어있는 변수입니다. */
         postStreamData:{
             required:true,
             type:Array as PropType<BlogPostStreamData[][]>
-        }
-    },
-    data(){
-        return{
-            perChunk:7
         }
     },
 })

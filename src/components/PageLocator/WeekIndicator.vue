@@ -20,6 +20,11 @@ export default defineComponent({
             pageDay
         }
     },
+    data(){
+        return{
+            height:8
+        }
+    },
     props:{
         currentDay:{
             required:true,
@@ -29,6 +34,10 @@ export default defineComponent({
             required:true,
             type:Array as PropType<BlogPostStreamData[][]>
         },
+        dayCount:{
+            required:true,
+            type:Number
+        }
     },
     watch:{
         currentDay:{
@@ -36,7 +45,18 @@ export default defineComponent({
                 this.setPageWeekDate(this.postStreamData,this.currentDay)
             },
             deep:true
-        }
+        },
+        pageWeek(){
+            console.log('tesitng',this.pageWeek)
+            if(this.pageWeek == 8){
+                this.height = this.dayCount % 7;
+
+                console.log(this.height)
+            }
+            else{
+                this.height = 8
+            }
+        },
     },
     methods:{
         setPageWeekDate(data:BlogPostStreamData[][],date:string){
@@ -78,7 +98,7 @@ export default defineComponent({
 
 #current-day{
     background-color: rgba(255,187,0,.5);
-    height:8px;
+    height:calc(v-bind(height) * 1px);
     width:100%;
     position: absolute;
     top:calc(v-bind(pageDay) * 8px);
@@ -87,7 +107,7 @@ export default defineComponent({
 
 #current-week{
     background-color: rgba(255,187,0,.2);
-    height:56px;
+    height:calc(v-bind(height) * 7px);
     width: 72px;
     top:calc(v-bind(pageWeek) * 8px * 7);
     position: absolute;

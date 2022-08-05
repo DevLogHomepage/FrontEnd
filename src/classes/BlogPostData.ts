@@ -43,7 +43,7 @@ export default class BlogPostDataClass implements BlogPostDataIneterface{
     splitMonth(){
         let compare = "";
 
-        const testing = this.title.reduce((resultArray:BlogStreamData[], item, index) => { 
+        const testing = this.title.reduce((resultArray:BlogStreamData[], item, _) => { 
             const temp:BlogStreamData = {
                 month:'',
                 backdate:'',
@@ -68,6 +68,13 @@ export default class BlogPostDataClass implements BlogPostDataIneterface{
         return testing
     }
 
+    /**
+     * 블로그 좌측에 들어가는 포스트를 기입하기 위해서 7일분으로 나누어 분배하여 반환하는 메소드입니다.
+     * 
+     * @param currentDate 현재 내가 보고 있는 포스트의 날짜
+     * @param page 현재 보고있는 페이지를 기입합니다.
+     * @returns `BlogPostStreamData[][]`의 형식으로 반환합니다.
+     */
     getBlogStreamIndiData(currentDate:string,page:number){
         const PostChanged = this.splitMonth()[page].blogPosts
 

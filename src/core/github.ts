@@ -1,5 +1,5 @@
 import { GITHUB_TOKEN } from '@/../config'
-import { BlogPostDataMonth, BlogPostDataYear, BlogPostStreamData, BlogStreamData, FileContentsResponse, FolderResponse,PostTile } from '@/Type' 
+import { BlogPostDataMonth, BlogPostDataYear, BlogStreamData, FileContentsResponse, FolderResponse,PostTile } from '@/Type' 
 
 import { BlogPostData, CommitDatas, CommitResponse } from '@/Type'
 import { returnGetBlogCommitQuery, returnNode } from './query'
@@ -208,7 +208,6 @@ export async function getContent(content:{owner:string,repo:string,path:string})
  */
 export function returnBlogMap(blogPostDatas:BlogPostData[]) {
     const TODAY = new Date(Date.now())
-    const currentDay = TODAY.getDay();
     const pastDay = new Date(TODAY.getFullYear(),TODAY.getMonth(),TODAY.getDate() - 6).getDay()
     const returnValue:BlogStreamData[] =  []
 

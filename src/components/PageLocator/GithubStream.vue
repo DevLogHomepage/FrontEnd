@@ -100,7 +100,7 @@ export default defineComponent({
         }
     },
     watch:{
-        async startingDate(newValue,oleValue){
+        async startingDate(){
             await this.updateIndicator()
         }
     },
