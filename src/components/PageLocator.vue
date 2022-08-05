@@ -1,13 +1,13 @@
 <template>
     <div id="pagelocater">
         <div id="pageContainer">
-            <WeekIndicator :pageWeek="pageWeek" :pageDay="pageDay"/>
+            <WeekIndicator :currentDay="watchingDate" :postStreamData="postStreamData"/>
             <div id="pagelocater-indicator">
-                <GithubStream :startingDate="Today"/>
+                <GithubStream :startingDate="datas.date"/>
                 <div id="MainStream">
-                    <div v-for="i in 62" :key="i" :class="['mainstream-div',(i < circleCount) ? 'on' : 'off']"></div>
+                    <div v-for="i in 62" :key="i" :class="['mainstream-div',(i < datas.circleCount) ? 'on' : 'off']"></div>
                 </div>
-                <BlogPostStream :startingDate="Today" :blogPostStreamData="blogPostStreamData" :ready="ready"/>
+                <BlogPostStream :postStreamData="postStreamData"/>
             </div>
         </div>
         <div class="date-indicator">Recent Post: {}</div>
@@ -33,14 +33,22 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType, ref } from 'vue'
+import { defineComponent, Prop, PropType, ref, watch } from 'vue'
 
 import GithubStream from './PageLocator/GithubStream.vue'
 import BlogPostStream from './PageLocator/BlogPostStream.vue'
 import WeekIndicator from './PageLocator/WeekIndicator.vue'
-import { BlogPostData,  BlogPostStreamData } from '@/utils/Types';
+import { BlogPostData,  BlogPostStreamData, Page, Post, WeekIndicater } from '@/utils/Types';
 
 import * as blog from '@/core/blog'
+import BlogPostDataClass, { BlogPostDataIneterface } from '@/classes/BlogPostData';
+
+export interface Data{
+    date:string,
+    circleCount:number,
+    blogPost:BlogPostData[]
+}
+
 
 export default defineComponent({
     /** 컴포넌트 이름의 정의입니다. */
@@ -48,25 +56,15 @@ export default defineComponent({
     /** 컴포넌트 시작 설정 부분입니다. */
     /** 현재 달과 지난 달의 총 일수를 구합니다. */
     setup(){
-        const BlogStreamIndicatorData = ref<BlogPostData[]>([]);
-        const tempDate = new Date()
-        const Today = ref<string>(blog.getFrontDate(tempDate));
-        const tempMonth = new Date(tempDate.getFullYear(),tempDate.getMonth() - 2,tempDate.getDate())
-        let difference  = tempDate.getTime() - tempMonth.getTime();
-        const dayCount = Math.ceil(difference / (1000 * 3600 * 24));
-        const circleCount = ref<number>(dayCount);
-
-        /** ref 관련 선언 */
-        const pageWeek = ref<number>(0);
-        const pageDay = ref<number>(0);
-        const blogPostStreamData = ref<BlogPostStreamData[][]>([])
+        const datas = ref<Data>({date:'',circleCount:0,blogPost:[]})
+        const weekIndicater = ref<WeekIndicater>({day:0,week:0})
+        const postStreamData = ref<BlogPostStreamData[][]>([])
+        const watchingDate = ref<string>('')
         return{
-            Today,
-            circleCount,
-            BlogStreamIndicatorData,
-            pageWeek,
-            pageDay,
-            blogPostStreamData
+            datas,
+            weekIndicater,
+            postStreamData,
+            watchingDate
         }
     },
     data() {
@@ -81,80 +79,54 @@ export default defineComponent({
         WeekIndicator
     },
     props:{
-        watchingPostIndex: {
-            type:Number,
-            default:0
+        //watchingPage, blogpostdata
+        blogPostData:{
+            type:Object as PropType<BlogPostDataIneterface>,
+            default: new BlogPostDataClass()
         },
+
         page:{
-            type:Number
-        },
-        currentDate: {
-            type:String
-        },
-        ready:{
             required:true,
-            type:Boolean
+            type:Object as PropType<Page>
         },
-        blogPostDataMap:{
+
+        post:{
             required:true,
-            type:Object as PropType<Map<string, BlogPostData[]>>
+            type:Object as PropType<Post>
         },
-        currentContents:{
-            required:true,
-            type:Array as PropType<BlogPostData[]>
-        }
     },
     watch:{
-        currentContents(newValue,oldValue){
-            this.setPageWeekDate(this.blogPostStreamData)
+        page:{
+            handler:function(){
+                const temp = this.blogPostData.splitMonth()[this.page.watching]
+                if(temp){
+                    this.datas.date = temp.month
+                    this.postStreamData = this.blogPostData.getBlogStreamIndiData(temp.month,this.page.watching)
+                    this.setMonthIndicater()
+                }
+            },
+            deep:true
         },
-        currentDate(){
-            this.blogPostStreamData = this.setBlogStreamIndiData(this.setBlogIndicaterData(this.blogPostDataMap))
-        },
+        post:{
+            handler:function(){
+                const temp = this.blogPostData.splitMonth()[this.page.watching]
+                this.watchingDate = blog.getFrontDate(new Date(temp.blogPosts[this.post.watching].updatedat))
+            },
+            deep:true
+        }
     },
     methods:{
-        setPageWeekDate(date:BlogPostStreamData[][]){
-            const compareDate = this.currentContents[this.watchingPostIndex].updatedat.split('T')[0]
-            for(const weekIndex in date){
-                for(const dayIndex in date[weekIndex]){
-                    if(date[weekIndex][dayIndex].date === compareDate){
-                        this.pageWeek = parseInt(weekIndex);
-                        this.pageDay = parseInt(dayIndex);
-                    }
-                }
-            }
+        setMonthIndicater(){
+            const tempDate = new Date(this.datas.date)
+            const tempMonth = new Date(tempDate.getFullYear(),tempDate.getMonth() - 2,tempDate.getDate())
+            let difference  = tempDate.getTime() - tempMonth.getTime();
+            const dayCount = Math.ceil(difference / (1000 * 3600 * 24));
+            this.datas.circleCount = dayCount
         },
-
-        /**
-         * 좌측에 목차를 만들어주기 위해서 일주일별로 저장되는 `map`입니다.
-         * 
-         * @param blogPostDataMap 일주일을 시작하는 날짜와 그안에 들어가있는 포스트 배열을 저장해줍니다.
-         */
-        setBlogIndicaterData(blogPostDataMap:Map<string, BlogPostData[]>):BlogPostData[]{
-            const arr = [...blogPostDataMap.entries()].filter(([date,_]) => {
-                const firstMonth = new Date(this.currentDate as string)
-                const secondMonth = new Date(firstMonth)
-                const currentDate = new Date(date)
-                secondMonth.setMonth(secondMonth.getMonth() - 1)
-                if(currentDate.getTime() >= secondMonth.getTime() || currentDate.getTime() <= firstMonth.getTime()){
-                    return true
-                }
-                return false
-            })
-
-            const returnValue:BlogPostData[] = []
-            for(const [node,blogPostData] of arr){
-                for(const e of blogPostData)
-                returnValue.push(e)
-            }
-            return returnValue
-        },
-
-        // 일부 받아온 데이터를 2달치를 채운 희소행렬 방식으로 바꿔어줍니다.
         setBlogStreamIndiData(blogPostData:BlogPostData[]){
-            const PostChanged = JSON.parse(JSON.stringify(blogPostData))
+            const PostChanged = blogPostData
 
-            const date = new Date(this.currentDate as string);
+            const date = new Date(this.datas.date as string);
             let tempDate = new Date(date.getFullYear(),date.getMonth(),date.getDate(),date.getHours(),date.getMinutes(),date.getSeconds());
             const startingDate = new Date(tempDate.getFullYear(),tempDate.getMonth() - 2,tempDate.getDate(),date.getHours(),date.getMinutes(),date.getSeconds())
 
@@ -192,7 +164,7 @@ export default defineComponent({
                 return resultArray
             }, [])
 
-        }
+        },
     }
 
 })

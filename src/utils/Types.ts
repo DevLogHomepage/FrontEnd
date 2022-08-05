@@ -217,3 +217,23 @@ export interface TypeTime{
     date:number,
     year:number,
 }
+
+export interface Page{
+    loading:number,
+    current:number,
+    total:number,
+    watching:number
+}
+
+export interface Post{
+    sections:HTMLElement[],
+    container:HTMLElement | undefined,
+    yPos:number,
+    index:number,
+    watching:number
+}
+
+export interface WeekIndicater{
+    week:number,
+    day:number
+}

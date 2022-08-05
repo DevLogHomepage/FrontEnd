@@ -7,16 +7,48 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
+import { BlogPostStreamData } from '@/utils/Types'
+import { defineComponent, PropType, ref } from 'vue'
+
 
 export default defineComponent({
-    props:{
-        pageWeek:{
-            type:Number
-        },
-        pageDay:{
-            type:Number
+    setup(){
+        const pageWeek = ref<number>(0);
+        const pageDay = ref<number>(0);
+        return{
+            pageWeek,
+            pageDay
         }
+    },
+    props:{
+        currentDay:{
+            required:true,
+            type:String
+        },
+        postStreamData:{
+            required:true,
+            type:Array as PropType<BlogPostStreamData[][]>
+        },
+    },
+    watch:{
+        currentDay:{
+            handler:function(){
+                this.setPageWeekDate(this.postStreamData,this.currentDay)
+            },
+            deep:true
+        }
+    },
+    methods:{
+        setPageWeekDate(data:BlogPostStreamData[][],date:string){
+            for(const weekIndex in data){
+                for(const dayIndex in data[weekIndex]){
+                    if(data[weekIndex][dayIndex].date === date){
+                        this.pageWeek = parseInt(weekIndex);
+                        this.pageDay = parseInt(dayIndex);
+                    }
+                }
+            }
+        },
     }
 })
 </script>

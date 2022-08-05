@@ -1,7 +1,6 @@
 <template>
 <Transition name="fade">
-    <div v-if="githubDataMonth.length <= 0" id="GithubStream"></div>
-    <div v-else id="GithubStream">
+    <div id="GithubStream">
         <TransitionGroup name="fade">
             <div v-for="(i,index) in displayMonth()" :key="index"  class="githubstream-div">
                 <div v-for="(week,indexWeek) in i" :key="indexWeek" class="week">
@@ -83,6 +82,10 @@ export default defineComponent({
         },
         async updateIndicator(){
             this.githubDataMonth = []
+            console.log("startingDate",this.startingDate)
+            if(this.startingDate === ''){
+                return
+            }
             const response = await axios.get(`http://localhost:3000/githubContirbutions/?startingDate=${this.startingDate}`)
             console.log(response)
             const githubResponse = response.data.data as githubContributionResponse 

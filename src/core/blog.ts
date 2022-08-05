@@ -91,11 +91,7 @@ export function getPostContent(prefix:string,surfix:string,content:string){
 
 
 export function getPageInfo(blogPostDataMap:BlogStreamData[],page:number){
-    // const iter = blogPostDataMap.()
-    // for(let i = 0 ; i < page; i++){
-    //     iter.next()
-    // }
-    console.log("blogPostDataMap",blogPostDataMap[page],"page",page)
+
     return blogPostDataMap[page]
 }
 
@@ -134,5 +130,17 @@ export function getPageIndex(blogPostDatas:BlogStreamData[],watchingIndex:number
             index += 1
         }
     }
-    return index;
+    return [index,watchingIndex - temp];
 }
+
+// export function getPostIndex(blogPostDatas:BlogStreamData[],watchingIndex:number){
+//     let temp = 0;
+//     let index = 0;
+//     for(const node of blogPostDatas){
+//         if(temp + node.blogPosts.length <= watchingIndex){
+//             temp += node.blogPosts.length
+//             index += 1
+//         }
+//     }
+//     return watchingIndex - temp;
+// }

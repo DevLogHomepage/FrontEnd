@@ -9,14 +9,11 @@
 
                 <div class="left-sidebar">
                     <SearchBox/>
-                    <!-- <PageLocater 
-                        :blogPostDataMap="blogPostDataMap" 
-                        :data="{
-                            currentDate:currentDate,
-                            watchingPage:watchingPage,
-                            currentContents:currentContents
-                        }"
-                        /> -->
+                    <PageLocater 
+                        :blogPostData = "blogPostData"
+                        :page="page"
+                        :post="post"
+                        />
                 </div>
                 <div class="post-container">
                     <div v-if="currentContents.get().length <= 0" class="loading posts">
@@ -66,26 +63,15 @@
 
 <script lang="ts">
 import { defineComponent, PropType, ref } from 'vue';
-import { BlogPostData } from '@/utils/Types';
+import { BlogPostData, Post, Page } from '@/utils/Types';
 import * as blog from '@/core/blog'
+import PageLocater from '@/components/PageLocator.vue'
 import LogoDiv from '@/components/LogoDiv.vue';
 import SearchBox from '../components/SearchBox.vue';
 import BlogPostDataClass from '@/classes/BlogPostData';
 import CurrentContents from '@/classes/CurrentConents'
 
-export interface Page{
-    loading:number,
-    current:number,
-    total:number,
-    watching:number
-}
 
-export interface Post{
-    sections:HTMLElement[],
-    container:HTMLElement | undefined,
-    yPos:number,
-    index:number
-}
 
 /**
  * TechView의 정의 부분입니다.
@@ -99,7 +85,7 @@ export default defineComponent({
         //post 섹션
         const currentDate = ref<string>('');
 
-        const post = ref<Post>({sections:[],container:undefined,yPos:0,index:0});
+        const post = ref<Post>({sections:[],container:undefined,yPos:0,index:0,watching:0});
 
         /**  */
         const page = ref<Page>({loading:0,current:0,total:0,watching:0} as Page)
@@ -121,7 +107,7 @@ export default defineComponent({
     },
     /** 컴포넌트 기본 정의 부분 */
     components:{
-    // PageLocater,
+        PageLocater,
         LogoDiv,
         SearchBox,
     },
@@ -149,7 +135,6 @@ export default defineComponent({
             /** 받아온 데이터를 1주일 단위로 분해해서 반환받습니다. */
             const tempTitle = await blog.getBlogTitles(this.basicBlogInfo);
             this.blogPostData.setMap(tempTitle)
-            console.log(this.blogPostData.splitWeek())
             const data = blog.getPageInfo(this.blogPostData.splitWeek(),this.page.loading)
             this.getCurrentPage(data.blogPosts)
             this.setTotalPage()
@@ -165,7 +150,6 @@ export default defineComponent({
          */
         async getCurrentPage(titles:BlogPostData[]){
             const temp = await blog.getCurrentPage(this.basicBlogInfo,titles)
-            console.log("contentTemp",temp)
             this.currentContents.push(temp)
             
             this.$nextTick(() => {
@@ -190,7 +174,6 @@ export default defineComponent({
                 if (top >= offset && top < offset + height){
                     this.post.index = index
                 }
-                console.log(this.post.index)
             })
 
             let bottom = (this.post.container as HTMLElement).scrollHeight - (this.post.container as HTMLElement).clientHeight - (this.post.yPos as number)
@@ -199,7 +182,6 @@ export default defineComponent({
                 if(this.page.loading === this.page.current){
                     
                     if(this.page.current < this.page.total - 1){
-                        console.log("bottom")
                         this.page.loading++
                         this.settingTechView()
                     }
@@ -258,7 +240,7 @@ export default defineComponent({
          */
         post:{
             handler:function(){
-                this.page.watching = blog.getPageIndex(this.blogPostData.splitMonth(),this.post.index)
+                [this.page.watching,this.post.watching] = blog.getPageIndex(this.blogPostData.splitMonth(),this.post.index)
             },
             deep:true
         }

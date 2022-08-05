@@ -1,7 +1,7 @@
 <template>
-    <div v-if="blogPostStreamData.length <= 0"></div>
+    <div v-if="postStreamData.length <= 0"></div>
     <div v-else id="BlogPost">
-        <div v-for="(i,index) in blogPostStreamData" class="blogstream-div-week" :key="index"> 
+        <div v-for="(i,index) in postStreamData" class="blogstream-div-week" :key="index"> 
             <div v-for="j in i" :class="j.date" :key="j.date" class="blogstream-div blog" >
                 <CircleIndicatorVue :type="1" :postType="j.type"/>
             </div>
@@ -15,6 +15,10 @@ import { defineComponent, PropType, ref } from 'vue'
 import CircleIndicatorVue from './CircleIndicator.vue'
 
 
+export interface Data{
+    currentDate:string,
+    blogPostData:BlogPostData[]
+}
 
 /**
  * BlogPostStream 정의 부분입니다.
@@ -28,13 +32,14 @@ export default defineComponent({
     },
     /** 기본 properity의 정의 */
     props:{
-        blogPostStreamData:{
+        postStreamData:{
             required:true,
             type:Array as PropType<BlogPostStreamData[][]>
-        },
-        ready:{
-            required:true,
-            type:Boolean
+        }
+    },
+    data(){
+        return{
+            perChunk:7
         }
     },
 })

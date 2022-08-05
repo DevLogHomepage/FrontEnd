@@ -1,10 +1,10 @@
 <template>
-<div class="flex-horizontal">
-    <button></button>
-    <div ref="draggableContainer" id="drag-container">
-        <div :contenttext="test" id="drag-indicator" @mousedown="dragMouseDown"></div>
-    </div>
-    <button></button>
+<div class="flex-horizontal pagination-container">
+    <button @click="decreaseNumber"></button>
+    <input :value="currentPage + 1" type="text" id="currentPage"/>
+    <div id="pagination-slash"></div>
+    <div>{{totalPage}}</div>
+    <button @click="increaseNumber"></button>
 </div>
 </template>
 
@@ -23,6 +23,10 @@ export default defineComponent({
             type:Number
         }
     },
+    emits:[
+        "increaseNumber",
+        "decreaseNumber"
+    ],
     setup(){
         const pageIndicator = ref<HTMLElement>()
         return{
@@ -40,63 +44,69 @@ export default defineComponent({
             test:'testing',
             totalLength:'400px',
             offset:0,
-            page:0
+            page:0,
+            snapLength:0
         }
     },
     mounted(){
         this.pageIndicator = document.getElementById("drag-indicator") as HTMLElement
-        this.offset = (this.pageIndicator as HTMLElement).offsetLeft
+        this.snapLength = parseInt(this.totalLength.replace('px','')) / (this.totalPage - 1)
     },
     methods:{
-        dragMouseDown: function (event:MouseEvent) {
-            console.log("testing")
-            event.preventDefault()
-        // // get the mouse cursor position at startup:
-            this.positions.clientX = event.clientX
-            // console.log(this.positions)
-            document.onmousemove = this.elementDrag
-            document.onmouseup = this.closeDragElement
-            this.pageIndicator?.classList.toggle("press")
-        },
-        elementDrag: function (event:MouseEvent) {
-            event.preventDefault()
-            this.positions.movementX = this.positions.clientX - event.clientX
-            this.positions.clientX = event.clientX;
-            this.snapPosition()
-            // console.log(this.positions.clientX)
-            // console.log(this.positions.movementX);
-            // console.log((this.pageIndicator as HTMLElement).offsetLeft);
-            
-            // set the element's new position:
-            // (this.pageIndicator as HTMLElement).style.left = ((this.pageIndicator as HTMLElement).offsetLeft - this.positions.movementX) + 'px';
-        },
-        closeDragElement () {
-            document.onmouseup = null
-            document.onmousemove = null
-            this.pageIndicator?.classList.toggle("press")
 
-        },
         snapPosition(){
-            const snapLength = parseInt(this.totalLength.replace('px','')) / this.totalPage
-            // console.log(snapLength);
             this.offset = this.offset - this.positions.movementX;
-            console.log(this.page * snapLength + snapLength / 2 )
-            if(this.offset > this.page * snapLength + snapLength / 2 ){
+            if(this.offset > this.page * this.snapLength + this.snapLength / 2 && this.page < this.totalPage){
                 this.page++;
-                (this.pageIndicator as HTMLElement).style.left = this.page * snapLength + 'px';
+                this.increasePage();
+                (this.pageIndicator as HTMLElement).style.left = this.page * this.snapLength + 'px';
             }
-            if(this.offset < this.page * (snapLength - 1) - snapLength / 2 ){
+            if(this.offset < this.page * (this.snapLength - 1) - this.snapLength / 2 && this.page >= 1){
                 this.page--;
-                (this.pageIndicator as HTMLElement).style.left = this.page * snapLength + 'px';
+                this.decreasePage();
+                (this.pageIndicator as HTMLElement).style.left = this.page * this.snapLength + 'px';
             }
-            this.test = this.page + ''
+            this.test = (this.page + 1) + ''
+        },
+        setPos(page:number,snapLength:number){
+            (this.pageIndicator as HTMLElement).style.left = page * snapLength + 'px';
+        },
+        increaseNumber(){
+            this.page++;
+            this.increasePage();
+            // (this.pageIndicator as HTMLElement).style.left = this.page * this.snapLength + 'px';
+        },
+        decreaseNumber(){
+            this.page--;
+            this.decreasePage();
+            // (this.pageIndicator as HTMLElement).style.left = this.page * this.snapLength + 'px';
+        },
+        increasePage(){
+            this.$emit("increaseNumber",this.page)
+        },
+        decreasePage(){
+            this.$emit("decreaseNumber",this.page)
         }
+
     }
 })
 </script>
 
 <style scoped>
+#currentPage{
+    width:10px;
+    border:none;
+    background-color: transparent;
+    font-size: 20px;
+}
 
+.dark #currentPage{
+    color:#fff;
+}
+
+.light #currentPage{
+    color:#000;
+}
 #drag-container{
     position: relative;
     width:v-bind(totalLength);
@@ -129,8 +139,9 @@ export default defineComponent({
     content: attr(contenttext) "";
     transform: translate(calc(-50% + 7px),-50%);
     background-color: #161616;
+    text-align: center;
     border-radius: 2px;
-
+    padding:5px;
 }
 
 
@@ -142,5 +153,18 @@ export default defineComponent({
 #drag-indicator::after{
     opacity: 0;
     transition: all 0.5s ease-in-out;
+}
+
+#pagination-slash{
+    width:2px;
+    height:20px;
+    transform: rotate(30deg);
+    background-color: #fb0;
+    margin: 0px 15px;
+}
+
+.pagination-container{
+    margin:15px;
+    justify-content: center;
 }
 </style>
