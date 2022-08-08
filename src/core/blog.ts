@@ -3,25 +3,40 @@ import { BlogPostData, BlogPostDataBasicInfo, BlogPostDataYear, BlogStreamData }
 import * as github from '@/core/github'
 import {marked} from 'marked';
 import hljs from 'highlight.js'
+import axios from 'axios';
 
+/**
+ * 깃허브에 올라가 있는 블로그 타이틀을 받아옵니다.
+ * 
+ * @param content 블로그 포스트 배열을 통한 타이틀 배열 매개변수입니다.
+ * @returns 제목 배열을 통한 블로그 포스트 내용을 반환합니다.
+ */
 export async function getBlogTitles(content:BlogPostDataBasicInfo){
-    const response = await github.getPostTitles({owner:'dennis0324',repo:'blogPost',path:content.path});
-    // console.log(response)
-    return github.returnBlogMap(response)
+    const response = await axios.get(`http://localhost:3000/getPostTitles/?owner=${content.owner}&repo=${content.repo}&path=${content.path}`)
+    return github.returnBlogMap(response.data)
     // return response
 }
 
 
-
+/**
+ * 특정 배열에 대해서 블로그 포스트 내용을 받아옵니다.
+ * 
+ * @param content 데이터를 받아오기위한 기본 데이터 매개변수입니다.
+ * @param postPage 블로그 포스트 배열을 통한 타이틀 배열 매개변수입니다.
+ * @returns 제목 배열을 통한 블로그 포스트 내용을 반환합니다.
+ */
 export async function getCurrentPage(content:BlogPostDataBasicInfo,postPage:BlogPostData[]){
     
     const blogPostDatas:BlogPostData[] = []
-
+    if(postPage === undefined){
+        return []
+    }
     /** 현재 반환 받은 값을 모두 포스팅으로 표시하는 부분입니다. */
     for(const i of postPage){
         const blogPostData:BlogPostData = {} as BlogPostData
-        const temp = await github.getContent({owner:'dennis0324',repo:'blogPost',path:`${content.path}/${i.name}.md`})
-        const contentStr =  github.decodeBase64UTF8(temp.content)
+        // const temp = await github.getContent({owner:'dennis0324',repo:'blogPost',path:`${content.path}/${i.name}.md`})
+        const response = await axios.get(`http://localhost:3000/getContent/?owner=${content.owner}&repo=${content.repo}&path=${content.path}&name=${i.name}`)
+        const contentStr =  response.data
         
 
         /** 가지고 온 파일을 md를 HTML string 형식으로 바꿔줍니다. */
@@ -40,7 +55,6 @@ export async function getCurrentPage(content:BlogPostDataBasicInfo,postPage:Blog
             smartypants: false,
             xhtml: false
         });
-
         blogPostData.titleData = getPostJson("---\n{","}\n---",contentStr)
         blogPostData.content =  marked.parse(getPostContent("---\n{","}\n---",contentStr))
         blogPostData.createdat = i.createdat.split('T')[0]
@@ -80,6 +94,14 @@ export function getPostJson(prefix:string,surfix:string,content:string){
     return JSON.parse(postData)
 }
 
+/**
+ * 태그, 업데이트날짜, 생성날짜, 제목 등 정보가 들어가 있는 데이터를 제외하고 나머지 내용을 받아올 때 사용합니다.
+ * 
+ * @param prefix 특정 프리셋을 찾을 수 있도록 합니다.
+ * @param surfix 특정 프리셋을 찾을 수 있도록 하는 매개변수입니다.
+ * @param content 찾고자 하는 프리셋이 있는 문자열 매개변수입니다.
+ * @returns 특정 프리셋을 통해 찾은 것을 제외하고 남은 포스트 문자열을 반환합니다.
+ */
 export function getPostContent(prefix:string,surfix:string,content:string){
     const startingPoint:number = content.indexOf(prefix) as number;
     const endingPoint:number = content.indexOf(surfix) as number;
@@ -89,12 +111,24 @@ export function getPostContent(prefix:string,surfix:string,content:string){
     return content
 }
 
-
+/**
+ * 그 블로그 게시글에 관련된 내용을 받아옵니다.
+ * 
+ * @param blogPostDataMap 현재 깃허브에 있는 블로그 게시글이 정리된 배열입니다.
+ * @param page 표시하고자 하는 페이지를 넣는 매개변수입니다.
+ * @returns 특정 날짜의 배열을 반환합니다.
+ */
 export function getPageInfo(blogPostDataMap:BlogStreamData[],page:number){
 
     return blogPostDataMap[page]
 }
 
+/**
+ * 현 날짜가 특정 월에 들어가 있는 확인해주는 함수입니다.
+ * 
+ * @param date 현 날짜를 기입하는 매개변수입니다
+ * @returns 날짜를 반환합니다.
+ */
 export function returnIncludeMonth(date:Date){
     const TODAY = new Date()
     const CURRENT = new Date()
@@ -111,16 +145,31 @@ export function returnIncludeMonth(date:Date){
     return TODAY
 }
 
-
+/**
+ * 현 날짜에서 T를 기준으로 앞의 시간만 문자열로 반환합니다.
+ * @param date 시간을 기입합니다.
+ * @returns `string`형식으로 반홥합니다.
+ */
 export function getFrontDate(date:Date){
     return date.toISOString().split('T')[0]
 }
 
+/**
+ * 현 날짜에서 T를 기준으로 뒤의 시간만 문자열로 반환합니다.
+ * @param date 시간을 기입합니다.
+ * @returns `string`형식으로 반홥합니다.
+ */
 export function getBackDate(date:Date){
     return date.toISOString().split('T')[1]
 }
 
-
+/**
+ * 현재 페이지와 현재 포스트의 인덱스를 반환합니다.
+ * 
+ * @param blogPostDatas 블로그가 표시할 수 있는 모든 포스트의 배열을 넣는 매개변수입니다.
+ * @param watchingIndex 현재 사용자가 보고 있는 블로그 포스트 인덱스입니다.
+ * @returns 배열 형식으로 `[현재 보고 있는 페이지, 페이지에서 몇번쨰 글]`의 형식으로 반환합니다.
+ */
 export function getPageIndex(blogPostDatas:BlogStreamData[],watchingIndex:number){
     let temp = 0;
     let index = 0;
@@ -132,15 +181,3 @@ export function getPageIndex(blogPostDatas:BlogStreamData[],watchingIndex:number
     }
     return [index,watchingIndex - temp];
 }
-
-// export function getPostIndex(blogPostDatas:BlogStreamData[],watchingIndex:number){
-//     let temp = 0;
-//     let index = 0;
-//     for(const node of blogPostDatas){
-//         if(temp + node.blogPosts.length <= watchingIndex){
-//             temp += node.blogPosts.length
-//             index += 1
-//         }
-//     }
-//     return watchingIndex - temp;
-// }

@@ -129,12 +129,13 @@ export default defineComponent({
     /** VIEW가 사용하는 메소드를 정의하는 부분입니다. */
     methods:{
         /**
-         * 
+         * 깃허브에서 새로운 블로그 포스트를 받아 표시합니다.
          */
         async settingTechView(){
             /** 받아온 데이터를 1주일 단위로 분해해서 반환받습니다. */
             const tempTitle = await blog.getBlogTitles(this.basicBlogInfo);
             this.blogPostData.setMap(tempTitle)
+            console.log(tempTitle[0].month)
             const data = blog.getPageInfo(this.blogPostData.splitWeek(),this.page.loading)
             this.getCurrentPage(data.blogPosts)
             this.setTotalPage()

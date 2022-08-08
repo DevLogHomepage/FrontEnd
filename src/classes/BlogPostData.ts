@@ -43,7 +43,7 @@ export default class BlogPostDataClass implements BlogPostDataIneterface{
     splitMonth(){
         let compare = "";
 
-        const testing = this.title.reduce((resultArray:BlogStreamData[], item, _) => { 
+        const testing = this.title.reduce((resultArray:BlogStreamData[], item) => { 
             const temp:BlogStreamData = {
                 month:'',
                 backdate:'',

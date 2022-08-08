@@ -1,5 +1,5 @@
 import { BlogPostDataBasicInfo } from "@/utils/Types"
-import { getPostName } from "./github"
+// import { getPostName } from "./github"
 
 /**
  * 깃허브의 파일들의 이름을 가지고 와서 문자열노드를 변환해줍니다.
@@ -86,18 +86,18 @@ export function returnGetBlogContentQuery(){
 }
 
 
-export async function getQuery(content:BlogPostDataBasicInfo){
-    const fileDate = await getPostName({owner:content.owner,repo:content.repo,path:content.path})
+// export async function getQuery(content:BlogPostDataBasicInfo){
+//     const fileDate = await getPostName({owner:content.owner,repo:content.repo,path:content.path})
 
-    /** 커밋 기록을 가지고 오는 형식을 만들어주는 틀입니다. */
-    const nodes:string[] = []
-    fileDate.forEach(value => {
-        const temp = returnNode(value.name.replace(".md",""),value.path)
+//     /** 커밋 기록을 가지고 오는 형식을 만들어주는 틀입니다. */
+//     const nodes:string[] = []
+//     fileDate.forEach(value => {
+//         const temp = returnNode(value.name.replace(".md",""),value.path)
 
-        nodes.push(temp)
-    })
+//         nodes.push(temp)
+//     })
     
-    /** 글을 가지고 올 때 사용하는 query입니다. */
-    const query = returnGetBlogCommitQuery(nodes)
-    return query
-}
+//     /** 글을 가지고 올 때 사용하는 query입니다. */
+//     const query = returnGetBlogCommitQuery(nodes)
+//     return query
+// }

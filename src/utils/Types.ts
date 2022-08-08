@@ -211,13 +211,14 @@ export interface BlogPostStreamData{
     date:string
 }
 
-
+/** 시간과 관련된 타입 정의 */
 export interface TypeTime{
     month:number,
     date:number,
     year:number,
 }
 
+/** techview에서 사용하는 페이지 관련 변수 타입 정의 */
 export interface Page{
     loading:number,
     current:number,
@@ -225,6 +226,7 @@ export interface Page{
     watching:number
 }
 
+/** techview에서 사용하는 포스트 관련 변수 타입 정의 */
 export interface Post{
     sections:HTMLElement[],
     container:HTMLElement | undefined,
@@ -233,7 +235,10 @@ export interface Post{
     watching:number
 }
 
+/** weekindicater에서 사용하는 타입 정의 */
 export interface WeekIndicater{
+    /** 주간 관련 정의 */
     week:number,
+    /** 일 관련 정의 */
     day:number
 }

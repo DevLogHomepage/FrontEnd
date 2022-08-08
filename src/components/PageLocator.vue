@@ -96,6 +96,9 @@ export default defineComponent({
         },
     },
     watch:{
+        /**
+         * page 값이 변경될 경우에 사용하는 watch 헨들러입니다.
+         */
         page:{
             handler:function(){
                 const temp = this.blogPostData.splitMonth()[this.page.watching]
@@ -107,6 +110,9 @@ export default defineComponent({
             },
             deep:true
         },
+        /**
+         * post의 값이 변경될 경우에 사용하는 watch 헨들러입니다.
+         */
         post:{
             handler:function(){
                 const temp = this.blogPostData.splitMonth()[this.page.watching]
@@ -116,6 +122,9 @@ export default defineComponent({
         }
     },
     methods:{
+        /**
+         * 현 날짜 혹은 보고 있는 블로그 포스트 날짜를 통해서 2달간의 날의 개수를 파악합니다.
+         */
         setMonthIndicater(){
             const tempDate = new Date(this.datas.date)
             const tempMonth = new Date(tempDate.getFullYear(),tempDate.getMonth() - 2,tempDate.getDate())
@@ -123,6 +132,10 @@ export default defineComponent({
             const dayCount = Math.ceil(difference / (1000 * 3600 * 24));
             this.datas.circleCount = dayCount
         },
+        /**
+         * 특정 2달동안 자신이 업데이트, 포스트 생성을 확인하기 위해서 데이터를 받아와 2달치의 배열로 변경하는 함수입니다.
+         * @param blogPostData 2달치의 포스트가 있는 배열입니다.
+         */
         setBlogStreamIndiData(blogPostData:BlogPostData[]){
             const PostChanged = blogPostData
 
@@ -131,6 +144,8 @@ export default defineComponent({
             const startingDate = new Date(tempDate.getFullYear(),tempDate.getMonth() - 2,tempDate.getDate(),date.getHours(),date.getMinutes(),date.getSeconds())
 
             const blogPostStreamDatas:BlogPostStreamData[] = []
+
+            /** 현재 보고 있는 달이 포함하는 달로부터 2달동안의 루프를 돌기 위함입니다. */
             while(startingDate.toISOString().split('T')[0] !== tempDate.toISOString().split('T')[0]){
                 /** 저장하기 위한 임시 변수 생성 */
                 const blogPostStreamData:BlogPostStreamData = {} as BlogPostStreamData
@@ -153,6 +168,8 @@ export default defineComponent({
                 tempDate?.setDate(tempDate?.getDate() - 1);
                 blogPostStreamDatas.push(blogPostStreamData)
             }
+
+            /** 1차원 배열에서 이를 통해서 2차원 배열로 변경합니다. */
             return blogPostStreamDatas.reduce((resultArray:BlogPostStreamData[][], item, index) => { 
                 const chunkIndex = Math.floor(index/this.perChunk)
                 if(!resultArray[chunkIndex]) {

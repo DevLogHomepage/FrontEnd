@@ -67,7 +67,7 @@ export default defineComponent({
     /** 컴포넌트에서 사용할 메소드를 정의하는 부분입니다. */
     methods: {
         /**
-         * 
+         * 깃허브 api에 받아온 데이터로 좌측 인디케이터에서 좌측에 초록색으로 표시하는 인디케이터를 표시합니다.
          */
         displayMonth: function(){
             let startNum = 0;
@@ -80,6 +80,9 @@ export default defineComponent({
             }
             return result
         },
+        /**
+         * 특정 상황마다 지속적으로 업데이트를 해줘야하기 때문에 이 함수를 사용해서 깃허브 api에서 값을 받아옵니다.
+         */
         async updateIndicator(){
             this.githubDataMonth = []
             console.log("startingDate",this.startingDate)
@@ -87,7 +90,6 @@ export default defineComponent({
                 return
             }
             const response = await axios.get(`http://localhost:3000/githubContirbutions/?startingDate=${this.startingDate}`)
-            console.log(response)
             const githubResponse = response.data.data as githubContributionResponse 
             if(response !== undefined){
                 

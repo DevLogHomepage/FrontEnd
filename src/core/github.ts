@@ -1,73 +1,7 @@
 import { GITHUB_TOKEN } from '@/../config'
-import { BlogPostDataMonth, BlogPostDataYear, BlogStreamData, FileContentsResponse, FolderResponse,PostTile } from '@/Type' 
+import { BlogPostDataMonth, BlogPostDataYear, BlogStreamData } from '@/Type' 
 
-import { BlogPostData, CommitDatas, CommitResponse } from '@/Type'
-import { returnGetBlogCommitQuery, returnNode } from './query'
-
-
-/**
- * 깃허브에서 포스트 이름과 디렉토리를 가지고 옵니다.
- * 
- * @param content `owner`: 사용자, `repo`: 레포지토리, `path`: 특정 파일 디렉토리
- * @param path 가지고올 파일 이름
- * @returns HTMLElement 형식의 `string` 배열입니다.
- */
- export async function getPostTitles(content:{owner:string,repo:string,path:string}) : Promise<BlogPostData[]>{
-    /** 깃허브에서 파일 이름을 가지고 옵니다. */
-    // const query = await getQuery({owner:content.owner,repo:content.repo,path:content.path})
-    const fileDate = await getPostName({owner:content.owner,repo:content.repo,path:content.path})
-
-    /** 커밋 기록을 가지고 오는 형식을 만들어주는 틀입니다. */
-    const nodes:string[] = []
-    fileDate.forEach(value => {
-        const temp = returnNode(value.name.replace(".md",""),value.path)
-
-        nodes.push(temp)
-    })
-    
-    /** 글을 가지고 올 때 사용하는 query입니다. */
-    const query = returnGetBlogCommitQuery(nodes)
-
-    const queryValue = {"own":"dennis0324","repo":"blogPost"}
-
-    /** github gql api  */
-    const endpoint = "https://api.github.com/graphql"
-
-    /** 깃허브 gql를 이용해서 받아온 데이터입니다. */
-    const commitDatas = await fetch(endpoint,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization':`bearer ${GITHUB_TOKEN}`
-          },
-          body:JSON.stringify({
-            query:query,
-            variables: queryValue
-          })
-        })
-
-    const commitData:CommitResponse = await commitDatas.json() as CommitResponse
-    const blogPostDatas:BlogPostData[] = []
-    Object.entries<CommitDatas>(commitData.data.repository.commitsData).forEach(key => {
-        const blogPostData:BlogPostData = {} as BlogPostData
-
-        const dateArr:string[] = []
-
-        key[1].edges.forEach(value => {
-            dateArr.push(value.node.committedDate)
-        })
-        blogPostData.name = key[0]
-        blogPostData.createdat = dateArr[dateArr.length - 1]
-        blogPostData.updatedat = dateArr[0]
-        blogPostDatas.push(blogPostData)
-    })
-    blogPostDatas.sort((a,b) => b.updatedat.localeCompare(a.updatedat))
-
-
-    return blogPostDatas
-}
-
+import { BlogPostData } from '@/Type'
 
 
 /**
@@ -141,6 +75,12 @@ export function githubFetch(request: Request): Promise<Response> {
     });
 }
 
+/**
+ * base64를 UTF-8로 변경해주는 함수입니다.
+ * 
+ * @param encoded 디코딩할 문자열을 넣는 매개변수입니다.
+ * @returns 디코딩한 문자열(HTML) 계열로 반환합니다.
+ */
 export function decodeBase64UTF8(encoded: string) {
     encoded = encoded.replace(/\s/g, '');
     return decodeURIComponent(atob(encoded).split('').map(function (c) {
@@ -148,56 +88,7 @@ export function decodeBase64UTF8(encoded: string) {
       }).join(''))
 }
 
-/**
- * 현재 깃허브에 올라가있는 블로그를 불러옵니다.
- * 
- * @param content `owner`,`repo`,`path`으로 구성된 dictonary 입니다.
- * @returns `{name,path}`으로 구성된 dictionary를 반환합니다.
- */
-export async function getPostName(content:{owner:string,repo:string,path:string}){
-    const branch = 'main'
-    const request = githubRequest(`repos/${content.owner}/${content.repo}/contents/${content.path}?ref=main`)
-    const response = await githubFetch(request)
 
-    if (response.status === 404) {
-        throw new Error(`Repo "${content.owner}/${content.repo}" does not have a file named "${content.path}" in the "${branch}" branch.`);
-    }
-    if (!response.ok) {
-        throw new Error(`Error fetching ${content.path}.`);
-    }
-    const file = await response.json() as FolderResponse[] | string
-    const arr:FolderResponse[] = file as FolderResponse[]
-    const PostTile:PostTile[] = []
-    for(const i of arr){
-        const temp = {
-            name: i.name,
-            path: i.path
-        }
-        PostTile.push(temp)
-    }
-    return PostTile
-}
-
-/**
- * 깃허브 포스트에서 데이터를 가지고 옵니다.
- * 
- * @param content 깃허브의 기본 정보를 넣는 변수입니다.
- * @returns json 형식으로 파일을 반환합니다.
- */
-export async function getContent(content:{owner:string,repo:string,path:string}):Promise<FileContentsResponse>{
-    const branch = 'main'
-    const request = githubRequest(`repos/${content.owner}/${content.repo}/contents/${content.path}?ref=main`)
-    const response = await githubFetch(request)
-    if (response.status === 404) {
-        throw new Error(`Repo "${content.owner}/${content.repo}" does not have a file named "${content.path}" in the "${branch}" branch.`);
-    }
-    if (!response.ok) {
-        throw new Error(`Error fetching ${content.path}.`);
-    }
-    const file = await response.json() as FileContentsResponse
-
-    return file
-}
 
 /**
  * 받아온 2달의 데이터에서 1주일치로 나누어 주며 `map`형식으로 반환합니다.
@@ -260,6 +151,12 @@ export function checkWeekExist(blogStreamData:BlogStreamData[],date:Date){
 }
 
 
+/**
+ * 좌측 인디케이터에 사용할 github 데이터를 변환합니다.
+ * 
+ * @param blogPostDatas 날짜와 그에 관련된 블로그 포스트 데이터가 있는 map를 매개변수로 받습니다.
+ * @returns `BlogPostDataYear` 반환합니다.
+ */
 export function displayIndicator(blogPostDatas:Map<string,BlogPostData[]>){
     const blogPostDataYears:BlogPostDataYear[] = []
     const TODAY = new Date();
@@ -285,10 +182,11 @@ export function displayIndicator(blogPostDatas:Map<string,BlogPostData[]>){
 }
 
 /**
+ * 특정 년도가 존재하는지에 대한 검사 함수입니다.
  * 
  * @param blogPostDataYears 
  * @param blogPostData 
- * @returns 
+ * @returns boolean값으로 반환합니다.
  */
  export function isYearExist(blogPostDataYears:BlogPostDataYear[],blogPostData:BlogPostData){
     const result = blogPostDataYears.filter(element => element.year === parseInt(blogPostData.updatedat))
