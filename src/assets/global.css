@@ -37,3 +37,12 @@
     display:flex;
     align-items: center;
 }
+
+
+.dark input[type=text]{
+    color:#fff;
+}
+
+.light input[type=text]{
+    color:#000;
+}

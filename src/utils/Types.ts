@@ -232,7 +232,8 @@ export interface Post{
     container:HTMLElement | undefined,
     yPos:number,
     index:number,
-    watching:number
+    watching:number,
+    recent:string
 }
 
 /** weekindicater에서 사용하는 타입 정의 */
@@ -241,4 +242,27 @@ export interface WeekIndicater{
     week:number,
     /** 일 관련 정의 */
     day:number
+}
+
+export interface SearchResult{
+    incomplete_results:boolean,
+    items:SearchItem[],
+    total_count:number
+}
+
+export interface SearchItem{
+    name:string,
+    path:string,
+    text_matches:TextMatches[]
+}
+
+export interface TextMatches{
+    fragment:string,
+    object_type:string,
+    matches:Matches[]
+}
+
+export interface Matches{
+    indices:number[],
+    text:string
 }

@@ -1,5 +1,5 @@
 
-import { BlogPostData, BlogPostDataBasicInfo, BlogPostDataYear, BlogStreamData } from '@/utils/Types';
+import { BlogPostData, BlogPostDataBasicInfo, BlogPostDataYear, BlogStreamData, SearchResult } from '@/utils/Types';
 import * as github from '@/core/github'
 import {marked} from 'marked';
 import hljs from 'highlight.js'
@@ -37,7 +37,7 @@ export async function getCurrentPage(content:BlogPostDataBasicInfo,postPage:Blog
         // const temp = await github.getContent({owner:'dennis0324',repo:'blogPost',path:`${content.path}/${i.name}.md`})
         const response = await axios.get(`http://localhost:3000/getContent/?owner=${content.owner}&repo=${content.repo}&path=${content.path}&name=${i.name}`)
         const contentStr =  response.data
-        
+        console.log(contentStr[28])
 
         /** 가지고 온 파일을 md를 HTML string 형식으로 바꿔줍니다. */
         marked.setOptions({
@@ -181,3 +181,23 @@ export function getPageIndex(blogPostDatas:BlogStreamData[],watchingIndex:number
     }
     return [index,watchingIndex - temp];
 }
+
+
+export async function searchPost(content:BlogPostDataBasicInfo,searchText:string){
+    const response = await axios.get(`http://localhost:3000/searchPost/?owner=${content.owner}&repo=${content.repo}&path=${content.path}&title=${searchText}`)
+    const temp = (response.data as SearchResult).items.filter(node =>{
+        console.log(node.path.replace(`/${node.name}`,''))
+        if(node.path.replace(`/${node.name}`,'') === content.path){
+            return true
+        }
+        return false
+    })
+    console.log("temp",temp)
+    // Object.values(response.data.items).map(e => e.path.)
+    // return github.returnBlogMap(response.data)
+    return temp
+}
+
+// export function isTag(){
+
+// }

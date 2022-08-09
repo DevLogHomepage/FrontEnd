@@ -1,14 +1,10 @@
-
-<!-- 
-    페이지 만들때 처음부터 그냥 2개로 쪼개서 표시
- -->
 <template>
     <main>
         <div id="tech" class="tech" :class="[theme ? 'dark' : 'light']">
             <div class="tech-container">
 
                 <div class="left-sidebar">
-                    <SearchBox/>
+                    <SearchBox :currentData="currentContents"/>
                     <PageLocater 
                         :blogPostData = "blogPostData"
                         :page="page"
@@ -85,7 +81,7 @@ export default defineComponent({
         //post 섹션
         const currentDate = ref<string>('');
 
-        const post = ref<Post>({sections:[],container:undefined,yPos:0,index:0,watching:0});
+        const post = ref<Post>({sections:[],container:undefined,yPos:0,index:0,watching:0,recent:''});
 
         /**  */
         const page = ref<Page>({loading:0,current:0,total:0,watching:0} as Page)
@@ -135,7 +131,7 @@ export default defineComponent({
             /** 받아온 데이터를 1주일 단위로 분해해서 반환받습니다. */
             const tempTitle = await blog.getBlogTitles(this.basicBlogInfo);
             this.blogPostData.setMap(tempTitle)
-            console.log(tempTitle[0].month)
+            this.post.recent = tempTitle[0].month
             const data = blog.getPageInfo(this.blogPostData.splitWeek(),this.page.loading)
             this.getCurrentPage(data.blogPosts)
             this.setTotalPage()
@@ -164,6 +160,8 @@ export default defineComponent({
          * @param event 스크롤 이벤트가 들어오는 매개변수입니다.
          */
         handleScroll(event:Event){
+            if(this.currentContents.getSearchValue().length > 0)
+                return
             this.post.yPos = (event.target as HTMLElement).scrollTop
 
             this.post.sections.forEach((section,index) => {
@@ -230,6 +228,7 @@ export default defineComponent({
          */
         currentContents:{
             handler: function() {
+                console.log("changed")
                 this.$nextTick(() => {
                     this.addSections();
                 });

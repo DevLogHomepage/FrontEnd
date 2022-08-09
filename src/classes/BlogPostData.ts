@@ -2,6 +2,9 @@ import { BlogPostData, BlogPostStreamData, BlogStreamData } from "@/utils/Types"
 import * as blog from '@/core/blog'
 import { toRaw } from "vue";
 
+/**
+ * 기본 blogPostData 클래스가 사용하는 타입 정의입니다.
+ */
 export interface BlogPostDataIneterface {
     setMap: (data: BlogStreamData[]) => void;
     splitWeek: () => BlogStreamData[];

@@ -10,7 +10,7 @@
                 <BlogPostStream :postStreamData="postStreamData"/>
             </div>
         </div>
-        <div class="date-indicator">Recent Post: {}</div>
+        <div class="date-indicator">Recent Post: {{post.recent}}</div>
         <div class="date-indicator">Post in a Row : {}</div>
         <div id="pagelocater-helper">
             <div class="flex-horizontal">
@@ -257,11 +257,17 @@ export default defineComponent({
 
 #pagelocater-helper{
     margin:15px 0;
-    background-color:#202020;
     border-radius: 10px;
     width:100%;
 }
 
+.dark #pagelocater-helper{
+    background-color:#202020;
+}
+
+.light #pagelocater-helper{
+    background-color: #ccc;
+}
 .pagelocater-conatainer{
     margin:15px;
 }

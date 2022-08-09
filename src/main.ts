@@ -4,10 +4,12 @@ import router from './router'
 import store from './store'
 import './assets/global.css';
 import './assets/font-color.css';
+import "vue-select/dist/vue-select.css";
 
 import { DefaultApolloClient } from '@vue/apollo-composable'
 import { ApolloClient, createHttpLink, InMemoryCache } from '@apollo/client/core'
 import {GITHUB_TOKEN} from '@/../config'
+import vSelect from 'vue-select'
 
 // HTTP connection to the API
 const httpLink = createHttpLink({
@@ -35,4 +37,4 @@ const app = createApp({
     render: () => h(App)
 })
 
-app.use(store).use(router).mount('#app')
+app.use(store).use(router).component("v-select",vSelect).mount('#app')

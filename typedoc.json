@@ -1,0 +1,11 @@
+{
+    "entryPoints": ["./src"],
+    "out": "docs",
+    "sort": ["source-order"],
+    "name": "testing",
+    "tsconfig": "./tsconfig.json",
+    "entryPointStrategy": "expand",
+    "includes": "./src/",
+    "categorizeByGroup": false,
+    "readme":"./README.md"
+}
