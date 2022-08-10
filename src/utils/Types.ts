@@ -254,6 +254,8 @@ export interface SearchItem{
     name:string,
     path:string,
     text_matches:TextMatches[]
+    createdat:string,
+    updatedat:string,
 }
 
 export interface TextMatches{

@@ -5,28 +5,41 @@ import { BlogPostData, SearchItem } from "@/utils/Types";
  */
  export interface CurrentContentInterface {
     push: (weekBlogPost: BlogPostData[]) => void;
-    get: () => BlogPostData[][];
-    setSearchValue: (searchItem: SearchItem[]) => void;
-    getSearchValue: () => SearchItem[];
+    getdata: () => BlogPostData[][];
+    setSearch:(search:BlogPostData[]) => void;
+    getSearch:() => BlogPostData[];
+    clearSeach:() => void;
 }
 
 export default class CurrentContents implements CurrentContentInterface{
     private data:BlogPostData[][] = [];
-    private search:SearchItem[] = [];
+    private search:BlogPostData[] = [];
 
     push(weekBlogPost:BlogPostData[]){
         this.data.push(weekBlogPost)
     }
     
-    get(){
+    getdata(){
         return this.data
     }
 
-    setSearchValue(searchItem:SearchItem[]){
-        this.search = searchItem
+    setSearch(search:BlogPostData[]){
+        this.search = search
     }
 
-    getSearchValue(){
+    getSearch(){
         return this.search
     }
+
+    get(){
+        if(this.search.length > 0)
+            return [this.search]
+        else
+            return this.data
+    }
+
+    clearSeach(){
+        this.search = []
+    }
+
 }

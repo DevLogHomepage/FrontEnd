@@ -1,5 +1,5 @@
 
-import { BlogPostData, BlogPostDataBasicInfo, BlogPostDataYear, BlogStreamData, SearchResult } from '@/utils/Types';
+import { BlogPostData, BlogPostDataBasicInfo, BlogPostDataYear, BlogStreamData, SearchItem, SearchResult } from '@/utils/Types';
 import * as github from '@/core/github'
 import {marked} from 'marked';
 import hljs from 'highlight.js'
@@ -25,7 +25,7 @@ export async function getBlogTitles(content:BlogPostDataBasicInfo){
  * @param postPage 블로그 포스트 배열을 통한 타이틀 배열 매개변수입니다.
  * @returns 제목 배열을 통한 블로그 포스트 내용을 반환합니다.
  */
-export async function getCurrentPage(content:BlogPostDataBasicInfo,postPage:BlogPostData[]){
+export async function getCurrentPage(content:BlogPostDataBasicInfo,postPage:BlogPostData[] | SearchItem[]){
     
     const blogPostDatas:BlogPostData[] = []
     if(postPage === undefined){
@@ -33,9 +33,10 @@ export async function getCurrentPage(content:BlogPostDataBasicInfo,postPage:Blog
     }
     /** 현재 반환 받은 값을 모두 포스팅으로 표시하는 부분입니다. */
     for(const i of postPage){
+        // console.log(i)
         const blogPostData:BlogPostData = {} as BlogPostData
         // const temp = await github.getContent({owner:'dennis0324',repo:'blogPost',path:`${content.path}/${i.name}.md`})
-        const response = await axios.get(`http://localhost:3000/getContent/?owner=${content.owner}&repo=${content.repo}&path=${content.path}&name=${i.name}`)
+        const response = await axios.get(`http://localhost:3000/getContent/?owner=${content.owner}&repo=${content.repo}&path=${content.path}&name=${i.name.replace('.md','')}`)
         const contentStr =  response.data
         console.log(contentStr[28])
 
@@ -66,6 +67,12 @@ export async function getCurrentPage(content:BlogPostDataBasicInfo,postPage:Blog
 
     return blogPostDatas
 }
+
+// export async function getSearchPage(content:BlogPostDataBasicInfo,searchItems:SearchItem[]) {
+//     for(const serachItem of searchItems){
+
+//     }
+// } 
 
 export function displayIndicator(blogPostDataYears:BlogPostDataYear[],currentDate:Date){
     const Today = new Date();
@@ -185,6 +192,7 @@ export function getPageIndex(blogPostDatas:BlogStreamData[],watchingIndex:number
 
 export async function searchPost(content:BlogPostDataBasicInfo,searchText:string){
     const response = await axios.get(`http://localhost:3000/searchPost/?owner=${content.owner}&repo=${content.repo}&path=${content.path}&title=${searchText}`)
+    console.log(response)
     const temp = (response.data as SearchResult).items.filter(node =>{
         console.log(node.path.replace(`/${node.name}`,''))
         if(node.path.replace(`/${node.name}`,'') === content.path){

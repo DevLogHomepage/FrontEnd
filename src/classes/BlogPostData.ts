@@ -1,4 +1,4 @@
-import { BlogPostData, BlogPostStreamData, BlogStreamData } from "@/utils/Types";
+import { BlogPostData, BlogPostStreamData, BlogStreamData, SearchItem } from "@/utils/Types";
 import * as blog from '@/core/blog'
 import { toRaw } from "vue";
 
@@ -10,15 +10,19 @@ export interface BlogPostDataIneterface {
     splitWeek: () => BlogStreamData[];
     splitMonth: () => BlogStreamData[];
     getBlogStreamIndiData: (currentDate: string, page: number) => BlogPostStreamData[][];
+    setSearchValue: (searchItem: SearchItem[]) => void;
+    getSearchValue: () => SearchItem[];
 }
 
 export default class BlogPostDataClass implements BlogPostDataIneterface{
     private title:BlogStreamData[]
     private perChunk:number
+    private searchData:SearchItem[]
 
     constructor(){
         this.title = [] as BlogStreamData[]
         this.perChunk = 7;
+        this.searchData = [] as SearchItem[]
     }
 
     /**
@@ -119,6 +123,37 @@ export default class BlogPostDataClass implements BlogPostDataIneterface{
             return resultArray
         }, [])
 
+    }
+
+    setSearchValue(searchItem:SearchItem[]){
+        const saveArr:SearchItem[] = Array(searchItem.length) as SearchItem[]
+        const indexArr = searchItem.map(item => {
+            const index = this.findIndex(item)
+            console.log(index)
+            if(index !== null){
+                console.log(this.title[index[0]].blogPosts[index[1]].createdat)
+                item.createdat = this.title[index[0]].blogPosts[index[1]].createdat
+                item.updatedat = this.title[index[0]].blogPosts[index[1]].updatedat
+                return item
+            }
+        })
+        console.log(indexArr)
+        this.searchData = indexArr as SearchItem[]
+    }
+
+    private findIndex(item: SearchItem){
+        for(const [i,node] of this.title.entries()){
+            for(const [j,post] of node.blogPosts.entries()){
+                if(post.name === item.name.replace('.md','')){
+                    return [i,j]
+                }
+            }
+        }
+        return null
+    }
+
+    getSearchValue(){
+        return this.searchData
     }
 
 }

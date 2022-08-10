@@ -4,7 +4,7 @@
             <div class="tech-container">
 
                 <div class="left-sidebar">
-                    <SearchBox :currentData="currentContents"/>
+                    <SearchBox :blogPostData="blogPostData"/>
                     <PageLocater 
                         :blogPostData = "blogPostData"
                         :page="page"
@@ -12,6 +12,7 @@
                         />
                 </div>
                 <div class="post-container">
+                    <button v-if="currentContents.getSearch().length > 0 " id="back-btn" @click="backBtn">뒤로가기</button>
                     <div v-if="currentContents.get().length <= 0" class="loading posts">
                         <img src="@/assets/loading-dark.gif" alt="" >
                     </div>
@@ -153,14 +154,13 @@ export default defineComponent({
                 this.addSections();
             });
         },
-
         /**
          * 스크롤 이벤트를 헨들링해주는 함수입니다.
          * 
          * @param event 스크롤 이벤트가 들어오는 매개변수입니다.
          */
         handleScroll(event:Event){
-            if(this.currentContents.getSearchValue().length > 0)
+            if(this.blogPostData.getSearchValue().length > 0)
                 return
             this.post.yPos = (event.target as HTMLElement).scrollTop
 
@@ -187,7 +187,6 @@ export default defineComponent({
                 }
             }
         },
-
         /**
          * 섹션이 나오면 감지후 추가해줍니다.
          */
@@ -198,7 +197,6 @@ export default defineComponent({
             this.post.container = posts as HTMLElement 
 
         },
-
         /**
          * 현재의 날짜를 설정해줍니다.
          * @param date `ISOstring의 형식으로 `T`의 앞부분을 string 값으로 받습니다.
@@ -207,7 +205,6 @@ export default defineComponent({
             const startOfWeek = blog.returnIncludeMonth(new Date(date))
             this.currentDate = blog.getFrontDate(startOfWeek)
         },
-
         /**
          * 블로그의 전체 페이지를 설정합니다.
          * 
@@ -216,6 +213,10 @@ export default defineComponent({
         setTotalPage(){
             this.page.total = this.blogPostData.splitWeek().length
         },
+
+        backBtn(){
+            this.currentContents.clearSeach()
+        }
 
     },
     /** 컴포넌트 생성시에 실행되는 함수입니다. */
@@ -228,7 +229,6 @@ export default defineComponent({
          */
         currentContents:{
             handler: function() {
-                console.log("changed")
                 this.$nextTick(() => {
                     this.addSections();
                 });
@@ -243,12 +243,25 @@ export default defineComponent({
                 [this.page.watching,this.post.watching] = blog.getPageIndex(this.blogPostData.splitMonth(),this.post.index)
             },
             deep:true
+        },
+        blogPostData:{
+            handler:async function(){
+                console.log("changed")
+                if(this.blogPostData.getSearchValue().length > 0){
+                    const result = await blog.getCurrentPage(this.basicBlogInfo,this.blogPostData.getSearchValue())
+                    this.currentContents.setSearch(result) 
+                }
+            },
+            deep:true
         }
     }
 })
 </script>
 
 <style scoped>
+    #back-btn{
+        margin:10px 0;
+    }
     .divider{
         margin:20px 0;
         width:100%;

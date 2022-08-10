@@ -15,7 +15,7 @@
 </template>
 
 <script lang="ts">
-import BlogPostDataClass from '@/classes/BlogPostData';
+import BlogPostDataClass, { BlogPostDataIneterface } from '@/classes/BlogPostData';
 import axios from 'axios';
 import { defineComponent, PropType, ref, toRaw } from 'vue'
 import * as blog from '@/core/blog'
@@ -64,14 +64,14 @@ export default defineComponent({
             if(this.searchKeyWord === '')
                 return
             const result = await blog.searchPost(this.basicBlogInfo,this.searchKeyWord)
-            this.currentData.setSearchValue(result)
+            this.blogPostData.setSearchValue(result)
         }
     },
 
     props:{
-        currentData:{
+        blogPostData:{
             required:true,
-            type:Object as PropType<CurrentContentInterface>
+            type:Object as PropType<BlogPostDataIneterface>
         }
     }
 })
