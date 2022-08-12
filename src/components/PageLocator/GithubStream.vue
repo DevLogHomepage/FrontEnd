@@ -89,7 +89,7 @@ export default defineComponent({
             if(this.startingDate === ''){
                 return
             }
-            const response = await axios.get(`http://localhost:3000/githubContirbutions/?startingDate=${this.startingDate}`)
+            const response = await axios.get(`http://192.168.1.17:3000/githubContirbutions/?startingDate=${this.startingDate}`)
             const githubResponse = response.data.data as githubContributionResponse 
             if(response !== undefined){
                 

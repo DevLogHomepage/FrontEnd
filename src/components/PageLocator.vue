@@ -11,7 +11,6 @@
             </div>
         </div>
         <div class="date-indicator">Recent Post: {{post.recent}}</div>
-        <div class="date-indicator">Post in a Row : {}</div>
         <div id="pagelocater-helper">
             <div class="flex-horizontal">
                 <div class="mainstream-div blogType-1 pagelocater-conatainer">
@@ -188,7 +187,17 @@ export default defineComponent({
 </script>
 
 <style scoped>
+@media(max-width:1366px){
+    #pagelocater-helper{
+        display:none;
+    }
+}
 
+@media(max-width:1024px){
+    #pagelocater{
+        
+    }
+}
 #pagelocater{
     display:flex;
 

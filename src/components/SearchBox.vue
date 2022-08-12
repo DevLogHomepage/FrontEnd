@@ -1,11 +1,13 @@
 <template>
     <div class="search-container">
-          <v-select 
+          <!-- <v-select 
             :options="optionArray" 
             label="title"
             v-model="selected"
-        ></v-select>
-
+        ></v-select> -->
+        <div id="back-container">
+            <button v-if="currentContents.getSearch().length > 0 " id="back-btn" @click="backBtn">뒤로가기</button>
+        </div>
         <div class="search">
             <input class="search-textInput" type="text" v-model="searchKeyWord"/>
             <span class="border"></span>
@@ -20,6 +22,7 @@ import axios from 'axios';
 import { defineComponent, PropType, ref, toRaw } from 'vue'
 import * as blog from '@/core/blog'
 import CurrentContents, { CurrentContentInterface } from '@/classes/CurrentConents';
+import { Post } from '@/utils/Types';
 
 
 export interface optionArray{
@@ -65,6 +68,13 @@ export default defineComponent({
                 return
             const result = await blog.searchPost(this.basicBlogInfo,this.searchKeyWord)
             this.blogPostData.setSearchValue(result)
+        },
+        
+        backBtn(){
+            this.currentContents.clearSeach()
+            this.blogPostData.clearSearch()
+            this.post.container!.scrollTop = 0
+            this.searchKeyWord = ''
         }
     },
 
@@ -72,12 +82,23 @@ export default defineComponent({
         blogPostData:{
             required:true,
             type:Object as PropType<BlogPostDataIneterface>
+        },
+        currentContents:{
+            required:true,
+            type:Object as PropType<CurrentContentInterface>
+        },
+        post:{
+            required:true,
+            type:Object as PropType<Post>
         }
     }
 })
 </script>
 
 <style scoped>
+    #back-container{
+        height:30px;
+    }
     .search-container  {
     --vs-controls-color: #ffbb00;
     --vs-border-color: transparent;

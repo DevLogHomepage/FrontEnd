@@ -68,6 +68,20 @@ export default defineComponent({
     bottom: 10px;
     
 }
+
+@media(min-width:600px){
+    #Theme{
+        right: 50px;
+        bottom: 10px; 
+    }
+}
+
+@media(max-width:600px){
+    #Theme{
+        right:10px;
+        bottom: -10px;
+    }
+}
 #ThemeInput{
     display: none;
 }

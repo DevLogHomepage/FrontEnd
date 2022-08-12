@@ -125,8 +125,13 @@ main{
 }
 
 footer{
-    height: 100px;
     display: table-row;
+}
+
+@media(min-width:600px){
+    footer{
+        height: 100px;
+    }
 }
 
 #helper{

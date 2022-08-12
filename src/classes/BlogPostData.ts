@@ -12,6 +12,7 @@ export interface BlogPostDataIneterface {
     getBlogStreamIndiData: (currentDate: string, page: number) => BlogPostStreamData[][];
     setSearchValue: (searchItem: SearchItem[]) => void;
     getSearchValue: () => SearchItem[];
+    clearSearch: () => void
 }
 
 export default class BlogPostDataClass implements BlogPostDataIneterface{
@@ -154,6 +155,10 @@ export default class BlogPostDataClass implements BlogPostDataIneterface{
 
     getSearchValue(){
         return this.searchData
+    }
+
+    clearSearch(){
+        this.searchData = []
     }
 
 }

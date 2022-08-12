@@ -4,7 +4,7 @@
             <div class="tech-container">
 
                 <div class="left-sidebar">
-                    <SearchBox :blogPostData="blogPostData"/>
+                    <SearchBox :blogPostData="blogPostData" :currentContents="currentContents" :post="post"/>
                     <PageLocater 
                         :blogPostData = "blogPostData"
                         :page="page"
@@ -12,7 +12,7 @@
                         />
                 </div>
                 <div class="post-container">
-                    <button v-if="currentContents.getSearch().length > 0 " id="back-btn" @click="backBtn">뒤로가기</button>
+                    <!-- <button v-if="currentContents.getSearch().length > 0 " id="back-btn" @click="backBtn">뒤로가기</button> -->
                     <div v-if="currentContents.get().length <= 0" class="loading posts">
                         <img src="@/assets/loading-dark.gif" alt="" >
                     </div>
@@ -42,7 +42,7 @@
                             </div>
                         </div>
                         
-                        <div v-if="!(page.current==page.total -1) " id="infinite-loading" class="flex-horizontal countPost" ><img src="@/assets/loading-dark.gif" alt="" ></div>
+                        <div v-if="(!(page.current==page.total -1) && !(currentContents.getSearch().length > 0))" id="infinite-loading" class="flex-horizontal countPost" ><img src="@/assets/loading-dark.gif" alt="" ></div>
                     </div>
                     
                 </div>
@@ -160,7 +160,7 @@ export default defineComponent({
          * @param event 스크롤 이벤트가 들어오는 매개변수입니다.
          */
         handleScroll(event:Event){
-            if(this.blogPostData.getSearchValue().length > 0)
+            if(this.currentContents.getSearch().length > 0)
                 return
             this.post.yPos = (event.target as HTMLElement).scrollTop
 
@@ -176,8 +176,7 @@ export default defineComponent({
             })
 
             let bottom = (this.post.container as HTMLElement).scrollHeight - (this.post.container as HTMLElement).clientHeight - (this.post.yPos as number)
-
-            if(bottom == 0){
+            if(bottom <= 10){
                 if(this.page.loading === this.page.current){
                     
                     if(this.page.current < this.page.total - 1){
@@ -214,9 +213,6 @@ export default defineComponent({
             this.page.total = this.blogPostData.splitWeek().length
         },
 
-        backBtn(){
-            this.currentContents.clearSeach()
-        }
 
     },
     /** 컴포넌트 생성시에 실행되는 함수입니다. */
@@ -229,6 +225,9 @@ export default defineComponent({
          */
         currentContents:{
             handler: function() {
+                // if(this.post.container){
+                //     this.post.container!.scrollTop = 0 
+                // }
                 this.$nextTick(() => {
                     this.addSections();
                 });
@@ -248,6 +247,7 @@ export default defineComponent({
             handler:async function(){
                 console.log("changed")
                 if(this.blogPostData.getSearchValue().length > 0){
+                    this.post.container!.scrollTop = 0 
                     const result = await blog.getCurrentPage(this.basicBlogInfo,this.blogPostData.getSearchValue())
                     this.currentContents.setSearch(result) 
                 }
@@ -261,6 +261,9 @@ export default defineComponent({
 <style scoped>
     #back-btn{
         margin:10px 0;
+        background: transparent;
+        border:none
+        
     }
     .divider{
         margin:20px 0;
@@ -353,7 +356,7 @@ export default defineComponent({
     /** 블로그 개시글 관련 css */
     .blogPost{
         margin:50px 0;
-        padding: 70px 0;
+        padding-bottom: 70px 0;
         border-bottom: solid 1px #707070;
     }
 
@@ -366,10 +369,63 @@ export default defineComponent({
     .left-sidebar{
         display: flex;
         flex-direction: column;
-        margin: 0 50px;
-        padding: 0 100px;
-        border-right: solid 1px #707070;
 
+
+    }
+
+    @media(max-width: 600px){
+        #tech{
+            margin: 0 !important;
+        }
+        .posts{
+            width:100vw !important;
+            box-sizing:border-box;
+        }
+
+        /* 스크롤바 설정*/
+        .posts::-webkit-scrollbar{
+            display: none;
+        }
+
+        /* 스크롤바 막대 설정 */
+        .posts::-webkit-scrollbar-thumb{
+            height: 17%;
+            background-color: rgba(255,255,255,1);
+            /* 스크롤바 둥글게 설정    */
+            border-radius: 10px;    
+        }
+
+        /* 스크롤바 뒷 배경 설정*/
+        .posts::-webkit-scrollbar-track{
+            background-color: rgba(0,0,0,0);
+        }
+    }
+
+    @media(max-width:1024px){
+        .tech-container{
+            flex-direction: row-reverse;
+            border: none;
+        }
+    }
+
+    @media(min-width:1025px) {
+        .left-sidebar{
+            margin: 0 50px;
+            padding: 0 100px;
+            border-right: solid 1px #707070;
+        }
+    }
+
+    @media(max-width:600px){
+        .left-sidebar{
+            display: none;
+        }
+    }
+
+    @media(max-height:600px){
+        .left-sidebar{
+            display: none;
+        }
     }
 
     .post-container{
@@ -377,7 +433,7 @@ export default defineComponent({
     }
     /** 블로그 포스팅 */
     .posts{
-        height:75vh;
+        height:70vh;
         width:50vw;
         overflow-y: scroll;
         padding: 10px;
