@@ -21,6 +21,7 @@ import { ref } from '@vue/reactivity'
 import CircleIndicatorVue from './CircleIndicator.vue'
 import { ContributionMonths,ContributionWeeks, githubContributionResponse} from '@/Type'
 import axios from 'axios'
+import { domain } from 'config'
 
 /**
  * GithubStream의 정의 부분입니다.
@@ -89,7 +90,7 @@ export default defineComponent({
             if(this.startingDate === ''){
                 return
             }
-            const response = await axios.get(`http://192.168.1.17:3000/githubContirbutions/?startingDate=${this.startingDate}`)
+            const response = await axios.get(`http://${domain}:3000/githubContirbutions/?startingDate=${this.startingDate}`)
             const githubResponse = response.data.data as githubContributionResponse 
             if(response !== undefined){
                 

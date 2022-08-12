@@ -4,6 +4,7 @@ import * as github from '@/core/github'
 import {marked} from 'marked';
 import hljs from 'highlight.js'
 import axios from 'axios';
+import { domain } from 'config';
 
 /**
  * 깃허브에 올라가 있는 블로그 타이틀을 받아옵니다.
@@ -12,7 +13,7 @@ import axios from 'axios';
  * @returns 제목 배열을 통한 블로그 포스트 내용을 반환합니다.
  */
 export async function getBlogTitles(content:BlogPostDataBasicInfo){
-    const response = await axios.get(`http://192.168.1.17:3000/getPostTitles/?owner=${content.owner}&repo=${content.repo}&path=${content.path}`)
+    const response = await axios.get(`http://${domain}:3000/getPostTitles/?owner=${content.owner}&repo=${content.repo}&path=${content.path}`)
     return github.returnBlogMap(response.data)
     // return response
 }
@@ -36,7 +37,7 @@ export async function getCurrentPage(content:BlogPostDataBasicInfo,postPage:Blog
         // console.log(i)
         const blogPostData:BlogPostData = {} as BlogPostData
         // const temp = await github.getContent({owner:'dennis0324',repo:'blogPost',path:`${content.path}/${i.name}.md`})
-        const response = await axios.get(`http://192.168.1.17:3000/getContent/?owner=${content.owner}&repo=${content.repo}&path=${content.path}&name=${i.name.replace('.md','')}`)
+        const response = await axios.get(`http://${domain}:3000/getContent/?owner=${content.owner}&repo=${content.repo}&path=${content.path}&name=${i.name.replace('.md','')}`)
         const contentStr =  response.data
         console.log(contentStr[28])
 
@@ -191,7 +192,7 @@ export function getPageIndex(blogPostDatas:BlogStreamData[],watchingIndex:number
 
 
 export async function searchPost(content:BlogPostDataBasicInfo,searchText:string){
-    const response = await axios.get(`http://192.168.1.17:3000/searchPost/?owner=${content.owner}&repo=${content.repo}&path=${content.path}&title=${searchText}`)
+    const response = await axios.get(`http://${domain}:3000/searchPost/?owner=${content.owner}&repo=${content.repo}&path=${content.path}&title=${searchText}`)
     console.log(response)
     const temp = (response.data as SearchResult).items.filter(node =>{
         console.log(node.path.replace(`/${node.name}`,''))
