@@ -21,7 +21,7 @@ import { ref } from '@vue/reactivity'
 import CircleIndicatorVue from './CircleIndicator.vue'
 import { ContributionMonths,ContributionWeeks, githubContributionResponse} from '@/Type'
 import axios from 'axios'
-import { domain } from 'config'
+import { domain } from '@/config'
 
 /**
  * GithubStream의 정의 부분입니다.

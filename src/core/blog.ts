@@ -4,7 +4,7 @@ import * as github from '@/core/github'
 import {marked} from 'marked';
 import hljs from 'highlight.js'
 import axios from 'axios';
-import { domain } from 'config';
+import { domain } from '@/config';
 
 /**
  * 깃허브에 올라가 있는 블로그 타이틀을 받아옵니다.

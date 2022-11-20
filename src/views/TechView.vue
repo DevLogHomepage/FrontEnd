@@ -16,7 +16,7 @@
                     <div v-if="currentContents.get().length <= 0" class="loading posts">
                         <img src="@/assets/loading-dark.gif" alt="" >
                     </div>
-                    <div v-else class="posts" @scroll="handleScroll">
+                    <div v-else class="posts" @scroll="handleScroll" @wheel="handleWheel">
                         <div v-for="(nodeTemp,index) in currentContents.get()" :key="index">
                             <div  v-for="node in nodeTemp" :key="node.name" class="blogPost countPost" v-on:load="addSections">
                                 <div class="blogPost-container">
@@ -42,7 +42,7 @@
                             </div>
                         </div>
                         
-                        <div v-if="(!(page.current==page.total -1) && !(currentContents.getSearch().length > 0))" id="infinite-loading" class="flex-horizontal countPost" ><img src="@/assets/loading-dark.gif" alt="" ></div>
+                        <div v-if="(!(page.current==page.total -1) && !(currentContents.getSearch().length > 0) && show)" id="infinite-loading" class="flex-horizontal countPost" ><img src="@/assets/loading-dark.gif" alt="" ></div>
                     </div>
                     
                 </div>
@@ -91,6 +91,8 @@ export default defineComponent({
 
         // const blogStreamIndiData = ref<BlogPostStreamData[][]>([]);
         const currentContents = ref<CurrentContents>(new CurrentContents());
+
+        const show = ref<boolean>(true);
         return {
             blogPostData,
             currentContents,
@@ -100,6 +102,7 @@ export default defineComponent({
             post,
 
             currentDate,
+            show
         }
     },
     /** 컴포넌트 기본 정의 부분 */
@@ -162,6 +165,9 @@ export default defineComponent({
         handleScroll(event:Event){
             if(this.currentContents.getSearch().length > 0)
                 return
+            if(this.show === false){
+                return
+            }
             this.post.yPos = (event.target as HTMLElement).scrollTop
 
             this.post.sections.forEach((section,index) => {
@@ -187,6 +193,17 @@ export default defineComponent({
             }
         },
         /**
+         * 스크롤이 내려가는 것이 아닌, 휠 사용시에 적용되는 이벤트 함수입니다.
+         */
+        handleWheel(){
+            console.log('tesing')
+            if(this.show === false){
+                this.page.loading++
+                this.settingTechView()
+                this.show = true
+            }
+        },
+        /**
          * 섹션이 나오면 감지후 추가해줍니다.
          */
         addSections(){
@@ -194,6 +211,11 @@ export default defineComponent({
             const posts = document.querySelector(".posts")
             this.post.sections = [...sections.values()] as HTMLElement[]
             this.post.container = posts as HTMLElement 
+
+            console.log((this.post.container as HTMLElement).scrollHeight,(this.post.container as HTMLElement).clientHeight)
+            if((this.post.container as HTMLElement).scrollHeight === (this.post.container as HTMLElement).clientHeight)
+                this.show = false
+
 
         },
         /**

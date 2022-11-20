@@ -1,4 +1,4 @@
-import { GITHUB_TOKEN } from '@/../config'
+import { GITHUB_TOKEN } from '@/config'
 import { BlogPostDataMonth, BlogPostDataYear, BlogStreamData } from '@/Type' 
 
 import { BlogPostData } from '@/Type'
