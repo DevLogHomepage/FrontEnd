@@ -47,7 +47,7 @@ export function returnGetBlogCommitQuery(nodes:string[]):string{
 
     return query
 }
-/** 블로그의 모든 포스트 글을 방아옵니다. */
+/** 블로그의 모든 포스트 글을 get아옵니다. */
 export function returnGetBlogContentQuery(){
     const query = 
     `query RepoFiles($own:String!,$repo:String!){
