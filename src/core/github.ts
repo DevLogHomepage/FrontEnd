@@ -1,4 +1,3 @@
-import { GITHUB_TOKEN } from '@/config'
 import { BlogPostDataMonth, BlogPostDataYear, BlogStreamData } from '@/Type' 
 
 import { BlogPostData } from '@/Type'
@@ -26,68 +25,6 @@ export function getBetweenDate(fromDate:Date,toDate:Date,blogPostDatas:BlogPostD
     }
     return filteredPostDatas
 }
-
-/** rest api를 담당하는 부분입니다. */
-
-/**
- * fetch를 사용하기 위해 반환하는 request를 받는 함수입니다.
- * 
- * @param relativeUrl 데이터를 받아오는 특정 url를 기입합니다.
- * @returns 인터넷에서 사용하기 위한 request를 반환합니다.
- */
-export function githubRequest(relativeUrl: string) {
-    const init = {} as RequestInit
-    init.mode = 'cors';
-    init.cache = 'no-cache'; // force conditional request
-    const request = new Request('https://api.github.com/' + relativeUrl,{method: "GET" ,cache:'no-cache',mode:'cors'});
-    request.headers.set('Accept', 'application/vnd.github.v3+json');
-    request.headers.set('Authorization', `token ${GITHUB_TOKEN}`);
-    return request
-}
-
-/**
- * `request`를 사용하여 결과를 받아옵니다.
- * 
- * @param request 깃허브 `request`를 넣는 매개변수입니다.
- * @returns `request`를 사용하여 fetch 받아온 결과값을 보여줍니다.
- */
-export function githubFetch(request: Request): Promise<Response> {
-    return fetch(request).then(response => {
-        if (response.status === 401) {
-            console.log('깃허브로 부터 응답 받을 수 없음')
-        }
-        if (response.status === 403) {
-            response.json().then(data => {
-                if (data.message === 'Resource not accessible by integration') {
-                    window.dispatchEvent(new CustomEvent('not-installed'));
-        }
-    });
-    }
-
-    if (request.method === 'GET'
-            && [401, 403].indexOf(response.status) !== -1
-            && request.headers.has('Authorization')
-        ) {
-        request.headers.delete('Authorization');
-            return githubFetch(request);
-        }
-        return response;
-    });
-}
-
-/**
- * base64를 UTF-8로 변경해주는 함수입니다.
- * 
- * @param encoded 디코딩할 문자열을 넣는 매개변수입니다.
- * @returns 디코딩한 문자열(HTML) 계열로 반환합니다.
- */
-export function decodeBase64UTF8(encoded: string) {
-    encoded = encoded.replace(/\s/g, '');
-    return decodeURIComponent(atob(encoded).split('').map(function (c) {
-        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-      }).join(''))
-}
-
 
 
 /**
