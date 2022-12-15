@@ -12,7 +12,7 @@
 <script lang="ts">
 import { BlogPostData, BlogPostStreamData } from '@/utils/Types'
 import { defineComponent, PropType } from 'vue'
-import CircleIndicatorVue from './CircleIndicator.vue'
+import CircleIndicatorVue from '../common/CircleIndicator.vue'
 
 
 export interface Data{
