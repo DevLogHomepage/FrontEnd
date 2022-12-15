@@ -2,52 +2,57 @@
     <main>
         <div id="tech" class="tech" :class="[theme ? 'dark' : 'light']">
             <div class="tech-container">
-
-                <div class="left-sidebar">
+                <!-- <DateIndicatorVue/> -->
+                <!-- <div class="left-sidebar">
                     <SearchBox :blogPostData="blogPostData" :currentContents="currentContents" :post="post"/>
                     <PageLocater 
                         :blogPostData = "blogPostData"
                         :page="page"
                         :post="post"
                         />
-                </div>
+                </div> -->
                 <div class="post-container">
                     <!-- <button v-if="currentContents.getSearch().length > 0 " id="back-btn" @click="backBtn">뒤로가기</button> -->
+
                     <div v-if="currentContents.get().length <= 0" class="loading posts">
                         <img src="@/assets/loading-dark.gif" alt="" >
                     </div>
-                    <div v-else class="posts" @scroll="handleScroll" @wheel="handleWheel">
-                        <div v-for="(nodeTemp,index) in currentContents.get()" :key="index">
-                            <div  v-for="node in nodeTemp" :key="node.name" class="blogPost countPost" v-on:load="addSections">
-                                <div class="blogPost-container">
-                                    <div class="blogPost-create">
-                                        <div class="blogPost-create-title">제작한 날짜</div>
-                                        <div class="blogPost-create-content">{{node.createdat}}</div>
-                                    </div>
-                                    <div class="blogPost-update">
-                                        <div class="blogPost-create-title">업데이트 날짜</div>
-                                        <div class="blogPost-create-content">{{node.updatedat}}</div>
-                                    </div>
-                                    
-                                </div>
-                                <div class="blog-title">{{node.titleData.title}}</div>
-                                <div v-html="node.content"></div>
-                                <div class="divider"></div>
-                                <div id="blog-footer">
-                                    <div id="blog-footer-title">tag</div> 
-                                    <div id="tag-container">
-                                        <div v-for="(i,index) in node.titleData.tags" :key="index" id="tag">{{i}}</div>
+                    <div v-else >
+                        <div class="postDate-container">
+                            <DateSeperatorVue :posts="currentContents.get()"/>
+                        </div>
+                        <div class="posts" @scroll="handleScroll" @wheel="handleWheel">
+                            <div v-for="(nodeTemp,index) in currentContents.get()" :key="index">
+                                <div  v-for="node in nodeTemp" :key="node.name" class="blogPost countPost" v-on:load="addSections">
+                                    <!-- <div class="blogPost-container">
+                                        <div class="blogPost-create">
+                                            <div class="blogPost-create-title">제작한 날짜</div>
+                                            <div class="blogPost-create-content">{{node.createdat}}</div>
+                                        </div>
+                                        <div class="blogPost-update">
+                                            <div class="blogPost-create-title">업데이트 날짜</div>
+                                            <div class="blogPost-create-content">{{node.updatedat}}</div>
+                                        </div>
+                                        
+                                    </div> -->
+                                    <!-- <DateIndicatorVue :date="1" :level="'SECOND_QUARTILE'"/> -->
+                                    <div class="blog-title">{{node.titleData.title}}</div>
+                                    <div v-html="node.content"></div>
+                                    <div class="divider"></div>
+                                    <div id="blog-footer">
+                                        <div id="blog-footer-title">tag</div> 
+                                        <div id="tag-container">
+                                            <div v-for="(i,index) in node.titleData.tags" :key="index" id="tag">{{i}}</div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
+                            
+                            <div v-if="(!(page.current==page.total -1) && !(currentContents.getSearch().length > 0) && show)" id="infinite-loading" class="flex-horizontal countPost" ><img src="@/assets/loading-dark.gif" alt="" ></div>
                         </div>
-                        
-                        <div v-if="(!(page.current==page.total -1) && !(currentContents.getSearch().length > 0) && show)" id="infinite-loading" class="flex-horizontal countPost" ><img src="@/assets/loading-dark.gif" alt="" ></div>
                     </div>
-                    
                 </div>
             </div>
-
         </div>
     </main>
     <footer>
@@ -67,6 +72,8 @@ import LogoDiv from '@/components/LogoDiv.vue';
 import SearchBox from '../components/SearchBox.vue';
 import BlogPostDataClass from '@/classes/BlogPostData';
 import CurrentContents from '@/classes/CurrentConents'
+// import DateIndicatorVue from '@/components/blogPost/DateIndicator.vue';
+import DateSeperatorVue from '@/components/blogPost/DateSeperator.vue';
 
 
 
@@ -107,9 +114,10 @@ export default defineComponent({
     },
     /** 컴포넌트 기본 정의 부분 */
     components:{
-        PageLocater,
+        // PageLocater,
+        // SearchBox,
         LogoDiv,
-        SearchBox,
+        DateSeperatorVue
     },
     /** 기본 properity의 정의 */
     props :{

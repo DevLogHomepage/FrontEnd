@@ -62,7 +62,6 @@ export async function getCurrentPage(content:BlogPostDataBasicInfo,postPage:Blog
         blogPostData.createdat = i.createdat.split('T')[0]
         blogPostData.updatedat = i.updatedat.split('T')[0]
 
-        //TODO 이거 함수 따로 하나 만들어서 제작하기
         blogPostDatas.push(blogPostData)
     }
 
