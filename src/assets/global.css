@@ -19,6 +19,12 @@
     background: #fff;
 }
 
+.center{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
 
 /* .dark pre code {
     text-align: left !important;
