@@ -18,7 +18,7 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
 import { ref } from '@vue/reactivity'
-import CircleIndicatorVue from './CircleIndicator.vue'
+import CircleIndicatorVue from '../common/CircleIndicator.vue'
 import { ContributionMonths,ContributionWeeks, githubContributionResponse} from '@/Type'
 import axios from 'axios'
 import { domain } from '@/config'
