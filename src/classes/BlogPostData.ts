@@ -1,3 +1,5 @@
+//TODO: 블로그 포스트 데이터 파일 저장 방식을 수정할 필요가 있음
+//TODO: 캘린더 포스트 불러오는 방식을 1주일 분량을 불러오는게 아니라 1달치로 변경
 import { BlogPostData, BlogPostStreamData, BlogStreamData, SearchItem } from "@/utils/Types";
 import * as blog from '@/core/blog'
 import { toRaw } from "vue";
