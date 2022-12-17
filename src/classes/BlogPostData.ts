@@ -9,7 +9,6 @@ import { toRaw } from "vue";
  */
 export interface BlogPostDataIneterface {
     setArray: (data: BlogPostData[]) => void;
-    split: (chunkSize:number) => BlogPostData[][]
     // splitWeek: () => BlogStreamData[];
     // splitMonth: () => BlogStreamData[];
     // getBlogStreamIndiData: (currentDate: string, page: number) => BlogPostStreamData[][];
@@ -38,30 +37,21 @@ export default class BlogPostDataClass implements BlogPostDataIneterface{
         this.title = data;
     }
 
-
-    /**
-     * 1차원 포스트 제목 정보(BlogPostData)를 2차원으로 출력해준다.
-     * 
-     * @param content BlogPostData
-     * @param chunkSize 나눌 사이즈를 명시한다.
-     * @returns 2차원 데이터를 출력한다.
-     */
     split(chunkSize:number):BlogPostData[][]{
         const result = this.title.reduce((resultArray:BlogPostData[][], item, index) => { 
             const chunkIndex = Math.floor(index/chunkSize)
-
+          
             if(!resultArray[chunkIndex]) {
-                resultArray[chunkIndex] = [] // start a new chunk
+              resultArray[chunkIndex] = [] // start a new chunk
             }
-
+          
             resultArray[chunkIndex].push(item)
-
+          
             return resultArray
-            }, [])
+        }, [])
+
         return result
     }
-
-    // getArray()
     /**
      * 각 그 주의 시작 날이 적힌 날짜를 받을 수 있습니다.
      * 
@@ -115,9 +105,8 @@ export default class BlogPostDataClass implements BlogPostDataIneterface{
     //     const PostChanged = this.splitMonth()[page].blogPosts
 
     //     const date = new Date(currentDate);
-    //     const tempDate = new Date(date);
-    //     const startingDate = new Date();
-    //     startingDate.setMonth(date.getMonth() - 2);
+    //     const tempDate = new Date(date.getFullYear(),date.getMonth(),date.getDate(),date.getHours(),date.getMinutes(),date.getSeconds());
+    //     const startingDate = new Date(tempDate.getFullYear(),tempDate.getMonth() - 2,tempDate.getDate(),date.getHours(),date.getMinutes(),date.getSeconds())
 
     //     const blogPostStreamDatas:BlogPostStreamData[] = []
     //     while(startingDate.toISOString().split('T')[0] !== tempDate.toISOString().split('T')[0]){
@@ -182,12 +171,12 @@ export default class BlogPostDataClass implements BlogPostDataIneterface{
     //     return null
     // }
 
-    getSearchValue(){
-        return this.searchData
-    }
+    // getSearchValue(){
+    //     return this.searchData
+    // }
 
-    clearSearch(){
-        this.searchData = []
-    }
+    // clearSearch(){
+    //     this.searchData = []
+    // }
 
 }

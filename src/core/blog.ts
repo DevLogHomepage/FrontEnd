@@ -12,9 +12,8 @@ import { domain } from '@/config';
  * @param content 블로그 포스트 배열을 통한 타이틀 배열 매개변수입니다.
  * @returns 제목 배열을 통한 블로그 포스트 내용을 반환합니다.
  */
-export async function getBlogTitles(content:BlogPostDataBasicInfo,chunkSIze:number):Promise<BlogPostData[]>{
+export async function getBlogTitles(content:BlogPostDataBasicInfo):Promise<BlogPostData[]>{
     const response = await axios.get(`http://${domain}:3000/getPostTitles/?owner=${content.owner}&repo=${content.repo}&path=${content.path}`)
-    console.log(response.data)
     return response.data;
     // return response
 }

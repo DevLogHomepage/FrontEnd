@@ -132,8 +132,8 @@ export default defineComponent({
         return {
             perChunk:7,
             basicBlogInfo: {owner:'dennis0324',repo:'blogPost',path:'tech'},
-            // 받아온 블로그 포스트를 다음과 같은 수로 나눕니다.
-            splitBlogPost:5
+            //받아온 포스트 데이터를 아래의 숫자만큼 나누워 줍니다.
+            splitChunk:5
         }
     },
     /** VIEW가 사용하는 메소드를 정의하는 부분입니다. */
@@ -142,19 +142,14 @@ export default defineComponent({
          * 깃허브에서 새로운 블로그 포스트를 받아 표시합니다.
          */
         async settingTechView(){
-
             /** 받아온 데이터를 1주일 단위로 분해해서 반환받습니다. */
-
-            const tempTitle = await blog.getBlogTitles(this.basicBlogInfo,this.splitBlogPost);
-            //객체에 데이터 저장
+            const tempTitle = await blog.getBlogTitles(this.basicBlogInfo);
             this.blogPostData.setArray(tempTitle)
-            //가장 최근 글 월자를 저장
             // this.post.recent = tempTitle[0].month
-            const data = this.blogPostData.split(5)
-    
-            this.getCurrentPage(data[this.page.loading])
-            
-            // 블로그 포스트가 가지고 있는 전체 페이지 수를 저장한다.
+            const data = this.blogPostData.split(this.splitChunk)
+            this.setCurrentPage(data[this.page.current])
+            // this.setTotalPage()
+            // this.blogPostData.splitMonth()
             // if(this.page.current !== this.page.loading)
             //     this.page.current++;
         },
@@ -164,7 +159,7 @@ export default defineComponent({
          * 
          * @param titles 블로그 포스트 내용을 받아오기 위해 받아온 포스트 기본 정보입니다.
          */
-        async getCurrentPage(titles:BlogPostData[]){
+        async setCurrentPage(titles:BlogPostData[]){
             const temp = await blog.getCurrentPage(this.basicBlogInfo,titles)
             this.currentContents.push(temp)
             
@@ -238,8 +233,16 @@ export default defineComponent({
          * @param date `ISOstring의 형식으로 `T`의 앞부분을 string 값으로 받습니다.
          */
         setCurrentDate(date:string){
-            const startOfWeek = blog.returnIncludeMonth(new Date(date))
-            this.currentDate = blog.getFrontDate(startOfWeek)
+            // const startOfWeek = blog.returnIncludeMonth(new Date(date))
+            // this.currentDate = blog.getFrontDate(startOfWeek)
+        },
+        /**
+         * 블로그의 전체 페이지를 설정합니다.
+         * 
+         * @param blogPostDataMap 날짜와 그 주에 해당하는 블로그 포스트가 저장된 변수를 매겨변수로 받습니다.
+         */
+        setTotalPage(){
+            // this.page.total = this.blogPostData.splitWeek().length
         },
 
 
@@ -274,12 +277,12 @@ export default defineComponent({
         },
         blogPostData:{
             handler:async function(){
-                console.log("changed")
-                if(this.blogPostData.getSearchValue().length > 0){
-                    this.post.container!.scrollTop = 0 
-                    const result = await blog.getCurrentPage(this.basicBlogInfo,this.blogPostData.getSearchValue())
-                    this.currentContents.setSearch(result) 
-                }
+                // console.log("changed")
+                // if(this.blogPostData.getSearchValue().length > 0){
+                //     this.post.container!.scrollTop = 0 
+                //     const result = await blog.getCurrentPage(this.basicBlogInfo,this.blogPostData.getSearchValue())
+                //     this.currentContents.setSearch(result) 
+                // }
             },
             deep:true
         }
