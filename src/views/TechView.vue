@@ -132,6 +132,8 @@ export default defineComponent({
         return {
             perChunk:7,
             basicBlogInfo: {owner:'dennis0324',repo:'blogPost',path:'tech'},
+            // 받아온 블로그 포스트를 다음과 같은 수로 나눕니다.
+            splitBlogPost:5
         }
     },
     /** VIEW가 사용하는 메소드를 정의하는 부분입니다. */
@@ -140,16 +142,21 @@ export default defineComponent({
          * 깃허브에서 새로운 블로그 포스트를 받아 표시합니다.
          */
         async settingTechView(){
+
             /** 받아온 데이터를 1주일 단위로 분해해서 반환받습니다. */
-            const tempTitle = await blog.getBlogTitles(this.basicBlogInfo);
-            this.blogPostData.setMap(tempTitle)
-            this.post.recent = tempTitle[0].month
-            const data = blog.getPageInfo(this.blogPostData.splitWeek(),this.page.loading)
-            this.getCurrentPage(data.blogPosts)
-            this.setTotalPage()
-            this.blogPostData.splitMonth()
-            if(this.page.current !== this.page.loading)
-                this.page.current++;
+
+            const tempTitle = await blog.getBlogTitles(this.basicBlogInfo,this.splitBlogPost);
+            //객체에 데이터 저장
+            this.blogPostData.setArray(tempTitle)
+            //가장 최근 글 월자를 저장
+            // this.post.recent = tempTitle[0].month
+            const data = this.blogPostData.split(5)
+    
+            this.getCurrentPage(data[this.page.loading])
+            
+            // 블로그 포스트가 가지고 있는 전체 페이지 수를 저장한다.
+            // if(this.page.current !== this.page.loading)
+            //     this.page.current++;
         },
 
         /**
@@ -234,14 +241,6 @@ export default defineComponent({
             const startOfWeek = blog.returnIncludeMonth(new Date(date))
             this.currentDate = blog.getFrontDate(startOfWeek)
         },
-        /**
-         * 블로그의 전체 페이지를 설정합니다.
-         * 
-         * @param blogPostDataMap 날짜와 그 주에 해당하는 블로그 포스트가 저장된 변수를 매겨변수로 받습니다.
-         */
-        setTotalPage(){
-            this.page.total = this.blogPostData.splitWeek().length
-        },
 
 
     },
@@ -269,7 +268,7 @@ export default defineComponent({
          */
         post:{
             handler:function(){
-                [this.page.watching,this.post.watching] = blog.getPageIndex(this.blogPostData.splitMonth(),this.post.index)
+                // [this.page.watching,this.post.watching] = blog.getPageIndex(this.blogPostData.splitMonth(),this.post.index)
             },
             deep:true
         },
