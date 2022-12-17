@@ -61,20 +61,20 @@ export default defineComponent({
 
     methods:{
         async search(){
-            console.log(this.selected.title,this.searchKeyWord)
-            if(toRaw(this.selected) === null)
-                return
-            if(this.searchKeyWord === '')
-                return
-            const result = await blog.searchPost(this.basicBlogInfo,this.searchKeyWord)
-            this.blogPostData.setSearchValue(result)
+            // console.log(this.selected.title,this.searchKeyWord)
+            // if(toRaw(this.selected) === null)
+            //     return
+            // if(this.searchKeyWord === '')
+            //     return
+            // const result = await blog.searchPost(this.basicBlogInfo,this.searchKeyWord)
+            // this.blogPostData.setSearchValue(result)
         },
         
         backBtn(){
-            this.currentContents.clearSeach()
-            this.blogPostData.clearSearch()
-            this.post.container!.scrollTop = 0
-            this.searchKeyWord = ''
+            // this.currentContents.clearSeach()
+            // this.blogPostData.clearSearch()
+            // this.post.container!.scrollTop = 0
+            // this.searchKeyWord = ''
         }
     },
 

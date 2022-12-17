@@ -100,12 +100,12 @@ export default defineComponent({
          */
         page:{
             handler:function(){
-                const temp = this.blogPostData.splitMonth()[this.page.watching]
-                if(temp){
-                    this.datas.date = temp.month
-                    this.postStreamData = this.blogPostData.getBlogStreamIndiData(temp.month,this.page.watching)
-                    this.setMonthIndicater()
-                }
+                // const temp = this.blogPostData.splitMonth()[this.page.watching]
+                // if(temp){
+                //     this.datas.date = temp.month
+                //     this.postStreamData = this.blogPostData.getBlogStreamIndiData(temp.month,this.page.watching)
+                //     this.setMonthIndicater()
+                // }
             },
             deep:true
         },
@@ -114,8 +114,8 @@ export default defineComponent({
          */
         post:{
             handler:function(){
-                const temp = this.blogPostData.splitMonth()[this.page.watching]
-                this.watchingDate = blog.getFrontDate(new Date(temp.blogPosts[this.post.watching].updatedat))
+                // const temp = this.blogPostData.splitMonth()[this.page.watching]
+                // this.watchingDate = blog.getFrontDate(new Date(temp.blogPosts[this.post.watching].updatedat))
             },
             deep:true
         }
@@ -135,52 +135,52 @@ export default defineComponent({
          * 특정 2달동안 자신이 업데이트, 포스트 생성을 확인하기 위해서 데이터를 받아와 2달치의 배열로 변경하는 함수입니다.
          * @param blogPostData 2달치의 포스트가 있는 배열입니다.
          */
-        setBlogStreamIndiData(blogPostData:BlogPostData[]){
-            const PostChanged = blogPostData
+        // setBlogStreamIndiData(blogPostData:BlogPostData[]){
+        //     const PostChanged = blogPostData
 
-            const date = new Date(this.datas.date as string);
-            let tempDate = new Date(date.getFullYear(),date.getMonth(),date.getDate(),date.getHours(),date.getMinutes(),date.getSeconds());
-            const startingDate = new Date(tempDate.getFullYear(),tempDate.getMonth() - 2,tempDate.getDate(),date.getHours(),date.getMinutes(),date.getSeconds())
+        //     const date = new Date(this.datas.date as string);
+        //     let tempDate = new Date(date.getFullYear(),date.getMonth(),date.getDate(),date.getHours(),date.getMinutes(),date.getSeconds());
+        //     const startingDate = new Date(tempDate.getFullYear(),tempDate.getMonth() - 2,tempDate.getDate(),date.getHours(),date.getMinutes(),date.getSeconds())
 
-            const blogPostStreamDatas:BlogPostStreamData[] = []
+        //     const blogPostStreamDatas:BlogPostStreamData[] = []
 
-            /** 현재 보고 있는 달이 포함하는 달로부터 2달동안의 루프를 돌기 위함입니다. */
-            while(startingDate.toISOString().split('T')[0] !== tempDate.toISOString().split('T')[0]){
-                /** 저장하기 위한 임시 변수 생성 */
-                const blogPostStreamData:BlogPostStreamData = {} as BlogPostStreamData
+        //     /** 현재 보고 있는 달이 포함하는 달로부터 2달동안의 루프를 돌기 위함입니다. */
+        //     while(startingDate.toISOString().split('T')[0] !== tempDate.toISOString().split('T')[0]){
+        //         /** 저장하기 위한 임시 변수 생성 */
+        //         const blogPostStreamData:BlogPostStreamData = {} as BlogPostStreamData
 
-                /** 현재 루프 돌아가고 있는 date 앞 날짜만 가지고 오기 */
-                const a = tempDate.toISOString().split('T')[0]
+        //         /** 현재 루프 돌아가고 있는 date 앞 날짜만 가지고 오기 */
+        //         const a = tempDate.toISOString().split('T')[0]
 
-                blogPostStreamData.type = []
+        //         blogPostStreamData.type = []
 
-                /** 현재 가지고 있는 모든 포스트 확인해보기 */
-                for(const node of PostChanged){
-                    if(a === node.createdat.split('T')[0]){
-                        blogPostStreamData.type.push(0)
-                    }
-                    else if(a === node.updatedat.split('T')[0]){
-                        blogPostStreamData.type.push(1)
-                    }
-                }
-                blogPostStreamData.date = a;
-                tempDate?.setDate(tempDate?.getDate() - 1);
-                blogPostStreamDatas.push(blogPostStreamData)
-            }
+        //         /** 현재 가지고 있는 모든 포스트 확인해보기 */
+        //         for(const node of PostChanged){
+        //             if(a === node.createdat.split('T')[0]){
+        //                 blogPostStreamData.type.push(0)
+        //             }
+        //             else if(a === node.updatedat.split('T')[0]){
+        //                 blogPostStreamData.type.push(1)
+        //             }
+        //         }
+        //         blogPostStreamData.date = a;
+        //         tempDate?.setDate(tempDate?.getDate() - 1);
+        //         blogPostStreamDatas.push(blogPostStreamData)
+        //     }
 
-            /** 1차원 배열에서 이를 통해서 2차원 배열로 변경합니다. */
-            return blogPostStreamDatas.reduce((resultArray:BlogPostStreamData[][], item, index) => { 
-                const chunkIndex = Math.floor(index/this.perChunk)
-                if(!resultArray[chunkIndex]) {
-                    resultArray[chunkIndex] = [] // start a new chunk
-                }
+        //     /** 1차원 배열에서 이를 통해서 2차원 배열로 변경합니다. */
+        //     return blogPostStreamDatas.reduce((resultArray:BlogPostStreamData[][], item, index) => { 
+        //         const chunkIndex = Math.floor(index/this.perChunk)
+        //         if(!resultArray[chunkIndex]) {
+        //             resultArray[chunkIndex] = [] // start a new chunk
+        //         }
 
-                resultArray[chunkIndex].push(item)
+        //         resultArray[chunkIndex].push(item)
 
-                return resultArray
-            }, [])
+        //         return resultArray
+        //     }, [])
 
-        },
+        // },
     }
 
 })

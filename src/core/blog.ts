@@ -12,9 +12,10 @@ import { domain } from '@/config';
  * @param content 블로그 포스트 배열을 통한 타이틀 배열 매개변수입니다.
  * @returns 제목 배열을 통한 블로그 포스트 내용을 반환합니다.
  */
-export async function getBlogTitles(content:BlogPostDataBasicInfo){
+export async function getBlogTitles(content:BlogPostDataBasicInfo,chunkSIze:number):Promise<BlogPostData[]>{
     const response = await axios.get(`http://${domain}:3000/getPostTitles/?owner=${content.owner}&repo=${content.repo}&path=${content.path}`)
-    return github.returnBlogMap(response.data)
+    console.log(response.data)
+    return response.data;
     // return response
 }
 
@@ -118,17 +119,6 @@ export function getPostContent(prefix:string,surfix:string,content:string){
     return content
 }
 
-/**
- * 그 블로그 게시글에 관련된 내용을 받아옵니다.
- * 
- * @param blogPostDataMap 현재 깃허브에 있는 블로그 게시글이 정리된 배열입니다.
- * @param page 표시하고자 하는 페이지를 넣는 매개변수입니다.
- * @returns 특정 날짜의 배열을 반환합니다.
- */
-export function getPageInfo(blogPostDataMap:BlogStreamData[],page:number){
-
-    return blogPostDataMap[page]
-}
 
 /**
  * 현 날짜가 특정 월에 들어가 있는 확인해주는 함수입니다.
